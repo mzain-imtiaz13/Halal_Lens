@@ -4,6 +4,19 @@ import Toolbar from '../components/Toolbar'
 import Pagination from '../components/Pagination'
 import { listVotesSummary } from '../api/services/votes'
 
+const Chip = (v) => {
+  const val = String(v || '').toLowerCase()
+  const cls =
+    val === 'halal' ? 'green' :
+    val === 'haram' ? 'red' : 'amber'
+  return (
+    <span className={`chip ${cls}`}>
+      <span className="dot" />
+      {v || '-'}
+    </span>
+  )
+}
+
 export default function VotesSummary() {
   const [rows, setRows] = useState([])
   const [loading, setLoading] = useState(true)
@@ -33,26 +46,39 @@ export default function VotesSummary() {
     { title: 'Haram Votes', dataIndex: 'haram_votes' },
     { title: 'Suspicious Votes', dataIndex: 'suspicious_votes' },
     { title: 'Total', dataIndex: 'total_votes' },
-    { title: 'AI Status', dataIndex: 'ai_status' },
+    { title: 'AI Status', dataIndex: 'ai_status', render: v => Chip(v) },
   ]
 
   return (
     <>
       <h2>Product-wise Ingredient Voting Summary</h2>
       <Toolbar onReset={reset}>
-        <input className="input" style={{minWidth:240}} placeholder="Search product or ingredient..." value={q} onChange={e=>{setQ(e.target.value); setPage(1)}} />
-        <select className="select" value={aiStatus} onChange={e => {setAiStatus(e.target.value); setPage(1)}}>
+        <input
+          className="input"
+          style={{minWidth:240}}
+          placeholder="Search product or ingredient..."
+          value={q}
+          onChange={e=>{setQ(e.target.value); setPage(1)}}
+        />
+        <select
+          className="select"
+          value={aiStatus}
+          onChange={e => {setAiStatus(e.target.value); setPage(1)}}
+        >
           <option value="">All AI Status</option>
           <option value="halal">Halal</option>
           <option value="haram">Haram</option>
           <option value="suspicious">Suspicious</option>
         </select>
       </Toolbar>
+
       <div className="space" />
-      {loading ? 'Loading...' : <>
-        <DataTable columns={columns} data={rows} />
-        <Pagination page={page} pageSize={pageSize} total={total} onChange={setPage} />
-      </>}
+      {loading ? 'Loading...' : (
+        <>
+          <DataTable columns={columns} data={rows} />
+          <Pagination page={page} pageSize={pageSize} total={total} onChange={setPage} />
+        </>
+      )}
     </>
   )
 }
