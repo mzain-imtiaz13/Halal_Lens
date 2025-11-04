@@ -14,11 +14,15 @@ import VotesSummary from './pages/VotesSummary'
 import Revenue from './pages/Revenue'
 import Shops from './pages/Shops'
 import NotFound from './pages/NotFound'
+import PrivacyPolicy from './pages/PrivacyPolicy'
+import DataDeletion from './pages/DataDeletion'
 
 export default function AppRouter() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+      <Route path="/data-deletion" element={<DataDeletion />} />
 
       <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
         <Route path="/" element={<Dashboard />} />
