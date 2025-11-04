@@ -1,7 +1,7 @@
 // src/pages/DataDeletion.jsx
-import React from 'react'
+import React from "react";
 
-const GOOGLE_FORM_URL = 'https://forms.gle/ZhZoXjRc5HWDtunv8'
+const GOOGLE_FORM_URL = "https://forms.gle/ZhZoXjRc5HWDtunv8";
 
 export default function DataDeletion() {
   return (
@@ -73,14 +73,26 @@ export default function DataDeletion() {
             directly, please email:
           </p>
           <p>
-            📧{' '}
-            <a
-              href="mailto:majidnaru69@gmail.com"
-              className="legal-link"
-            >
+            📧{" "}
+            <a href="mailto:majidnaru69@gmail.com" className="legal-link">
               majidnaru69@gmail.com
             </a>
           </p>
+          <h2 className="legal-section-title">🧾 How to Request Deletion</h2>
+          <ul className="legal-list">
+            <li>
+              <strong>Step 1:</strong> Fill out the form below with your account
+              information.
+            </li>
+            <li>
+              <strong>Step 2:</strong> Click “Submit” to initiate the account
+              deletion process.
+            </li>
+            <li>
+              <strong>Step 3:</strong> You will receive a confirmation email
+              once your account has been deleted.
+            </li>
+          </ul>
 
           {/* Google Form embed */}
           <h2 className="legal-form-title">
@@ -104,5 +116,5 @@ export default function DataDeletion() {
         </section>
       </main>
     </div>
-  )
+  );
 }
