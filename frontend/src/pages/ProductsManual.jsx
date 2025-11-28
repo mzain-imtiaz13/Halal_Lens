@@ -3,7 +3,7 @@ import DataTable from '../components/DataTable'
 import Toolbar from '../components/Toolbar'
 import Pagination from '../components/Pagination'
 import { listManualProducts } from '../api/services/products'
-
+import './../styles.css'
 const PLACEHOLDER_IMG =
   'data:image/svg+xml;utf8,' +
   encodeURIComponent(`

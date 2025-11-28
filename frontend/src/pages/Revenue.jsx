@@ -3,7 +3,7 @@ import DataTable from '../components/DataTable'
 import Toolbar from '../components/Toolbar'
 import { db } from '../firebase'
 import { collection, getDocs } from 'firebase/firestore'
-
+import './../styles.css'
 const toDate = (v) => {
   try {
     if (v?.toDate) return v.toDate()

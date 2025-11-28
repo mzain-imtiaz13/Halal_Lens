@@ -3,7 +3,7 @@ import DataTable from '../components/DataTable'
 import Toolbar from '../components/Toolbar'
 import Pagination from '../components/Pagination'
 import { listAIProducts, recheckAI } from '../api/services/products'
-
+import './../styles.css'
 function Drawer({ open, onClose, data }) {
   if (!open) return null
   const x = data?._extra || {}

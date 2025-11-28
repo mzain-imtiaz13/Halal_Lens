@@ -5,7 +5,7 @@ import logo from '../assets/Halal_lens_logo.png'
 import { sendPasswordResetEmail } from 'firebase/auth'
 import { auth } from '../firebase'
 import { toast } from 'react-toastify'
-
+import './../styles.css'
 export default function Login() {
   const { user, login } = useAuth()
   const navigate = useNavigate()

@@ -9,7 +9,7 @@ import {
   listUserScanHistory
 } from '../api/services/users_firebase'
 import { useAuth } from '../contexts/AuthContext'
-
+import './../styles.css'
 export default function Users() {
   const { user, loading: authLoading, isAdmin } = useAuth()
 

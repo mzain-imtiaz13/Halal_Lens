@@ -1,6 +1,6 @@
 // src/pages/PrivacyPolicy.jsx
 import React from 'react'
-
+import './../styles.css'
 export default function PrivacyPolicy() {
   return (
     <div className="legal-page">
@@ -148,10 +148,10 @@ export default function PrivacyPolicy() {
               Request deletion of your account and associated data by contacting
               us at{' '}
               <a
-                href="mailto:majidnaru69@gmail.com"
+                href="mailto:halallensofficial@gmail.com"
                 className="legal-link"
               >
-                majidnaru69@gmail.com
+                halallensofficial@gmail.com
               </a>
               .
             </li>

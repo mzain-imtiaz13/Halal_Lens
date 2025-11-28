@@ -3,6 +3,7 @@ import DataTable from '../components/DataTable'
 import Toolbar from '../components/Toolbar'
 import Pagination from '../components/Pagination'
 import { listVotesSummary } from '../api/services/votes'
+import './../styles.css'
 
 const Chip = (v) => {
   const val = String(v || '').toLowerCase()

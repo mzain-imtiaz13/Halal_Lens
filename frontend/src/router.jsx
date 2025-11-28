@@ -1,21 +1,26 @@
-import React from 'react'
-import { Routes, Route } from 'react-router-dom'
-import Layout from './components/Layout'
-import ProtectedRoute from './components/ProtectedRoute'
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import Layout from "./components/Layout";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 // pages
-import Login from './pages/Login'
-import Dashboard from './pages/Dashboard'
-import Users from './pages/Users'
-import ProductsAI from './pages/ProductsAI'
-import ProductsManual from './pages/ProductsManual'
-import Votes from './pages/Votes'
-import VotesSummary from './pages/VotesSummary'
-import Revenue from './pages/Revenue'
-import Shops from './pages/Shops'
-import NotFound from './pages/NotFound'
-import PrivacyPolicy from './pages/PrivacyPolicy'
-import DataDeletion from './pages/DataDeletion'
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import Users from "./pages/Users";
+import ProductsAI from "./pages/ProductsAI";
+import ProductsManual from "./pages/ProductsManual";
+import Votes from "./pages/Votes";
+import VotesSummary from "./pages/VotesSummary";
+import Revenue from "./pages/Revenue";
+import Shops from "./pages/Shops";
+import NotFound from "./pages/NotFound";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import DataDeletion from "./pages/DataDeletion";
+import HalalLensLanding from "./pages/HalalLensLanding";
+import StaticLayout from "./components/StaticLayout";
+import About from "./pages/About";
+import TermsOfService from "./pages/TermsOfService";
+import Support from "./pages/Support";
 
 export default function AppRouter() {
   return (
@@ -23,9 +28,21 @@ export default function AppRouter() {
       <Route path="/login" element={<Login />} />
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       <Route path="/data-deletion" element={<DataDeletion />} />
+      <Route element={<StaticLayout />}>
+        <Route path="/" element={<HalalLensLanding />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/terms-of-service" element={<TermsOfService />} />
+        <Route path="/support" element={<Support />} />
+      </Route>
 
-      <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-        <Route path="/" element={<Dashboard />} />
+      <Route
+        element={
+          <ProtectedRoute>
+            <Layout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/users" element={<Users />} />
         <Route path="/products/ai" element={<ProductsAI />} />
         <Route path="/products/manual" element={<ProductsManual />} />
@@ -37,5 +54,5 @@ export default function AppRouter() {
 
       <Route path="*" element={<NotFound />} />
     </Routes>
-  )
+  );
 }

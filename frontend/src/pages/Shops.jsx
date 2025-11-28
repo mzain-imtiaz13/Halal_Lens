@@ -8,7 +8,7 @@ import {
   updateProduct,
   deleteProduct
 } from '../api/services/shops'
-
+import './../styles.css'
 /* File -> dataURL for preview */
 const readAsDataURL = (file) => new Promise((res, rej) => {
   const fr = new FileReader()

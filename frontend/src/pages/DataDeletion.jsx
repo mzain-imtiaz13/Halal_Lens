@@ -2,7 +2,7 @@
 import React from "react";
 
 const GOOGLE_FORM_URL = "https://forms.gle/ZhZoXjRc5HWDtunv8";
-
+import './../styles.css'
 export default function DataDeletion() {
   return (
     <div className="legal-page">
@@ -74,8 +74,8 @@ export default function DataDeletion() {
           </p>
           <p>
             📧{" "}
-            <a href="mailto:majidnaru69@gmail.com" className="legal-link">
-              majidnaru69@gmail.com
+            <a href="mailto:halallensofficial@gmail.com" className="legal-link">
+              halallensofficial@gmail.com
             </a>
           </p>
           <h2 className="legal-section-title">🧾 How to Request Deletion</h2>

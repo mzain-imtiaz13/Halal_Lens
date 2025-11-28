@@ -1,104 +1,37 @@
-import React, { useState } from 'react'
-import { Outlet, useNavigate } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext'
-import NavItem from './NavItem'
-import logo from '../assets/Halal_lens_logo.png'
+// src/layout/Layout.jsx (or wherever this lives)
+import React, { useState } from "react";
+import { Outlet } from "react-router-dom";
 
-export default function Layout(){
-  const { logout, user } = useAuth()
-  const navigate = useNavigate()
-  const [q, setQ] = useState('')
+import Navbar from "../pages/Landing/Navbar";
+import Sidebar from "../components/Sidebar"; // adjust path if needed
 
+export default function Layout() {
   // Collapsible sidebar (persist)
   const [collapsed, setCollapsed] = useState(() => {
-    try { return localStorage.getItem('hl__sidebar') === 'collapsed' } catch(_) { return false }
-  })
-  const toggleSidebar = () => {
-    const next = !collapsed
-    setCollapsed(next)
-    try { localStorage.setItem('hl__sidebar', next ? 'collapsed' : 'expanded') } catch(_) {}
-  }
+    try {
+      return localStorage.getItem("hl__sidebar") === "collapsed";
+    } catch (_) {
+      return false;
+    }
+  });
 
-  const handleLogout = async () => {
-    await logout()
-    navigate('/login', { replace: true })
-  }
+  const toggleSidebar = () => {
+    const next = !collapsed;
+    setCollapsed(next);
+    try {
+      localStorage.setItem("hl__sidebar", next ? "collapsed" : "expanded");
+    } catch (_) {}
+  };
 
   return (
-    <div className={`layout ${collapsed ? 'collapsed' : ''}`}>
-      <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
-        <div className="brand">
-          <img src={logo} alt="Halal Lens" className={`brand-logo ${collapsed ? 'mini' : ''}`} />
-        </div>
-
-        <button
-          className="btn sidebar-toggle fancy"
-          aria-label="Toggle sidebar"
-          onClick={toggleSidebar}
-          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        >
-          {collapsed ? (
-            <svg width="18" height="18" viewBox="0 0 24 24"><path d="M9 6l-6 6 6 6" fill="none" stroke="currentColor" strokeWidth="2"/></svg>
-          ) : (
-            <svg width="18" height="18" viewBox="0 0 24 24"><path d="M15 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2"/></svg>
-          )}
-        </button>
-
-        <div className="side-sep" />
-
-        <nav className="nav">
-          <NavItem to="/" label="Dashboard" icon={
-            <svg viewBox="0 0 24 24"><path d="M3 12h7V3H3v9zm0 9h7v-7H3v7zm11 0h7v-9h-7v9zm0-18v7h7V3h-7z" fill="currentColor"/></svg>
-          } collapsed={collapsed} />
-
-          <div className="side-sep" />
-
-          <div className="nav-section-title">{!collapsed ? 'Management' : ''}</div>
-          <NavItem to="/users" label="Users" icon={
-            <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-4 0-8 2-8 6v2h16v-2c0-4-4-6-8-6z" fill="currentColor"/></svg>
-          } collapsed={collapsed} />
-
-          <NavItem to="/products/ai" label="AI Products" icon={
-            <svg viewBox="0 0 24 24"><path d="M12 2l9 4.9v9.1L12 22l-9-6.9V6.9L12 2zm0 2.2L5 7v6l7 5.3L19 13V7l-7-2.8z" fill="currentColor"/></svg>
-          } collapsed={collapsed} />
-
-          <NavItem to="/votes" label="Community Votes" icon={
-            <svg viewBox="0 0 24 24"><path d="M12 21l-8-6 8-6 8 6-8 6zm0-12l-8-6 8-6 8 6-8 6z" fill="currentColor"/></svg>
-          } collapsed={collapsed} />
-
-          <NavItem to="/votes/summary" label="Votes Summary" icon={
-            <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm10 8h8V3h-8v18z" fill="currentColor"/></svg>
-          } collapsed={collapsed} />
-
-          <NavItem to="/revenue" label="Revenue" icon={
-            <svg viewBox="0 0 24 24"><path d="M3 17h2v4H3v-4zm4-6h2v10H7V11zm4-4h2v14h-2V7zm4 8h2v6h-2v-6zm4-12h2v18h-2V3z" fill="currentColor"/></svg>
-          } collapsed={collapsed} />
-
-          <NavItem to="/shops" label="Shops & Products" icon={
-            <svg viewBox="0 0 24 24"><path d="M4 4h16v6H4zM3 12h18v8H3z" fill="currentColor"/></svg>
-          } collapsed={collapsed} />
-
-          <NavItem to="/products/manual" label="Manual Products" icon={
-            <svg viewBox="0 0 24 24"><path d="M4 4h12v2H4v12h12v2H2V2h14v2H4zM12 12l6 6 4-10-10 4z" fill="currentColor"/></svg>
-          } collapsed={collapsed} />
-        </nav>
-      </aside>
-
-      <div>
-        <header className="header">
-          <div className="search" style={{maxWidth: 520}}>
-            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M10 18a8 8 0 1 1 5.293-14.293A8 8 0 0 1 10 18zm11 3-6-6"/></svg>
-            <input placeholder="Search products, users, ingredients..." value={q} onChange={e=>setQ(e.target.value)} />
-          </div>
-          <div className="top-actions">
-            <span className="user-email">{user?.email}</span>
-            <button className="btn primary" onClick={handleLogout}>Logout</button>
-          </div>
-        </header>
-        <div className="container">
+    <div className={`flex flex-col ${collapsed ? "collapsed" : ""}`}>
+      <Navbar />
+      <div className="flex">
+        <Sidebar collapsed={collapsed} onToggle={toggleSidebar} />
+        <div className="container flex-1">
           <Outlet />
         </div>
       </div>
     </div>
-  )
+  );
 }
