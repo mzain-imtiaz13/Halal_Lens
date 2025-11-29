@@ -6,8 +6,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "SET NODE_ENV=development & node --watch ./src/bin/www.js",
     "start": "node api/index.js",
-    "prod": "SET NODE_ENV=production & node --watch ./src/bin/www.js",
-    "build": "pm2 start ecosystem.config.js"
+    "prod": "SET NODE_ENV=production & node --watch ./src/bin/www.js",    
+    "build": "echo \"No build step needed for backend on Vercel\""
   },
   "author": "",
   "license": "ISC",
