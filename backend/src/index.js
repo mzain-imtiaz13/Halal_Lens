@@ -10,7 +10,7 @@ const app = express();
 app.set("view engine", "ejs");
 // Stripe webhook (must be BEFORE express.json)
 app.post(
-  "/backend/api/billing/webhook",
+  "/api/billing/webhook",
   express.raw({ type: "application/json" }),
   stripeWebhookHandler
 );
@@ -20,7 +20,7 @@ app.set("trust proxy", true);
 //Logs all the requests with repective response' status.
 app.use(morgan("tiny"));
 //Endpoints routing
-app.use("/backend/api", routes);
+app.use("/api", routes);
 app.use(express.static(__dirname + "/public"));
 //Error catching middleware
 app.use((error, req, res, next) => {
