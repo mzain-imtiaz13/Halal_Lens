@@ -3,10 +3,17 @@ const morgan = require("morgan");
 const express = require("express");
 const routes = require("./routes");
 const { R5XX } = require("./Responses");
+const stripeWebhookHandler = require("./controllers/stripe.controller");
 
 const app = express();
 
 app.set("view engine", "ejs");
+// Stripe webhook (must be BEFORE express.json)
+app.post(
+  "/backend/api/billing/webhook",
+  express.raw({ type: "application/json" }),
+  stripeWebhookHandler
+);
 app.use(express.json());
 app.use(cors());
 app.set("trust proxy", true);

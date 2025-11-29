@@ -1,13 +1,13 @@
 const { Router } = require("express");
 
 const router = Router();
-// const authRoutes = require("./auth.routes");
+const billingRoutes = require("./billing.routes");
 
 const defaultRoutes = [
-  // {
-  //   path: "/auth",
-  //   route: authRoutes,
-  // },
+  {
+    path: "/billing",
+    route: billingRoutes,
+  },
 ];
 
 defaultRoutes.forEach(({ path, route }) => {

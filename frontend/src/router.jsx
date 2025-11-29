@@ -21,18 +21,24 @@ import StaticLayout from "./components/StaticLayout";
 import About from "./pages/About";
 import TermsOfService from "./pages/TermsOfService";
 import Support from "./pages/Support";
+import BillingSuccess from "./pages/Billing/BillingSuccess";
+import BillingCancel from "./pages/Billing/BillingCancel";
+import BillingPlans from "./pages/Billing/BillingPlans";
 
 export default function AppRouter() {
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-      <Route path="/data-deletion" element={<DataDeletion />} />
       <Route element={<StaticLayout />}>
         <Route path="/" element={<HalalLensLanding />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/data-deletion" element={<DataDeletion />} />
         <Route path="/about" element={<About />} />
         <Route path="/terms-of-service" element={<TermsOfService />} />
         <Route path="/support" element={<Support />} />
+        <Route path="/billing" element={<BillingPlans />} />
+        <Route path="/billing/success" element={<BillingSuccess />} />
+        <Route path="/billing/cancel" element={<BillingCancel />} />
       </Route>
 
       <Route

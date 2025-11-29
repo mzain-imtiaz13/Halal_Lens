@@ -1,18 +1,33 @@
-const { jwtUtils } = require("../utils");
-const { R4XX } = require("../Responses");
+// middleware/firebaseAuth.js
+const { auth } = require('../config/firebaseAdmin.config');
+const { R4XX } = require('../Responses');
 
-const isAuth = async (req, res, next) => {
-  const jwt = req.headers.authorization;
+const firebaseAuth = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
 
-  if (!jwt) return R4XX(res, 401, "No auth token provided.");
+  // Expect "Authorization: Bearer <token>"
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return R4XX(res, 401, 'No auth token provided.');
+  }
+
+  const idToken = authHeader.split(' ')[1];
 
   try {
-    let decoded = await jwtUtils.verifyToken(jwt);
-    req.user = decoded?.sub;
+    // Verify Firebase ID token
+    const decodedToken = await auth.verifyIdToken(idToken);
+
+    // Attach user info to req (you can customize what you store)
+    req.user = {
+      uid: decodedToken.uid,
+      email: decodedToken.email,
+      // customClaims: decodedToken, // if you want whole payload
+    };
+
     next();
   } catch (error) {
-    R4XX(res, 401, "Invalid or expired auth token.");
+    console.error('Firebase auth error:', error);
+    return R4XX(res, 401, 'Invalid or expired auth token.');
   }
 };
 
-module.exports = isAuth;
+module.exports = firebaseAuth;

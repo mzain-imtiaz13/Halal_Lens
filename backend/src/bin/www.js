@@ -1,15 +1,17 @@
 const mongoose = require("mongoose");
 const app = require("../index");
 const { envConfig, mongoConfig } = require("../config/");
+const { seedPlans } = require("../seeder/plan.seeder");
 // ---------------------------------------------------------------------------->>
 let server = null;
 
 mongoose
   .connect(mongoConfig.url, mongoConfig.options)
-  .then(() => {
+  .then(() => {    
     server = app.listen(envConfig.PORT, () => {
       console.log(`Listening to port ${server.address().port}`);
     });
+    seedPlans();
   })
   .catch((err) => {
     console.log("Failed to connect database.\n" + err);

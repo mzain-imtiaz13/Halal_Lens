@@ -1,11 +1,7 @@
 const Stripe = require("stripe");
-require("dotenv").config();
+const { STRIPE_SECRET_KEY } = require("./env.config");
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error("STRIPE_SECRET_KEY is not set in .env");
-}
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+const stripe = new Stripe(STRIPE_SECRET_KEY, {
   apiVersion: "2023-10-16",
 });
 

@@ -77,9 +77,9 @@ const Footer = () => {
             © {new Date().getFullYear()} Halal Lens. All rights reserved.
           </p>
           <div className="flex gap-3 text-[11px] text-emerald-200">
-            <button className="hover:text-white transition">
+            <Link to="privacy-policy" className="hover:text-white transition">
               Privacy Policy
-            </button>
+            </Link>
             <Link
               to={"/terms-of-service"}
               className="hover:text-white transition"

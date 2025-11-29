@@ -9,6 +9,7 @@ const Navbar = () => {
     navigate("/login", { replace: true });
   };
   const navItems = [
+    { label: "Plans", href: "/billing" },
     { label: "Features", href: "/#features" },
     { label: "Discover", href: "/#discover" },
     { label: "Reviews", href: "/#testimonials" },
@@ -49,13 +50,17 @@ const Navbar = () => {
             </a>
           ))}
         </nav>
-        {user && (
+        {user ? (
           <div className="top-actions">
             <span className="user-email">{user?.email}</span>
             <button className="btn primary" onClick={handleLogout}>
               Logout
             </button>
           </div>
+        ) : (
+          <Link to="/login" className="btn primary">
+            Log in
+          </Link>
         )}
 
         {/* Mobile Toggle */}
