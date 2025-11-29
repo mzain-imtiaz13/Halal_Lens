@@ -22,6 +22,10 @@ app.use(morgan("tiny"));
 //Endpoints routing
 app.use("/api", routes);
 app.use(express.static(__dirname + "/public"));
+app.get("/api/health", (req, res) => {
+  res.json({ ok: true });
+});
+
 //Error catching middleware
 app.use((error, req, res, next) => {
   console.log(error);
