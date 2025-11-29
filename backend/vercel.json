@@ -1,16 +1,9 @@
 {
   "version": 2,
-  "builds": [
-    { "src": "api/index.js", "use": "@vercel/node" }
-  ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/backend/api/(.*)",
-      "dest": "/api/index"
-    },
-    {
-      "src": "/backend/api/billing/webhook",
-      "dest": "/api/index"
+      "source": "/backend/api/:path*",
+      "destination": "/api/index"
     }
   ]
 }
