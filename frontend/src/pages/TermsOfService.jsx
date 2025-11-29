@@ -207,7 +207,7 @@ const TermsOfService = () => {
                   For questions, support, or account deletion, contact us at:
                 </p>
                 <p className="mt-2 text-emerald-900 font-semibold">
-                  📧 halallensofficial@gmail.com
+                  📧 support@halallens.org
                 </p>
               </section>
             </div>

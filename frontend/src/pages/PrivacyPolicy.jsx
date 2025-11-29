@@ -148,10 +148,10 @@ export default function PrivacyPolicy() {
               Request deletion of your account and associated data by contacting
               us at{' '}
               <a
-                href="mailto:halallensofficial@gmail.com"
+                href="mailto:support@halallens.org"
                 className="legal-link"
               >
-                halallensofficial@gmail.com
+                support@halallens.org
               </a>
               .
             </li>
@@ -195,10 +195,10 @@ export default function PrivacyPolicy() {
           <p>
             📧 Email:{' '}
             <a
-              href="mailto:majidnaru69@gmail.com"
+              href="mailto:support@halallens.org"
               className="legal-link"
             >
-              majidnaru69@gmail.com
+              support@halallens.org
             </a>
           </p>
 

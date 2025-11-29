@@ -22,7 +22,7 @@ const Support = () => {
               If you have questions or need help, feel free to contact us:
             </p>
             <p className="text-emerald-900 font-semibold">
-              Email: <span className="underline">halallensofficial@gmail.com</span>
+              Email: <span className="underline">support@halallens.org</span>
             </p>
             <p className="mt-2 text-emerald-800">
               Our team usually responds within 24–48 hours.

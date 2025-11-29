@@ -74,8 +74,8 @@ export default function DataDeletion() {
           </p>
           <p>
             📧{" "}
-            <a href="mailto:halallensofficial@gmail.com" className="legal-link">
-              halallensofficial@gmail.com
+            <a href="mailto:support@halallens.org" className="legal-link">
+              support@halallens.org
             </a>
           </p>
           <h2 className="legal-section-title">🧾 How to Request Deletion</h2>
