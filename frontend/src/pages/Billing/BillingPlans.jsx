@@ -146,7 +146,7 @@ const BillingPlans = () => {
               <div className="flex items-center gap-2">
                 <FiCheckCircle className="h-4 w-4" />
                 <span className="font-medium">
-                  Current plan:{' '}
+                  Current Plan:{' '}
                   {subscription.plan?.name || subscription.plan?.code || 'Unknown'}
                 </span>
               </div>
