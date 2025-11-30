@@ -2,20 +2,20 @@ const mongoose = require("mongoose");
 const app = require("../index");
 const { envConfig, mongoConfig } = require("../config/");
 const { seedPlans } = require("../seeder/plan.seeder");
+const { connectDb } = require("../config/db.config");
 // ---------------------------------------------------------------------------->>
 let server = null;
 
-mongoose
-  .connect(mongoConfig.url, mongoConfig.options)
-  .then(() => {    
+(async () => {
+  try {
+    await connectDb();   // uses the same helper
     server = app.listen(envConfig.PORT, () => {
       console.log(`Listening to port ${server.address().port}`);
     });
-    seedPlans();
-  })
-  .catch((err) => {
-    console.log("Failed to connect database.\n" + err);
-  });
+  } catch (err) {
+    console.log("Failed to start server.\n", err);
+  }
+})();
 // ---------------------------------------------------------------------------->>
 const exitHandler = () => {
   if (server) {
