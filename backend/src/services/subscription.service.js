@@ -1,21 +1,30 @@
 const Stripe = require("stripe");
 const planModel = require("../models/plan.model");
 const subscriptionModel = require("../models/subscription.model");
+const EmailService = require("./email.service");
 
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 const SubscriptionService = {
   getCurrentSubscriptionForUser: async (firebaseUid) => {
-    return subscriptionModel.findOne({ firebaseUid })
+    return subscriptionModel
+      .findOne({ firebaseUid })
       .populate("plan")
       .sort({ createdAt: -1 });
   },
 
-  startTrialIfNotExists: async (firebaseUid) => {
-    const existing = await subscriptionModel.findOne({ firebaseUid, status: "trial" });
+  // Called on signup from app: starts trial & sends trial activation email
+  startTrialIfNotExists: async (firebaseUid, email) => {
+    const existing = await subscriptionModel.findOne({
+      firebaseUid,
+      status: "trial",
+    });
     if (existing) return existing;
 
-    const plan = await planModel.findOne({ code: "TRIAL_7_DAYS", isActive: true });
+    const plan = await planModel.findOne({
+      code: "TRIAL_7_DAYS",
+      isActive: true,
+    });
     if (!plan) throw new Error("Trial plan not configured");
 
     const now = new Date();
@@ -30,11 +39,21 @@ const SubscriptionService = {
       currentPeriodEnd: end,
     });
 
-    return sub.populate("plan");
+    const populated = await sub.populate("plan");
+
+    if (email) {
+      await EmailService.sendTrialActivationEmail(email, plan, end);
+    }
+
+    return populated;
   },
 
-  moveToFreePlan: async (firebaseUid) => {
-    const plan = await planModel.findOne({ code: "FREE_PLAN", isActive: true });
+  // To be used when trial expires (via cron/worker) to move user to free plan
+  moveToFreePlan: async (firebaseUid, email) => {
+    const plan = await planModel.findOne({
+      code: "FREE_PLAN",
+      isActive: true,
+    });
     if (!plan) throw new Error("Free plan not configured");
 
     const sub = await subscriptionModel.create({
@@ -43,10 +62,22 @@ const SubscriptionService = {
       status: "free",
     });
 
-    return sub.populate("plan");
+    const populated = await sub.populate("plan");
+
+    if (email) {
+      await EmailService.sendTrialEndedNowOnFreeEmail(email, plan);
+    }
+
+    return populated;
   },
 
-  createCheckoutSessionForPlan: async ({ firebaseUid, planCode, successUrl, cancelUrl }) => {
+  createCheckoutSessionForPlan: async ({
+    firebaseUid,
+    customerEmail,
+    planCode,
+    successUrl,
+    cancelUrl,
+  }) => {
     const plan = await planModel.findOne({ code: planCode, isActive: true });
     if (!plan) throw new Error("planModel not found");
     if (plan.billingType !== "recurring") {
@@ -57,6 +88,7 @@ const SubscriptionService = {
     }
 
     const customer = await stripe.customers.create({
+      email: customerEmail || undefined,
       metadata: { firebaseUid },
     });
 

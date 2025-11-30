@@ -1,5 +1,5 @@
 // src/pages/Billing/BillingPlans.jsx
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   FiCheckCircle,
@@ -12,7 +12,6 @@ import {
 } from 'react-icons/fi'
 import {
   fetchBillingOverview,
-  startTrial,
   createCheckoutSession,
 } from '../../api/services/billing'
 
@@ -46,31 +45,28 @@ const BillingPlans = () => {
     loadData()
   }, [])
 
+  // Find monthly price so we can show 12 * monthly (e.g. $36) crossed out on yearly
+  const yearlyOriginalPrice = useMemo(() => {
+    const monthlyPlan = plans.find((p) => p.code === 'STANDARD_MONTHLY')
+    if (!monthlyPlan || !monthlyPlan.price) return null
+    return monthlyPlan.price * 12
+  }, [plans])
+
   const handlePlanAction = async (plan) => {
     const action = plan.ui?.action
     if (!action) return
 
+    if (action === 'login') {
+      navigate('/login', {
+        state: { from: { pathname: '/billing' } },
+        replace: true,
+      })
+      return
+    }
+
     try {
       setError('')
       setActionLoading(true)
-
-      if (action === 'login') {
-        navigate('/login', {
-          state: { from: { pathname: '/billing' } },
-          replace: true,
-        })
-        return
-      }
-
-      if (action === 'start_trial') {
-        const sub = await startTrial()
-        setSubscription(sub)
-        const data = await fetchBillingOverview()
-        setPlans(data.plans || [])
-        setSubscription(data.subscription || null)
-        setIsAuthenticated(!!data.isAuthenticated)
-        return
-      }
 
       if (action === 'subscribe') {
         const { url } = await createCheckoutSession(plan.code)
@@ -184,6 +180,9 @@ const BillingPlans = () => {
               const buttonVariant = ui.buttonVariant || 'outline'
               const disabled = ui.disabled || actionLoading
 
+              const isYearlyRecurring =
+                plan.billingType === 'recurring' && plan.interval === 'year'
+
               return (
                 <div
                   key={plan._id || plan.code}
@@ -203,17 +202,24 @@ const BillingPlans = () => {
                       {renderPlanBadge(plan)}
                     </div>
 
-                    <div className="mt-5 flex items-baseline gap-1">
+                    <div className="mt-5 flex flex-col gap-1">
                       {plan.price > 0 ? (
                         <>
-                          <span className="text-3xl font-bold text-slate-900">
-                            ${plan.price}
-                          </span>
-                          {plan.interval && (
-                            <span className="text-sm text-slate-500">
-                              / {plan.interval}
+                          {isYearlyRecurring && yearlyOriginalPrice && (
+                            <span className="text-sm text-slate-400 line-through">
+                              ${yearlyOriginalPrice.toFixed(0)}
                             </span>
                           )}
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-3xl font-bold text-slate-900">
+                              ${plan.price}
+                            </span>
+                            {plan.interval && (
+                              <span className="text-sm text-slate-500">
+                                / {plan.interval}
+                              </span>
+                            )}
+                          </div>
                         </>
                       ) : (
                         <span className="text-xl font-semibold text-emerald-600">

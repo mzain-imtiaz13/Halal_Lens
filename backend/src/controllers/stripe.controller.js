@@ -1,7 +1,11 @@
 const Stripe = require("stripe");
-const { STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET } = require("../config/env.config");
+const {
+  STRIPE_SECRET_KEY,
+  STRIPE_WEBHOOK_SECRET,
+} = require("../config/env.config");
 const planModel = require("../models/plan.model");
 const subscriptionModel = require("../models/subscription.model");
+const EmailService = require("../services/email.service");
 
 const stripe = Stripe(STRIPE_SECRET_KEY);
 
@@ -23,7 +27,10 @@ const stripeWebhookHandler = async (req, res) => {
       STRIPE_WEBHOOK_SECRET
     );
   } catch (err) {
-    console.error("❌ Webhook signature verification failed:", err.message);
+    console.error(
+      "❌ Webhook signature verification failed:",
+      err.message
+    );
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
@@ -37,16 +44,15 @@ const stripeWebhookHandler = async (req, res) => {
         const stripeSubscriptionId = session.subscription;
 
         if (!firebaseUid || !stripeSubscriptionId) {
-          console.warn("Missing firebaseUid or stripeSubscriptionId in session");
+          console.warn(
+            "Missing firebaseUid or stripeSubscriptionId in session"
+          );
           break;
         }
 
         const stripeSub = await stripe.subscriptions.retrieve(
           stripeSubscriptionId
         );
-
-        // Log once if needed
-        // console.log("Stripe subscription object:", stripeSub);
 
         const priceId = stripeSub.items?.data?.[0]?.price?.id;
         if (!priceId) {
@@ -79,22 +85,31 @@ const stripeWebhookHandler = async (req, res) => {
         if (periodStart) updateDoc.currentPeriodStart = periodStart;
         if (periodEnd) updateDoc.currentPeriodEnd = periodEnd;
 
-        await subscriptionModel.findOneAndUpdate(
+        const saved = await subscriptionModel.findOneAndUpdate(
           { firebaseUid, stripeSubscriptionId },
           updateDoc,
           { upsert: true, new: true }
         );
 
+        // Send purchase confirmation email
+        if (customer.email) {
+          await EmailService.sendPlanPurchaseConfirmationEmail(
+            customer.email,
+            plan,
+            periodEnd
+          );
+        }
+
         break;
       }
 
       case "invoice.payment_failed": {
-        // Optional: mark subscription as past_due etc.
+        // Optional: mark subscription as past_due, and send payment failed email
+        // You can call EmailService.sendPaymentFailedEmail(...) here if you add it.
         break;
       }
 
       default:
-        // console.log(`Unhandled event type ${event.type}`);
         break;
     }
 

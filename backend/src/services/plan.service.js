@@ -8,6 +8,7 @@ const PlanService = {
   getAllActivePlans: async () => {
     return planModel.find({ isActive: true }).sort({ price: 1 });
   },
+
   decoratePlansForUi: (plans, subscription, isAuthenticated) => {
     const subStatus = subscription?.status;
     const isTrialActive = subStatus === "trial";
@@ -35,93 +36,62 @@ const PlanService = {
         badgeType = plan.interval === "month" ? "monthly" : "yearly";
       }
 
-      // Default: anonymous user – show only "Sign in to select"
-      if (!isAuthenticated) {
-        return {
-          ...plan,
-          ui: {
-            badgeType,
-            showButton: true,
-            buttonLabel: "Sign in to select",
-            buttonVariant: "primary",
-            disabled: false,
-            action: "login",
-          },
-        };
-      }
-
-      // Authenticated user – decide per plan
-      let showButton = true;
-      let buttonLabel = "Select";
-      let buttonVariant = "outline"; // 'primary' | 'outline'
+      // Default UI flags
+      let showButton = false;
+      let buttonLabel = "";
+      let buttonVariant = "outline";
       let disabled = false;
       let action = null;
 
-      if (plan.billingType === "trial") {
-        if (isTrialActive) {
-          buttonLabel = "Trial Active";
-          buttonVariant = "outline";
-          disabled = true;
-          action = null;
-        } else if (hasPaidRecurring) {
-          // user already on monthly/yearly
-          buttonLabel = "Already subscribed";
-          buttonVariant = "outline";
-          disabled = true;
-          action = null;
-        } else {
-          buttonLabel = `Start ${plan.trialDays || 7}-Day Trial`;
+      // Anonymous user: only recurring plans get a "Sign in to subscribe" button
+      if (!isAuthenticated) {
+        if (plan.billingType === "recurring") {
+          showButton = true;
+          buttonLabel = "Sign in to subscribe";
           buttonVariant = "primary";
           disabled = false;
-          action = "start_trial";
+          action = "login";
         }
-      } else if (plan.billingType === "free") {
-        // Free plan behavior
-        if (hasPaidRecurring) {
-          // if subscribed to monthly or yearly then free will be disabled because Already subscribed
-          showButton = true;
-          buttonLabel = "Already subscribed";
-          buttonVariant = "outline";
-          disabled = true;
-          action = null;
-        } else if (isFreeActive) {
-          showButton = true;
-          buttonLabel = "Free Plan Active";
-          buttonVariant = "outline";
-          disabled = true;
-          action = null;
-        } else {
-          // e.g. trial-only or no sub yet – we can hide button or enable "Switch to Free" in future
-          showButton = false;
-          action = null;
-        }
-      } else if (plan.billingType === "recurring") {
-        // Monthly / Yearly
-        if (hasPaidRecurring) {
-          // already on some recurring plan
-          if (currentPlanCode === plan.code) {
+      } else {
+        // Authenticated user
+        if (plan.billingType === "recurring") {
+          // Monthly / Yearly (user can manually subscribe)
+          if (hasPaidRecurring) {
+            // already on some recurring plan
+            if (currentPlanCode === plan.code) {
+              buttonLabel = "Subscribed";
+              buttonVariant = "outline";
+              disabled = true;
+              action = null;
+            } else {
+              buttonLabel = "Already subscribed";
+              buttonVariant = "outline";
+              disabled = true;
+              action = null;
+            }
+          } else if (isPaidActive && currentPlanCode === plan.code) {
+            // edge case
             buttonLabel = "Subscribed";
             buttonVariant = "outline";
             disabled = true;
             action = null;
           } else {
-            // other recurring plan should also be disabled
-            buttonLabel = "Already subscribed";
-            buttonVariant = "outline";
-            disabled = true;
-            action = null;
+            showButton = true;
+            buttonLabel = "Subscribe";
+            buttonVariant = "primary";
+            disabled = false;
+            action = "subscribe";
           }
-        } else if (isPaidActive && currentPlanCode === plan.code) {
-          // active paid but somehow not in hasPaidRecurring (edge case)
-          buttonLabel = "Subscribed";
-          buttonVariant = "outline";
-          disabled = true;
-          action = null;
         } else {
-          buttonLabel = "Subscribe";
-          buttonVariant = "primary";
-          disabled = false;
-          action = "subscribe";
+          // Trial & Free are system-managed: NO buttons at all
+          showButton = false;
+
+          // Optionally, you can reflect “active” states in the text only
+          if (plan.billingType === "trial" && isTrialActive) {
+            buttonLabel = "Trial Active";
+          } else if (plan.billingType === "free" && isFreeActive) {
+            buttonLabel = "Free Plan Active";
+          }
         }
       }
 

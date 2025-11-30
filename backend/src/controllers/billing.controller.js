@@ -1,7 +1,12 @@
-const { default: mongoose } = require("mongoose");
-const { mongoConfig } = require("../config");
+const EmailService = require("../services/email.service");
 const PlanService = require("../services/plan.service");
 const SubscriptionService = require("../services/subscription.service");
+
+const addDays = (days) => {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return d;
+};
 
 const BillingController = {
   // GET /api/billing/plans
@@ -14,20 +19,20 @@ const BillingController = {
       res.status(500).json({ message: "Failed to fetch plans" });
     }
   },
+
+  // GET /api/billing/overview (used by web UI)
   getOverview: async (req, res) => {
     try {
-      console.log("----- BILLING /plans HIT -----");
-      console.log("Mongo URL from controller:", mongoConfig.url);
-      console.log("Mongoose readyState:", mongoose.connection.readyState);
       const firebaseUid = req.user?.uid || null;
 
       const plans = await PlanService.getAllActivePlans();
       let subscription = null;
 
       if (firebaseUid) {
-        subscription = await SubscriptionService.getCurrentSubscriptionForUser(
-          firebaseUid
-        );
+        subscription =
+          await SubscriptionService.getCurrentSubscriptionForUser(
+            firebaseUid
+          );
       }
       const decoratedPlans = PlanService.decoratePlansForUi(
         plans,
@@ -42,15 +47,21 @@ const BillingController = {
       });
     } catch (err) {
       console.error(err);
-      res.status(500).json({ message: "Failed to fetch billing overview" });
+      res
+        .status(500)
+        .json({ message: "Failed to fetch billing overview" });
     }
   },
 
   // POST /api/billing/start-trial
+  // Called from app on signup – NOT from web UI
   startTrial: async (req, res) => {
     try {
-      const firebaseUid = req.user.uid; // from firebaseAuth middleware
-      const sub = await SubscriptionService.startTrialIfNotExists(firebaseUid);
+      const { uid, email } = req.user; // from firebaseAuth middleware
+      const sub = await SubscriptionService.startTrialIfNotExists(
+        uid,
+        email
+      );
       res.json(sub);
     } catch (err) {
       console.error(err);
@@ -62,13 +73,16 @@ const BillingController = {
   getMySubscription: async (req, res) => {
     try {
       const firebaseUid = req.user.uid;
-      const sub = await SubscriptionService.getCurrentSubscriptionForUser(
-        firebaseUid
-      );
+      const sub =
+        await SubscriptionService.getCurrentSubscriptionForUser(
+          firebaseUid
+        );
       res.json(sub);
     } catch (err) {
       console.error(err);
-      res.status(500).json({ message: "Failed to fetch subscription" });
+      res
+        .status(500)
+        .json({ message: "Failed to fetch subscription" });
     }
   },
 
@@ -76,25 +90,30 @@ const BillingController = {
   // body: { planCode }
   createCheckoutSession: async (req, res) => {
     try {
-      const firebaseUid = req.user.uid;
+      const { uid, email } = req.user;
       const { planCode } = req.body;
 
-      const successUrl = `${process.env.FRONTEND_URL}billing/success`;
-      const cancelUrl = `${process.env.FRONTEND_URL}billing/cancel`;
+      const base = process.env.FRONTEND_URL?.replace(/\/+$/, "") || "";
+      const successUrl = `${base}/billing/success`;
+      const cancelUrl = `${base}/billing/cancel`;
 
-      const session = await SubscriptionService.createCheckoutSessionForPlan({
-        firebaseUid,
-        planCode,
-        successUrl,
-        cancelUrl,
-      });
+      const session =
+        await SubscriptionService.createCheckoutSessionForPlan({
+          firebaseUid: uid,
+          customerEmail: email,
+          planCode,
+          successUrl,
+          cancelUrl,
+        });
 
       res.json({ url: session.url });
     } catch (err) {
       console.error(err);
       res
         .status(400)
-        .json({ message: err.message || "Failed to create checkout session" });
+        .json({
+          message: err.message || "Failed to create checkout session",
+        });
     }
   },
 };

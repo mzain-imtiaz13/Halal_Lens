@@ -52,12 +52,12 @@ export default function Login() {
           <div className="hero-logo-wrap">
             <img src={logo} alt="Halal Lens" className="hero-logo" />
           </div>
-          <div className="hero-caption">Halal Lens Admin</div>
+          <div className="hero-caption">Halal Lens</div>
         </div>
 
         <div className="login-form">
           <h3 style={{margin:0}}>Welcome back</h3>
-          <div className="helper">Use your admin email and password to continue.</div>
+          <div className="helper">Use your email and password to continue.</div>
 
           {info && <div className="pill" style={{marginTop:12, background:'#ecfdf3', borderColor:'#bbf7d0', color:'#166534'}}>{info}</div>}
           {error && <div className="pill" style={{marginTop:12, background:'#fef2f2', borderColor:'#fecaca', color:'#7f1d1d'}}>{error}</div>}
@@ -66,7 +66,7 @@ export default function Login() {
             <label className="helper">Email</label>
             <input
               className="input"
-              placeholder="admin@halal.app"
+              placeholder="example@gmail.com"
               value={email}
               onChange={e => setEmail(e.target.value)}
             />
@@ -83,14 +83,7 @@ export default function Login() {
             <button className="btn primary" type="submit" style={{width:'100%'}}>Sign In</button>
 
             <div className="row" style={{justifyContent:'space-between', marginTop:8}}>
-              <button type="button" className="btn link" onClick={() => setResetEmail(email)}>Forgot password?</button>
-              <button
-                type="button"
-                className="btn ghost"
-                onClick={()=>{setEmail('admin@halal.app'); setPassword('admin123')}}
-              >
-                Use sample
-              </button>
+              <button type="button" className="btn link" onClick={() => setResetEmail(email)}>Forgot password?</button>              
             </div>
           </form>
 
