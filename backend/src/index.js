@@ -8,25 +8,31 @@ const stripeWebhookHandler = require("./controllers/stripe.controller");
 const app = express();
 
 app.set("view engine", "ejs");
-// Stripe webhook (must be BEFORE express.json)
+
+// Stripe webhook (no /api prefix here)
 app.post(
-  "/api/billing/webhook",
+  "/billing/webhook",
   express.raw({ type: "application/json" }),
   stripeWebhookHandler
 );
+
 app.use(express.json());
 app.use(cors());
 app.set("trust proxy", true);
-//Logs all the requests with repective response' status.
 app.use(morgan("tiny"));
-//Endpoints routing
-app.use("/api", routes);
+
+// Mount routes at root – Vercel already gives you /api prefix
+app.use("/", routes);
+
+// Static
 app.use(express.static(__dirname + "/public"));
-app.get("/api/health", (req, res) => {
+
+// Health
+app.get("/health", (req, res) => {
   res.json({ ok: true });
 });
 
-//Error catching middleware
+// Error catching middleware
 app.use((error, req, res, next) => {
   console.log(error);
   R5XX(res, { error: error?.message });
