@@ -17,6 +17,7 @@ async function connectDbAndMaybeSeed() {
   if (dbConnPromise) {
     return dbConnPromise;
   }
+  console.log("Mongo URL (Vercel):", mongoConfig.url);
 
   const connectPromise = mongoose
     .connect(mongoConfig.url, mongoConfig.options)
@@ -77,8 +78,7 @@ module.exports = async (req, res) => {
     res.end(
       JSON.stringify({
         message: "Internal server error",
-        error:
-          envConfig.NODE_ENV === "development" ? error.message : undefined,
+        error: envConfig.NODE_ENV === "development" ? error.message : undefined,
       })
     );
   }
