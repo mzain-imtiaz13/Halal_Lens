@@ -1,68 +1,44 @@
-// api/[...path].js
+// backend/api/[...path].js
 const serverless = require("serverless-http");
 const mongoose = require("mongoose");
 const { envConfig, mongoConfig } = require("../src/config");
 const { seedPlans } = require("../src/seeder/plan.seeder");
 const app = require("../src");
 
-// Single shared handler & connection across invocations
 let serverlessHandler = null;
-let dbConnPromise = null;
-let hasSeededPlans = false;
+let isDbReady = false;
 
-const MAX_DB_BOOT_MS = 8000; // hard cap to avoid Vercel 504
+async function connectDbAndSeedOnce() {
+  if (isDbReady) return;
 
-async function connectDbAndMaybeSeed() {
-  // If we already have a connection attempt, reuse it
-  if (dbConnPromise) {
-    return dbConnPromise;
-  }
+  const url = mongoConfig.url || "";
+  const safeUrl = url.startsWith("mongodb")
+    ? url.split("@").pop()
+    : url;
 
-  const connectPromise = mongoose
-    .connect(mongoConfig.url, mongoConfig.options)
-    .then(async () => {
-      console.log("✅ MongoDB connected (Vercel)");
+  console.log("Mongo URL host (Vercel):", safeUrl);
 
-      if (!hasSeededPlans) {
-        try {
-          await seedPlans();
-          hasSeededPlans = true;
-          console.log("✅ Default plans seeded/updated (Vercel)");
-        } catch (err) {
-          console.error("❌ Failed to seed plans on Vercel:", err);
-        }
-      }
-    })
-    .catch((err) => {
-      console.error("❌ Failed to connect database on Vercel:\n", err);
-      // If connection fails, clear promise so we can retry next invocation
-      dbConnPromise = null;
-      throw err;
+  try {
+    await mongoose.connect(mongoConfig.url, {
+      ...mongoConfig.options,
+      serverSelectionTimeoutMS: 5000,
     });
 
-  // Race the connect vs a manual timeout so we don't hang forever
-  dbConnPromise = Promise.race([
-    connectPromise,
-    new Promise((_, reject) =>
-      setTimeout(
-        () => reject(new Error("Mongo connection timeout in serverless")),
-        MAX_DB_BOOT_MS
-      )
-    ),
-  ]).catch((err) => {
-    // If the race fails (timeout or connect error), clear for next time
-    dbConnPromise = null;
-    throw err;
-  });
+    console.log("✅ MongoDB connected (Vercel)");
 
-  return dbConnPromise;
+    await seedPlans();
+    console.log("✅ Default plans seeded/updated (Vercel)");
+
+    isDbReady = true;
+  } catch (err) {
+    console.error("❌ MongoDB connect/seed failed (Vercel):", err.name, err.message);
+    throw err;
+  }
 }
 
 module.exports = async (req, res) => {
   try {
-    console.log("Mongo URL (Vercel):", mongoConfig.url);
-    // Ensure DB is up (or fails fast)
-    await connectDbAndMaybeSeed();
+    await connectDbAndSeedOnce();
 
     if (!serverlessHandler) {
       serverlessHandler = serverless(app);
@@ -71,14 +47,13 @@ module.exports = async (req, res) => {
     return serverlessHandler(req, res);
   } catch (error) {
     console.error("❌ Unhandled error in Vercel handler:", error);
-
-    // Fallback 500 response so Vercel doesn't 504
     res.statusCode = 500;
     res.setHeader("Content-Type", "application/json");
     res.end(
       JSON.stringify({
         message: "Internal server error",
-        error: envConfig.NODE_ENV === "development" ? error.message : undefined,
+        error:
+          envConfig.NODE_ENV === "development" ? error.message : undefined,
       })
     );
   }
