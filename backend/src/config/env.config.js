@@ -1,13 +1,10 @@
 const Joi = require("joi");
 
-// File selection based on environment
-const envFiles = {
-  development: ".env.development",
-  production: ".env.production",
-};
+const dotenv = require("dotenv");
 
-const env = process.env.NODE_ENV || "development";
-require("dotenv").config({ path: envFiles.development });
+// Load .env locally. On Vercel, this does nothing if .env is missing
+// and it WILL NOT override env vars that are already set.
+dotenv.config();
 
 // --------------------
 // ENV VALIDATION SCHEMA
