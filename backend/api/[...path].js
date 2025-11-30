@@ -17,7 +17,6 @@ async function connectDbAndMaybeSeed() {
   if (dbConnPromise) {
     return dbConnPromise;
   }
-  console.log("Mongo URL (Vercel):", mongoConfig.url);
 
   const connectPromise = mongoose
     .connect(mongoConfig.url, mongoConfig.options)
@@ -61,6 +60,7 @@ async function connectDbAndMaybeSeed() {
 
 module.exports = async (req, res) => {
   try {
+    console.log("Mongo URL (Vercel):", mongoConfig.url);
     // Ensure DB is up (or fails fast)
     await connectDbAndMaybeSeed();
 
