@@ -1,3 +1,5 @@
+const { default: mongoose } = require("mongoose");
+const { mongoConfig } = require("../config");
 const PlanService = require("../services/plan.service");
 const SubscriptionService = require("../services/subscription.service");
 
@@ -14,6 +16,9 @@ const BillingController = {
   },
   getOverview: async (req, res) => {
     try {
+      console.log("----- BILLING /plans HIT -----");
+      console.log("Mongo URL from controller:", mongoConfig.url);
+      console.log("Mongoose readyState:", mongoose.connection.readyState);
       const firebaseUid = req.user?.uid || null;
 
       const plans = await PlanService.getAllActivePlans();
