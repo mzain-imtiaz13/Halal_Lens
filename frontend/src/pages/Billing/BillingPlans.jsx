@@ -124,7 +124,7 @@ const BillingPlans = () => {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-slate-50 to-slate-100 py-10">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 py-10">
       <div className="mx-auto max-w-6xl px-6">
         <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
@@ -143,17 +143,22 @@ const BillingPlans = () => {
                 <FiCheckCircle className="h-4 w-4" />
                 <span className="font-medium">
                   Current Plan:{' '}
-                  {subscription.plan?.name || subscription.plan?.code || 'Unknown'}
+                  {subscription.plan?.name ||
+                    subscription.plan?.code ||
+                    'Unknown'}
                 </span>
               </div>
               {subscription.currentPeriodEnd && (
                 <div className="text-xs text-emerald-800">
                   Ends on:{' '}
-                  {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
+                  {new Date(
+                    subscription.currentPeriodEnd
+                  ).toLocaleDateString()}
                 </div>
               )}
               <div className="text-xs text-emerald-800">
-                Status: <span className="font-semibold">{subscription.status}</span>
+                Status:{' '}
+                <span className="font-semibold">{subscription.status}</span>
               </div>
             </div>
           )}
@@ -172,7 +177,7 @@ const BillingPlans = () => {
             Loading plans...
           </div>
         ) : (
-          <div className="grid gap-8 md:grid-cols-4 auto-rows-fr">
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4 auto-rows-fr">
             {plans.map((plan) => {
               const ui = plan.ui || {}
               const showButton = ui.showButton
@@ -186,10 +191,11 @@ const BillingPlans = () => {
               return (
                 <div
                   key={plan._id || plan.code}
-                  className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
+                  className="flex h-full flex-col rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
                 >
-                  {/* Top content fills available height */}
+                  {/* Main content fills height */}
                   <div className="flex flex-1 flex-col">
+                    {/* Header */}
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <h2 className="text-xl font-semibold text-slate-900">
@@ -202,7 +208,8 @@ const BillingPlans = () => {
                       {renderPlanBadge(plan)}
                     </div>
 
-                    <div className="mt-5 flex flex-col gap-1">
+                    {/* Price */}
+                    <div className="mt-5 min-h-14">
                       {plan.price > 0 ? (
                         <>
                           {isYearlyRecurring && yearlyOriginalPrice && (
@@ -222,13 +229,21 @@ const BillingPlans = () => {
                           </div>
                         </>
                       ) : (
-                        <span className="text-xl font-semibold text-emerald-600">
-                          Free
-                        </span>
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-3xl font-bold text-emerald-600">
+                            Free
+                          </span>
+                          {plan.interval && (
+                            <span className="text-sm text-slate-500">
+                              / {plan.interval}
+                            </span>
+                          )}
+                        </div>
                       )}
                     </div>
 
-                    <ul className="mt-4 space-y-1.5 text-sm text-slate-700">
+                    {/* Features */}
+                    <ul className="mt-4 flex-1 space-y-1.5 text-sm text-slate-700">
                       <li className="flex items-center gap-2">
                         <FiCheckCircle className="h-4 w-4 text-emerald-500" />
                         <span>{plan.scansPerDay} scans per day</span>
@@ -246,30 +261,30 @@ const BillingPlans = () => {
                         </li>
                       )}
                     </ul>
-                  </div>
 
-                  {/* Sticky bottom button area */}
-                  {showButton && (
-                    <div className="mt-6 border-t border-slate-100 pt-4">
-                      <button
-                        disabled={disabled}
-                        onClick={() => handlePlanAction(plan)}
-                        className={
-                          'flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition ' +
-                          (disabled
-                            ? 'cursor-not-allowed bg-slate-100 text-slate-400'
-                            : buttonVariant === 'primary'
-                            ? 'bg-emerald-600 text-white hover:bg-emerald-700 cursor-pointer'
-                            : 'border border-slate-300 bg-white text-slate-800 hover:bg-slate-50 cursor-pointer')
-                        }
-                      >
-                        <span>{buttonLabel}</span>
-                        {!disabled && buttonVariant === 'primary' && (
-                          <FiArrowRight className="h-4 w-4" />
-                        )}
-                      </button>
-                    </div>
-                  )}
+                    {/* Button pinned to bottom */}
+                    {showButton && (
+                      <div className="mt-auto border-t border-slate-100 pt-4">
+                        <button
+                          disabled={disabled}
+                          onClick={() => handlePlanAction(plan)}
+                          className={
+                            'flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition ' +
+                            (disabled
+                              ? 'cursor-not-allowed bg-slate-100 text-slate-400'
+                              : buttonVariant === 'primary'
+                              ? 'bg-emerald-600 text-white hover:bg-emerald-700 cursor-pointer'
+                              : 'border border-slate-300 bg-white text-slate-800 hover:bg-slate-50 cursor-pointer')
+                          }
+                        >
+                          <span>{buttonLabel}</span>
+                          {!disabled && buttonVariant === 'primary' && (
+                            <FiArrowRight className="h-4 w-4" />
+                          )}
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )
             })}

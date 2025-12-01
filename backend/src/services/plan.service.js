@@ -116,6 +116,15 @@ const PlanService = {
   seedDefaultPlans: async () => {
     const plans = [
       {
+        name: "Free Forever (Lifetime)",
+        code: "FREE_PLAN",
+        description: "Free plan after trial. 2 scans per day.",
+        billingType: "free",
+        interval: null,
+        price: 0,
+        scansPerDay: 2,
+      },
+      {
         name: "Standard Trial (7 days)",
         code: "TRIAL_7_DAYS",
         description: "7-day trial, 10 scans per day.",
@@ -124,16 +133,7 @@ const PlanService = {
         price: 0,
         scansPerDay: 10,
         trialDays: 7,
-      },
-      {
-        name: "Free Forever",
-        code: "FREE_PLAN",
-        description: "Free plan after trial. 2 scans per day.",
-        billingType: "free",
-        interval: null,
-        price: 0,
-        scansPerDay: 2,
-      },
+      },      
       {
         name: "Standard Monthly",
         code: "STANDARD_MONTHLY",
