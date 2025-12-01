@@ -31,7 +31,7 @@ const Hero = () => {
                 <span>App Store</span>
               </span>
             </button>
-            <button className="flex items-center gap-2 rounded-xl bg-emerald-100 px-4 py-2 text-xs md:text-sm font-semibold text-emerald-800 border border-emerald-200 hover:bg-emerald-200/70 hover:-translate-y-0.5 hover:shadow-md transition">
+            <a href="https://play.google.com/store/apps/details?id=com.integer.halallens" className="flex items-center gap-2 rounded-xl bg-emerald-100 px-4 py-2 text-xs md:text-sm font-semibold text-emerald-800 border border-emerald-200 hover:bg-emerald-200/70 hover:-translate-y-0.5 hover:shadow-md transition">
               <span className="text-xl">
                 <FaGooglePlay />
               </span>
@@ -41,7 +41,7 @@ const Hero = () => {
                 </span>
                 <span>Google Play</span>
               </span>
-            </button>
+            </a>
           </div>
           <div className="flex flex-wrap gap-6 text-xs text-emerald-700">
             <div className="flex items-center gap-2">

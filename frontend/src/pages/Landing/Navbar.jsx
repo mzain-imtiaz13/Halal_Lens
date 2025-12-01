@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 
 const Navbar = ({ navItems }) => {
   const { logout, user } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation(); // detect current URL
 
   const handleLogout = async () => {
     await logout();
@@ -13,32 +14,63 @@ const Navbar = ({ navItems }) => {
 
   const handleCloseMobile = () => setMobileOpen(false);
 
-  // FUNCTION that decides if item should be <Link> or <a>
-  const renderNavItem = (item, isMobile = false) => {
-    const baseClasses =
-      "text-emerald-800 hover:text-emerald-600 transition-colors";
+  // ---------------------------
+  // ACTIVE LINK DETECTION LOGIC
+  // ---------------------------
+  const isActive = (item) => {
+    const currentPath = location.pathname + location.hash;
 
+    // Case: route like "/billing" or "/about"
     if (item.type === "route") {
-      // React Router internal link
+      return location.pathname === item.href;
+    }
+
+    // Case: anchor like "/#faq" or "#faq"
+    if (item.type === "anchor") {
+      return currentPath === item.href || location.hash === item.href.replace("/", "");
+    }
+
+    return false;
+  };
+
+  // STYLE FOR ACTIVE NAV ITEM
+  const getClasses = (item) => {
+    const base =
+      "px-3 py-1 rounded-full transition-colors text-sm";
+
+    const active =
+      "bg-emerald-200 text-white shadow-md font-semibold";
+
+    const inactive =
+      "text-emerald-800 hover:text-emerald-600 hover:bg-emerald-100";
+
+    return base + " " + (isActive(item) ? active : inactive);
+  };
+
+  // ---------------------------
+  // RENDER NAV ITEM (Link or <a>)
+  // ---------------------------
+  const renderNavItem = (item) => {
+    if (item.type === "route") {
       return (
         <Link
           key={item.href}
           to={item.href}
           onClick={handleCloseMobile}
-          className={baseClasses}
+          className={getClasses(item)}
         >
           {item.label}
         </Link>
       );
     }
 
-    // Default: anchor tag
+    // Anchor link
     return (
       <a
         key={item.href}
         href={item.href}
         onClick={handleCloseMobile}
-        className={baseClasses}
+        className={getClasses(item)}
       >
         {item.label}
       </a>
@@ -48,7 +80,7 @@ const Navbar = ({ navItems }) => {
   return (
     <header className="sticky top-0 z-30 bg-emerald-50/90 backdrop-blur border-b border-emerald-100">
       <div className="mx-auto px-4 py-3 flex items-center justify-between">
-        
+
         {/* Logo */}
         <Link className="flex items-center gap-2 cursor-pointer" to="/">
           <div className="flex h-11 w-11 items-center justify-center">
@@ -63,14 +95,14 @@ const Navbar = ({ navItems }) => {
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-8 text-sm">
+        <nav className="hidden md:flex items-center gap-3">
           {navItems.map((item) => renderNavItem(item))}
         </nav>
 
         {/* Auth buttons */}
         {user ? (
-          <div className="top-actions flex items-center gap-2">
-            <span className="user-email text-xs">{user?.email}</span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs">{user?.email}</span>
             <button className="btn primary" onClick={handleLogout}>
               Logout
             </button>
@@ -81,7 +113,7 @@ const Navbar = ({ navItems }) => {
           </Link>
         )}
 
-        {/* Mobile menu toggle */}
+        {/* Mobile Toggle */}
         <button
           className="md:hidden inline-flex items-center justify-center rounded-full border border-emerald-200 p-2 text-emerald-700"
           onClick={() => setMobileOpen((s) => !s)}
@@ -97,8 +129,8 @@ const Navbar = ({ navItems }) => {
       {/* Mobile Dropdown */}
       {mobileOpen && (
         <div className="md:hidden border-t border-emerald-100 bg-emerald-50">
-          <div className="px-4 py-3 flex flex-col gap-3">
-            {navItems.map((item) => renderNavItem(item, true))}
+          <div className="px-4 py-3 flex flex-col gap-2">
+            {navItems.map((item) => renderNavItem(item))}
           </div>
         </div>
       )}
