@@ -197,11 +197,19 @@ const TermsOfService = () => {
                   App after updates means you accept the new Terms.
                 </p>
               </section>
+              <section id="user-responsibilities">
+                <h2 className="font-semibold text-emerald-950 mb-2">
+                  11. Subscriptions
+                </h2>
+                <p className="mb-1 text-emerald-800">
+                  Subscriptions are purchased and managed through our website. The Halal Lens app does not include in-app purchases and does not process payments.
+                </p>
+              </section>
 
               {/* 11. Contact Us */}
               <section id="contact">
                 <h2 className="font-semibold text-emerald-950 mb-2">
-                  11. Contact Us
+                  12. Contact Us
                 </h2>
                 <p className="text-emerald-800">
                   For questions, support, or account deletion, contact us at:

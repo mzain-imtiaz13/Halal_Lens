@@ -1,6 +1,6 @@
 // src/pages/PrivacyPolicy.jsx
-import React from 'react'
-import './../styles.css'
+import React from "react";
+import "./../styles.css";
 export default function PrivacyPolicy() {
   return (
     <div className="legal-page">
@@ -19,8 +19,7 @@ export default function PrivacyPolicy() {
           <p className="legal-meta">
             <strong>Privacy Policy — Halal Lens</strong>
             <br />
-            Last Updated:{' '}
-            <time dateTime="2025-11-03">November 3, 2025</time>
+            Last Updated: <time dateTime="2025-11-03">November 3, 2025</time>
           </p>
 
           <p>
@@ -78,24 +77,18 @@ export default function PrivacyPolicy() {
           </p>
 
           {/* 2. How We Use Your Information */}
-          <h2 className="legal-section-title">2. How We Use Your Information</h2>
+          <h2 className="legal-section-title">
+            2. How We Use Your Information
+          </h2>
           <p>We use your data to:</p>
           <ul className="legal-list">
-            <li>
-              Authenticate users and manage secure sign-ins.
-            </li>
+            <li>Authenticate users and manage secure sign-ins.</li>
             <li>
               Process product scans and image uploads to determine halal status.
             </li>
-            <li>
-              Improve AI accuracy and maintain database quality.
-            </li>
-            <li>
-              Display aggregated community votes and trending searches.
-            </li>
-            <li>
-              Provide a personalized and consistent user experience.
-            </li>
+            <li>Improve AI accuracy and maintain database quality.</li>
+            <li>Display aggregated community votes and trending searches.</li>
+            <li>Provide a personalized and consistent user experience.</li>
           </ul>
           <p>
             We <strong>do not</strong> sell, rent, or trade user data for
@@ -146,11 +139,8 @@ export default function PrivacyPolicy() {
             </li>
             <li>
               Request deletion of your account and associated data by contacting
-              us at{' '}
-              <a
-                href="mailto:support@halallens.org"
-                className="legal-link"
-              >
+              us at{" "}
+              <a href="mailto:support@halallens.org" className="legal-link">
                 support@halallens.org
               </a>
               .
@@ -186,18 +176,23 @@ export default function PrivacyPolicy() {
             before the new policy takes effect.
           </p>
 
+          <h2 className="legal-section-title">9. Payments</h2>
+          <p>
+            All payments for Halal Lens subscriptions are processed securely on
+            our official website using Stripe. No payment processing happens
+            inside the mobile app, and the app does not store or process any
+            payment information.
+          </p>
+
           {/* 9. Contact Us */}
-          <h2 className="legal-section-title">9. Contact Us</h2>
+          <h2 className="legal-section-title">10. Contact Us</h2>
           <p>
             If you have any questions, concerns, or requests related to privacy,
             please contact:
           </p>
           <p>
-            📧 Email:{' '}
-            <a
-              href="mailto:support@halallens.org"
-              className="legal-link"
-            >
+            📧 Email:{" "}
+            <a href="mailto:support@halallens.org" className="legal-link">
               support@halallens.org
             </a>
           </p>
@@ -209,5 +204,5 @@ export default function PrivacyPolicy() {
         </section>
       </main>
     </div>
-  )
+  );
 }
