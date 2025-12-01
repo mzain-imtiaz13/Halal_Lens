@@ -148,7 +148,7 @@ const BillingPlans = () => {
               </div>
               {subscription.currentPeriodEnd && (
                 <div className="text-xs text-emerald-800">
-                  Renews / ends on:{' '}
+                  Ends on:{' '}
                   {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
                 </div>
               )}

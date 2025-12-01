@@ -44,7 +44,7 @@ const BillingSuccess = () => {
             </div>
             {sub.currentPeriodEnd && (
               <div>
-                Renews / ends on:{' '}
+                Ends on:{' '}
                 {new Date(sub.currentPeriodEnd).toLocaleDateString()}
               </div>
             )}

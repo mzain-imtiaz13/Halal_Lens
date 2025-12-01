@@ -122,7 +122,7 @@ const EmailService = {
           value: String(plan?.scansPerDay || 10),
         },
         {
-          label: "Renews / valid until",
+          label: "Valid until",
           value: end,
         },
       ],
