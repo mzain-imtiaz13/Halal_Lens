@@ -89,7 +89,7 @@ const EmailService = {
       ctaUrl: `${FRONTEND_URL}/billing`,
       ctaLabel: "View paid plans",
       footerNote:
-        "You can upgrade anytime to a Standard Monthly or Yearly plan and get 10 scans per day.",
+        "You can upgrade anytime to a Standard Monthly or Yearly plan and get 20 scans per day.",
       supportEmail: SUPPORT_EMAIL,
       supportUrl: `${FRONTEND_URL}/support`,
     });
@@ -119,7 +119,7 @@ const EmailService = {
         { label: "Plan", value: plan?.name || "Standard" },
         {
           label: "Scans per day",
-          value: String(plan?.scansPerDay || 10),
+          value: String(plan?.scansPerDay || 20),
         },
         {
           label: "Valid until",
