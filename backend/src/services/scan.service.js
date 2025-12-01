@@ -69,7 +69,7 @@ const ScanService = {
       // Recommended message for app popups
       message: allowed
         ? "Scan allowed."
-        : "You’ve completed today’s available scans. Please try again tomorrow.",
+        : "Your current plan has reached today’s scan limit. You can continue scanning tomorrow.",
     };
   },
 

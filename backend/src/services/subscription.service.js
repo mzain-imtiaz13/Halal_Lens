@@ -5,21 +5,190 @@ const EmailService = require("./email.service");
 
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
+// Helper: mark all user subscriptions as not current (used before creating a new one)
+const clearCurrentFlagForUser = async (firebaseUid) => {
+  await subscriptionModel.updateMany(
+    { firebaseUid, isCurrent: true },
+    { isCurrent: false }
+  );
+};
+
+// Helper: handle expiry for a subscription document
+const handleSubscriptionExpiryIfNeeded = async (subDoc) => {
+  if (!subDoc) return { expired: false, updated: subDoc };
+
+  const now = new Date();
+  const plan = subDoc.plan; // might be populated or not
+
+  // If no currentPeriodEnd, we can't time-based expire it (e.g. free plan)
+  if (!subDoc.currentPeriodEnd) {
+    return { expired: false, updated: subDoc };
+  }
+
+  const hasEnded = subDoc.currentPeriodEnd <= now;
+  if (!hasEnded) {
+    return { expired: false, updated: subDoc };
+  }
+
+  // It has passed currentPeriodEnd ⇒ treat as expired for trial or paid
+  let shouldExpire = false;
+
+  if (subDoc.status === "trial") {
+    shouldExpire = true;
+  } else if (
+    subDoc.status === "active" &&
+    plan &&
+    plan.billingType === "recurring"
+  ) {
+    // Paid recurring - if no Stripe webhook changed status, we treat it as ended here
+    shouldExpire = true;
+  }
+
+  if (!shouldExpire) {
+    return { expired: false, updated: subDoc };
+  }
+
+  subDoc.isActive = false;
+  subDoc.isCurrent = false;
+  subDoc.endedAt = subDoc.currentPeriodEnd || now;
+  await subDoc.save();
+
+  return { expired: true, updated: subDoc };
+};
+
+// Helper: create or return a "free" subscription and mark it as current
+const createOrGetFreeSubscription = async (firebaseUid, email) => {
+  const freePlan = await planModel.findOne({
+    code: "FREE_PLAN",
+    isActive: true,
+  });
+  if (!freePlan) throw new Error("Free plan not configured");
+
+  // Check if there's already a free subscription that is active
+  let existingFree = await subscriptionModel
+    .findOne({
+      firebaseUid,
+      status: "free",
+      isActive: true,
+    })
+    .sort({ createdAt: -1 })
+    .populate("plan");
+
+  if (existingFree) {
+    // Make sure this is marked as current
+    await clearCurrentFlagForUser(firebaseUid);
+    existingFree.isCurrent = true;
+    await existingFree.save();
+    return existingFree;
+  }
+
+  // Otherwise create a new one
+  await clearCurrentFlagForUser(firebaseUid);
+
+  const sub = await subscriptionModel.create({
+    firebaseUid,
+    plan: freePlan._id,
+    status: "free",
+    isActive: true,
+    isCurrent: true,
+  });
+
+  const populated = await sub.populate("plan");
+
+  // Optional: if you only want to send "moved to free" emails in some flows,
+  // keep this guarded behind email param:
+  if (email) {
+    await EmailService.sendTrialEndedNowOnFreeEmail(email, freePlan);
+  }
+
+  return populated;
+};
+
 const SubscriptionService = {
-  getCurrentSubscriptionForUser: async (firebaseUid) => {
+  // 🔹 This is now "smart": ensures we always return a valid current sub
+  // Falls back to FREE plan if:
+  //  - no subscription exists, OR
+  //  - current subscription is expired
+  getCurrentSubscriptionForUser: async (firebaseUid, email) => {
+    // Try to get a subscription marked as current
+    let current = await subscriptionModel
+      .findOne({ firebaseUid, isCurrent: true })
+      .populate("plan");
+
+    // If no isCurrent, fall back to most recent one (for older data)
+    if (!current) {
+      current = await subscriptionModel
+        .findOne({ firebaseUid })
+        .sort({ createdAt: -1 })
+        .populate("plan");
+    }
+
+    // If still nothing => directly move/create FREE plan subscription
+    if (!current) {
+      return await createOrGetFreeSubscription(firebaseUid, email);
+    }
+
+    // If it's a free subscription that is active, just return it
+    if (
+      current.status === "free" &&
+      current.isActive &&
+      current.plan &&
+      current.plan.billingType === "free"
+    ) {
+      // Ensure it's marked as current
+      if (!current.isCurrent) {
+        await clearCurrentFlagForUser(firebaseUid);
+        current.isCurrent = true;
+        await current.save();
+      }
+      return current;
+    }
+
+    // Handle expiry for trial or paid recurring
+    const { expired } = await handleSubscriptionExpiryIfNeeded(current);
+
+    if (expired) {
+      // Fallback to free if expired
+      return await createOrGetFreeSubscription(firebaseUid, email);
+    }
+
+    // If not expired but accidentally isCurrent:false, fix it
+    if (!current.isCurrent) {
+      await clearCurrentFlagForUser(firebaseUid);
+      current.isCurrent = true;
+      await current.save();
+    }
+
+    return current;
+  },
+
+  // Return ALL subscriptions (history) for dashboard
+  getAllSubscriptionsForUser: async (firebaseUid) => {
     return subscriptionModel
-      .findOne({ firebaseUid })
+      .find({ firebaseUid })
       .populate("plan")
       .sort({ createdAt: -1 });
   },
 
   // Called on signup from app: starts trial & sends trial activation email
   startTrialIfNotExists: async (firebaseUid, email) => {
-    const existing = await subscriptionModel.findOne({
-      firebaseUid,
-      status: "trial",
-    });
-    if (existing) return existing;
+    // If already have any active trial, just return it
+    let existing = await subscriptionModel
+      .findOne({
+        firebaseUid,
+        status: "trial",
+        isActive: true,
+      })
+      .populate("plan")
+      .sort({ createdAt: -1 });
+
+    if (existing) {
+      // Ensure it's current
+      await clearCurrentFlagForUser(firebaseUid);
+      existing.isCurrent = true;
+      await existing.save();
+      return existing;
+    }
 
     const plan = await planModel.findOne({
       code: "TRIAL_7_DAYS",
@@ -31,12 +200,17 @@ const SubscriptionService = {
     const end = new Date();
     end.setDate(now.getDate() + (plan.trialDays || 7));
 
+    // Mark other subs as not current
+    await clearCurrentFlagForUser(firebaseUid);
+
     const sub = await subscriptionModel.create({
       firebaseUid,
       plan: plan._id,
       status: "trial",
       currentPeriodStart: now,
       currentPeriodEnd: end,
+      isCurrent: true,
+      isActive: true,
     });
 
     const populated = await sub.populate("plan");
@@ -50,27 +224,11 @@ const SubscriptionService = {
 
   // To be used when trial expires (via cron/worker) to move user to free plan
   moveToFreePlan: async (firebaseUid, email) => {
-    const plan = await planModel.findOne({
-      code: "FREE_PLAN",
-      isActive: true,
-    });
-    if (!plan) throw new Error("Free plan not configured");
-
-    const sub = await subscriptionModel.create({
-      firebaseUid,
-      plan: plan._id,
-      status: "free",
-    });
-
-    const populated = await sub.populate("plan");
-
-    if (email) {
-      await EmailService.sendTrialEndedNowOnFreeEmail(email, plan);
-    }
-
-    return populated;
+    const freeSub = await createOrGetFreeSubscription(firebaseUid, email);
+    return freeSub;
   },
 
+  // Create Stripe checkout session for Standard Monthly / Yearly
   createCheckoutSessionForPlan: async ({
     firebaseUid,
     customerEmail,
@@ -107,6 +265,43 @@ const SubscriptionService = {
     });
 
     return { url: session.url };
+  },
+
+  // Helper for Stripe webhook when a paid subscription becomes active
+  // (call this in your webhook after retrieving stripeSub + matching plan)
+  upsertPaidSubscriptionFromStripe: async ({
+    firebaseUid,
+    stripeCustomerId,
+    stripeSubscriptionId,
+    plan,
+    periodStart,
+    periodEnd,
+  }) => {
+    // Mark all old subs as not current
+    await clearCurrentFlagForUser(firebaseUid);
+
+    const updateDoc = {
+      firebaseUid,
+      plan: plan._id,
+      status: "active",
+      stripeCustomerId,
+      stripeSubscriptionId,
+      isActive: true,
+      isCurrent: true,
+    };
+
+    if (periodStart) updateDoc.currentPeriodStart = periodStart;
+    if (periodEnd) updateDoc.currentPeriodEnd = periodEnd;
+
+    const saved = await subscriptionModel
+      .findOneAndUpdate(
+        { firebaseUid, stripeSubscriptionId },
+        updateDoc,
+        { upsert: true, new: true }
+      )
+      .populate("plan");
+
+    return saved;
   },
 };
 
