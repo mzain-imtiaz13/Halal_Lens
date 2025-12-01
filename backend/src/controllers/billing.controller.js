@@ -29,10 +29,9 @@ const BillingController = {
       let subscription = null;
 
       if (firebaseUid) {
-        subscription =
-          await SubscriptionService.getCurrentSubscriptionForUser(
-            firebaseUid
-          );
+        subscription = await SubscriptionService.getCurrentSubscriptionForUser(
+          firebaseUid
+        );
       }
       const decoratedPlans = PlanService.decoratePlansForUi(
         plans,
@@ -47,9 +46,34 @@ const BillingController = {
       });
     } catch (err) {
       console.error(err);
-      res
-        .status(500)
-        .json({ message: "Failed to fetch billing overview" });
+      res.status(500).json({ message: "Failed to fetch billing overview" });
+    }
+  },
+
+  getSubscriptionHistory: async (req, res) => {
+    try {
+      const firebaseUid = req.user.uid;
+
+      const history = await SubscriptionService.getAllSubscriptionsForUser(
+        firebaseUid
+      );
+
+      const formatted = history.map((h) => ({
+        id: h._id,
+        planName: h.plan?.name || "Unknown",
+        planCode: h.plan?.code || null,
+        status: h.status,
+        startDate: h.currentPeriodStart || h.createdAt,
+        endDate: h.currentPeriodEnd || h.endedAt || null,
+        isActive: h.isActive,
+        isCurrent: h.isCurrent,
+        createdAt: h.createdAt,
+      }));
+
+      res.json({ history: formatted });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Failed to fetch subscription history" });
     }
   },
 
@@ -58,10 +82,7 @@ const BillingController = {
   startTrial: async (req, res) => {
     try {
       const { uid, email } = req.user; // from firebaseAuth middleware
-      const sub = await SubscriptionService.startTrialIfNotExists(
-        uid,
-        email
-      );
+      const sub = await SubscriptionService.startTrialIfNotExists(uid, email);
       res.json(sub);
     } catch (err) {
       console.error(err);
@@ -73,16 +94,13 @@ const BillingController = {
   getMySubscription: async (req, res) => {
     try {
       const firebaseUid = req.user.uid;
-      const sub =
-        await SubscriptionService.getCurrentSubscriptionForUser(
-          firebaseUid
-        );
+      const sub = await SubscriptionService.getCurrentSubscriptionForUser(
+        firebaseUid
+      );
       res.json(sub);
     } catch (err) {
       console.error(err);
-      res
-        .status(500)
-        .json({ message: "Failed to fetch subscription" });
+      res.status(500).json({ message: "Failed to fetch subscription" });
     }
   },
 
@@ -97,23 +115,20 @@ const BillingController = {
       const successUrl = `${base}/billing/success`;
       const cancelUrl = `${base}/billing/cancel`;
 
-      const session =
-        await SubscriptionService.createCheckoutSessionForPlan({
-          firebaseUid: uid,
-          customerEmail: email,
-          planCode,
-          successUrl,
-          cancelUrl,
-        });
+      const session = await SubscriptionService.createCheckoutSessionForPlan({
+        firebaseUid: uid,
+        customerEmail: email,
+        planCode,
+        successUrl,
+        cancelUrl,
+      });
 
       res.json({ url: session.url });
     } catch (err) {
       console.error(err);
-      res
-        .status(400)
-        .json({
-          message: err.message || "Failed to create checkout session",
-        });
+      res.status(400).json({
+        message: err.message || "Failed to create checkout session",
+      });
     }
   },
   sendAllTestEmails: async (req, res) => {
@@ -144,16 +159,11 @@ const BillingController = {
         // 1) Trial activation
         EmailService.sendTrialActivationEmail(to, trialPlan, trialEnd),
 
-
         // 3) Trial ended → moved to free
         EmailService.sendTrialEndedNowOnFreeEmail(to, freePlan),
 
         // 4) Plan purchase confirmation
-        EmailService.sendPlanPurchaseConfirmationEmail(
-          to,
-          paidPlan,
-          periodEnd
-        ),
+        EmailService.sendPlanPurchaseConfirmationEmail(to, paidPlan, periodEnd),
 
         // 6) Subscription expired
         EmailService.sendSubscriptionExpiredEmail(to, paidPlan),
@@ -163,7 +173,10 @@ const BillingController = {
       const summary = results.map((r, idx) => ({
         index: idx,
         status: r.status,
-        reason: r.status === "rejected" ? r.reason?.message || String(r.reason) : null,
+        reason:
+          r.status === "rejected"
+            ? r.reason?.message || String(r.reason)
+            : null,
       }));
 
       return res.json({

@@ -24,6 +24,8 @@ import Support from "./pages/Support";
 import BillingSuccess from "./pages/Billing/BillingSuccess";
 import BillingCancel from "./pages/Billing/BillingCancel";
 import BillingPlans from "./pages/Billing/BillingPlans";
+import UserLayout from "./components/UserLayout";
+import BillingHistory from "./pages/Billing/BillingHistory";
 
 export default function AppRouter() {
   return (
@@ -36,7 +38,10 @@ export default function AppRouter() {
         <Route path="/about" element={<About />} />
         <Route path="/terms-of-service" element={<TermsOfService />} />
         <Route path="/support" element={<Support />} />
+      </Route>
+      <Route element={<UserLayout />}>
         <Route path="/billing" element={<BillingPlans />} />
+        <Route path="/subscriptions" element={<BillingHistory />} />
         <Route path="/billing/success" element={<BillingSuccess />} />
         <Route path="/billing/cancel" element={<BillingCancel />} />
       </Route>

@@ -25,7 +25,9 @@ export default function Layout() {
 
   return (
     <div className={`flex flex-col ${collapsed ? "collapsed" : ""}`}>
-      <Navbar />
+      <Navbar
+        navItems={[]}
+      />
       <div className="flex">
         <Sidebar collapsed={collapsed} onToggle={toggleSidebar} />
         <div className="container flex-1">

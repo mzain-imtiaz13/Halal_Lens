@@ -4,8 +4,8 @@ const {
   STRIPE_WEBHOOK_SECRET,
 } = require("../config/env.config");
 const planModel = require("../models/plan.model");
-const subscriptionModel = require("../models/subscription.model");
 const EmailService = require("../services/email.service");
+const SubscriptionService = require("../services/subscription.service");
 
 const stripe = Stripe(STRIPE_SECRET_KEY);
 
@@ -17,15 +17,8 @@ const unixToDate = (value) => {
 };
 
 const stripeWebhookHandler = async (req, res) => {
-  console.log(
-    "STRIPE_WEBHOOK_SECRET:",
-    STRIPE_WEBHOOK_SECRET
-  );
-  console.log(
-    "STRIPE_WEBHOOK_SECRET prefix:",
-    (STRIPE_WEBHOOK_SECRET || "").slice(0, 10)
-  );
-  
+  // Debug logs (keep or remove as you like)
+  console.log("STRIPE_WEBHOOK_SECRET prefix:", (STRIPE_WEBHOOK_SECRET || "").slice(0, 10));
 
   const sig = req.headers["stripe-signature"];
   console.log("Stripe signature header:", sig);
@@ -33,15 +26,12 @@ const stripeWebhookHandler = async (req, res) => {
   let event;
   try {
     event = stripe.webhooks.constructEvent(
-      req.body,
+      req.body,            // raw body (make sure express.raw is used for this route)
       sig,
       STRIPE_WEBHOOK_SECRET
     );
   } catch (err) {
-    console.error(
-      "❌ Webhook signature verification failed:",
-      err.message
-    );
+    console.error("❌ Webhook signature verification failed:", err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
@@ -55,12 +45,11 @@ const stripeWebhookHandler = async (req, res) => {
         const stripeSubscriptionId = session.subscription;
 
         if (!firebaseUid || !stripeSubscriptionId) {
-          console.warn(
-            "Missing firebaseUid or stripeSubscriptionId in session"
-          );
+          console.warn("Missing firebaseUid or stripeSubscriptionId in session");
           break;
         }
 
+        // Get full Stripe subscription
         const stripeSub = await stripe.subscriptions.retrieve(
           stripeSubscriptionId
         );
@@ -72,12 +61,11 @@ const stripeWebhookHandler = async (req, res) => {
         }
 
         const plan = await planModel.findOne({ stripePriceId: priceId });
-
         if (!plan) {
           console.warn(
-            "No Plan found for priceId: ",
+            "No Plan found for priceId:",
             priceId,
-            " – make sure stripePriceId is set on Plan."
+            "– make sure stripePriceId is set on Plan."
           );
           break;
         }
@@ -85,22 +73,17 @@ const stripeWebhookHandler = async (req, res) => {
         const periodStart = unixToDate(stripeSub.current_period_start);
         const periodEnd = unixToDate(stripeSub.current_period_end);
 
-        const updateDoc = {
+        // ✅ Use new helper to ensure:
+        // - this paid sub is isCurrent=true, isActive=true
+        // - all previous subs have isCurrent=false
+        const saved = await SubscriptionService.upsertPaidSubscriptionFromStripe({
           firebaseUid,
-          plan: plan._id,
-          status: "active",
           stripeCustomerId: customer.id,
           stripeSubscriptionId,
-        };
-
-        if (periodStart) updateDoc.currentPeriodStart = periodStart;
-        if (periodEnd) updateDoc.currentPeriodEnd = periodEnd;
-
-        const saved = await subscriptionModel.findOneAndUpdate(
-          { firebaseUid, stripeSubscriptionId },
-          updateDoc,
-          { upsert: true, new: true }
-        );
+          plan,
+          periodStart,
+          periodEnd,
+        });
 
         // Send purchase confirmation email
         if (customer.email) {
@@ -111,16 +94,37 @@ const stripeWebhookHandler = async (req, res) => {
           );
         }
 
+        console.log("✅ checkout.session.completed handled, subscription:", saved._id);
         break;
       }
 
       case "invoice.payment_failed": {
-        // Optional: mark subscription as past_due, and send payment failed email
-        // You can call EmailService.sendPaymentFailedEmail(...) here if you add it.
+        // Optional: you can mark subscription as past_due or send email
+        // Example (minimal):
+        /*
+        const invoice = event.data.object;
+        const stripeSubscriptionId = invoice.subscription;
+
+        if (stripeSubscriptionId) {
+          await subscriptionModel.updateMany(
+            { stripeSubscriptionId },
+            { status: "past_due" }
+          );
+          //Optionally send EmailService.sendPaymentFailedEmail(...)
+        }
+        */
+        console.log("invoice.payment_failed received (no-op for now).");
         break;
       }
 
+      // You can optionally handle cancellations:
+      // case "customer.subscription.deleted":
+      // case "customer.subscription.updated":
+      // e.g. mark isActive=false, isCurrent=false, and optionally move to free plan
+      //   break;
+
       default:
+        // console.log(`Unhandled event type ${event.type}`);
         break;
     }
 

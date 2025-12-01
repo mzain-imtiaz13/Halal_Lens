@@ -8,7 +8,7 @@ const maybeFirebaseAuth = require("../middlewares/maybeFirebaseAuth.middleware")
 // public: list plans
 router.get("/plans", BillingController.getPlans);
 router.get("/overview", maybeFirebaseAuth, BillingController.getOverview);
-
+router.get("/history", firebaseAuth, BillingController.getSubscriptionHistory);
 // protected
 router.get("/me", firebaseAuth, BillingController.getMySubscription);
 

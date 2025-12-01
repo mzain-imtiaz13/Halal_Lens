@@ -10,6 +10,11 @@ export const fetchBillingOverview = async () => {
   return res.data
 }
 
+export const fetchSubscriptionHistory = async () => {
+  const res = await api.get('/billing/history')
+  return res.data // { history: [...] }
+}
+
 export const fetchMySubscription = async () => {
   const res = await api.get('/billing/me')
   return res.data
