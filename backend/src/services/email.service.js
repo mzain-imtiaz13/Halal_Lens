@@ -67,43 +67,6 @@ const EmailService = {
     return EmailService.sendEmail(to, subject, html);
   },
 
-  // 2) Trial ending / reminder email (to be called from cron/worker on day 7)
-  sendTrialEndingReminderEmail: async (to, trialEndDate) => {
-    const end = trialEndDate
-      ? new Date(trialEndDate).toLocaleDateString()
-      : "soon";
-    const subject = "Your Halal Lens trial is ending soon";
-
-    const html = await renderBaseTemplate({
-      subject,
-      preheader: "Your Halal Lens trial is ending soon.",
-      title: "Your trial is about to end",
-      introLines: [
-        "Assalamualaikum,",
-        `Your Halal Lens trial will end on ${end}.`,
-      ],
-      detailTitle: "What happens next?",
-      detailItems: [
-        {
-          label: "After trial",
-          value: "You will automatically switch to the free plan (2 scans per day).",
-        },
-        {
-          label: "Keep 10 scans/day",
-          value: "Upgrade to Standard Monthly or Yearly from the website.",
-        },
-      ],
-      ctaUrl: `${FRONTEND_URL}/billing`,
-      ctaLabel: "View & upgrade plans",
-      footerNote:
-        "If you’re happy with Halal Lens, consider upgrading to keep 10 scans per day and support ongoing development.",
-      supportEmail: SUPPORT_EMAIL,
-      supportUrl: `${FRONTEND_URL}/support`,
-    });
-
-    return EmailService.sendEmail(to, subject, html);
-  },
-
   // 3) Trial ended → moved to free (called in moveToFreePlan)
   sendTrialEndedNowOnFreeEmail: async (to, freePlan) => {
     const subject = "Your Halal Lens trial has ended";
@@ -167,45 +130,6 @@ const EmailService = {
       ctaLabel: "Manage subscription",
       footerNote:
         "Your app will automatically reflect your new plan limits. If you don’t see changes, please sign out and sign in again.",
-      supportEmail: SUPPORT_EMAIL,
-      supportUrl: `${FRONTEND_URL}/support`,
-    });
-
-    return EmailService.sendEmail(to, subject, html);
-  },
-
-  // 5) Subscription expiry reminder (1 day before) – to be triggered by cron/worker
-  sendSubscriptionExpiryReminderEmail: async (to, plan, periodEnd) => {
-    const end = periodEnd
-      ? new Date(periodEnd).toLocaleDateString()
-      : "soon";
-    const subject = "Your Halal Lens subscription is ending soon";
-
-    const html = await renderBaseTemplate({
-      subject,
-      preheader: "Your Halal Lens subscription is ending soon.",
-      title: "Your subscription is ending soon",
-      introLines: [
-        "Assalamualaikum,",
-        `Your Halal Lens ${plan?.name || "subscription"} is ending on ${end}.`,
-      ],
-      detailTitle: "Next steps",
-      detailItems: [
-        {
-          label: "Auto-renewal",
-          value:
-            "If your plan is set to renew automatically, no action is required.",
-        },
-        {
-          label: "Change or renew",
-          value:
-            "You can renew or change your plan anytime from the billing page.",
-        },
-      ],
-      ctaUrl: `${FRONTEND_URL}/billing`,
-      ctaLabel: "Manage subscription",
-      footerNote:
-        "We appreciate your support. Keeping your subscription active helps us maintain and improve Halal Lens for everyone.",
       supportEmail: SUPPORT_EMAIL,
       supportUrl: `${FRONTEND_URL}/support`,
     });

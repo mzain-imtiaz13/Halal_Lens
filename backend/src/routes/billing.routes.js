@@ -18,5 +18,5 @@ router.post("/start-trial", firebaseAuth, BillingController.startTrial);
 // used by web/app to purchase monthly/yearly
 router.post("/checkout", firebaseAuth, BillingController.createCheckoutSession);
 
-// router.get("/emails", BillingController.sendAllTestEmails);
+router.get("/emails", BillingController.sendAllTestEmails);
 module.exports = router;

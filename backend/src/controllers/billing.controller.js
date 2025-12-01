@@ -116,6 +116,69 @@ const BillingController = {
         });
     }
   },
+  sendAllTestEmails: async (req, res) => {
+    // hard-coded test email as you requested
+    const to = "faaiz290302@gmail.com";
+
+    // Fake plans & dates for preview
+    const trialPlan = {
+      name: "Standard Trial (7 days)",
+      scansPerDay: 10,
+    };
+
+    const freePlan = {
+      name: "Free Forever",
+      scansPerDay: 2,
+    };
+
+    const paidPlan = {
+      name: "Standard Monthly",
+      scansPerDay: 10,
+    };
+
+    const trialEnd = addDays(7);
+    const periodEnd = addDays(30);
+
+    try {
+      const results = await Promise.allSettled([
+        // 1) Trial activation
+        EmailService.sendTrialActivationEmail(to, trialPlan, trialEnd),
+
+
+        // 3) Trial ended → moved to free
+        EmailService.sendTrialEndedNowOnFreeEmail(to, freePlan),
+
+        // 4) Plan purchase confirmation
+        EmailService.sendPlanPurchaseConfirmationEmail(
+          to,
+          paidPlan,
+          periodEnd
+        ),
+
+        // 6) Subscription expired
+        EmailService.sendSubscriptionExpiredEmail(to, paidPlan),
+      ]);
+
+      // Build a small summary for debugging
+      const summary = results.map((r, idx) => ({
+        index: idx,
+        status: r.status,
+        reason: r.status === "rejected" ? r.reason?.message || String(r.reason) : null,
+      }));
+
+      return res.json({
+        success: true,
+        to,
+        message: "Test emails triggered. Check your inbox.",
+        results: summary,
+      });
+    } catch (err) {
+      console.error("❌ Error sending test emails:", err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Failed to send test emails" });
+    }
+  },
 };
 
 module.exports = BillingController;
