@@ -17,7 +17,18 @@ const unixToDate = (value) => {
 };
 
 const stripeWebhookHandler = async (req, res) => {
+  console.log(
+    "STRIPE_WEBHOOK_SECRET:",
+    STRIPE_WEBHOOK_SECRET
+  );
+  console.log(
+    "STRIPE_WEBHOOK_SECRET prefix:",
+    (STRIPE_WEBHOOK_SECRET || "").slice(0, 10)
+  );
+  
+
   const sig = req.headers["stripe-signature"];
+  console.log("Stripe signature header:", sig);
 
   let event;
   try {
