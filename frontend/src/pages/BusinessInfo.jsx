@@ -141,13 +141,10 @@ const BusinessInfo = () => {
 
           <InfoRow labelEn="Payment Timing" labelJa="支払時期">
             <p>
-              Payment is charged at the time you confirm the purchase. For
-              subscription plans, recurring payments are charged automatically
-              on each renewal date until you cancel.
+              Payment is charged at the time you confirm the purchase.
             </p>
             <p className="mt-2 text-xs text-emerald-700">
-              ご購入の確定時に決済が行われます。定期購読プランの場合は、
-              解約されるまで更新日に自動的に決済されます。
+              ご購入の確定時に決済が行われます。
             </p>
           </InfoRow>
 
