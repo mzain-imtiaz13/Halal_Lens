@@ -26,6 +26,7 @@ import BillingCancel from "./pages/Billing/BillingCancel";
 import BillingPlans from "./pages/Billing/BillingPlans";
 import UserLayout from "./components/UserLayout";
 import BillingHistory from "./pages/Billing/BillingHistory";
+import BusinessInfo from "./pages/BusinessInfo";
 
 export default function AppRouter() {
   return (
@@ -37,6 +38,7 @@ export default function AppRouter() {
         <Route path="/data-deletion" element={<DataDeletion />} />
         <Route path="/about" element={<About />} />
         <Route path="/terms-of-service" element={<TermsOfService />} />
+        <Route path="/scta" element={<BusinessInfo />} />
         <Route path="/support" element={<Support />} />
       </Route>
       <Route element={<UserLayout />}>

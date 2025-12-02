@@ -86,6 +86,9 @@ const Footer = () => {
             >
               Terms of Use
             </Link>
+            <Link to="/scta" className="hover:text-white transition">
+              Specified Commercial Transactions Act
+            </Link>
           </div>
         </div>
       </div>
