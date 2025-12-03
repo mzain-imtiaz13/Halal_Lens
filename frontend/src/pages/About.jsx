@@ -177,9 +177,7 @@ const About = () => {
             <div className="flex justify-center md:justify-end">
               <div className="rounded-3xl bg-emerald-800/70 border border-emerald-600 p-6 shadow-xl max-w-sm w-full">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="h-12 w-12 rounded-full bg-emerald-700 flex items-center justify-center text-lg font-semibold">
-                    PF
-                  </div>
+                  <img src="/prince-faisal.jfif" className="h-12 w-12 rounded-full bg-emerald-700 flex items-center justify-center text-lg font-semibold"/>                   
                   <div>
                     <p className="text-sm font-semibold text-white">
                       Prince Faisal
