@@ -1,17 +1,15 @@
 const path = require("path");
 const ejs = require("ejs");
 const { emailConfig } = require("../config"); // nodemailer transport
+const {
+  EMAIL_USER,
+  EMAIL_SENDER_NAME,
+  FRONTEND_URL,
+} = require("../config/env.config");
 
-const FRONTEND_URL =
-  process.env.FRONTEND_URL || "https://halallens.org";
-const SUPPORT_EMAIL = process.env.EMAIL_USER || "support@halallens.org";
+const SUPPORT_EMAIL = EMAIL_USER || "support@halallens.org";
 
-const TEMPLATE_PATH = path.join(
-  __dirname,
-  "..",
-  "email-templates",
-  "base.ejs"
-);
+const TEMPLATE_PATH = path.join(__dirname, "..", "email-templates", "base.ejs");
 
 // helper: render the shared EJS layout
 async function renderBaseTemplate(viewModel) {
@@ -26,7 +24,7 @@ async function renderBaseTemplate(viewModel) {
 const EmailService = {
   sendEmail: async (to, subject, html, text = "") => {
     const msg = {
-      from: process.env.EMAIL_USER,
+      from: `"${EMAIL_SENDER_NAME}" <${EMAIL_USER}>`,
       to,
       subject,
       text,
@@ -161,6 +159,42 @@ const EmailService = {
       ctaLabel: "View plans & upgrade",
       footerNote:
         "You can reactivate a paid plan anytime from the billing page if you’d like to regain higher scan limits.",
+      supportEmail: SUPPORT_EMAIL,
+      supportUrl: `${FRONTEND_URL}/support`,
+    });
+
+    return EmailService.sendEmail(to, subject, html);
+  },
+
+  // 7) Account deletion request email
+  sendAccountDeletionEmail: async (to) => {
+    const subject = "We received your Halal Lens account deletion request";
+
+    const html = await renderBaseTemplate({
+      subject,
+      preheader: "Your Halal Lens account deletion request has been received.",
+      title: "Your account deletion request is in process",
+      introLines: [
+        "Assalamualaikum,",
+        "We have received your request to delete your Halal Lens account.",
+        "Your account will be permanently deleted within the next 30 days.",
+      ],
+      detailTitle: "Important Information",
+      detailItems: [
+        {
+          label: "Deletion timeline",
+          value: "Your account will be permanently deleted within 30 days.",
+        },
+        {
+          label: "Need to cancel deletion?",
+          value:
+            "If you change your mind within this period, please contact our support team to restore your account before deletion is finalized.",
+        },
+      ],
+      ctaUrl: `${FRONTEND_URL}/support`,
+      ctaLabel: "Contact Support",
+      footerNote:
+        "If you did not request this deletion or believe this was done in error, please contact us immediately.",
       supportEmail: SUPPORT_EMAIL,
       supportUrl: `${FRONTEND_URL}/support`,
     });

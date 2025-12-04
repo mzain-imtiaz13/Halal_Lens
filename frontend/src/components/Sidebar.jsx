@@ -1,97 +1,70 @@
-// src/components/Sidebar.jsx
-import React from 'react'
-import NavItem from './NavItem'
-import logo from '../assets/Halal_lens_logo.png'
+import React, { useState } from 'react'
+import { NavLink } from 'react-router-dom'
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 
-import {
-  FiChevronLeft,
-  FiChevronRight,
-  FiHome,
-  FiUsers,
-  FiCpu,
-  FiLayers,
-  FiTrendingUp,
-  FiBarChart2,
-  FiShoppingBag,
-  FiEdit3,
-} from 'react-icons/fi'
-
-export default function Sidebar({ collapsed, onToggle }) {
+/** Single nav item */
+const NavItem = ({ to, label, Icon, collapsed }) => {
   return (
-    <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
+    <NavLink
+      to={to}
+      className={({ isActive }) =>
+        [
+          'flex items-center gap-3 px-3 py-2 mx-1 rounded-lg text-sm font-medium transition-colors',
+          collapsed ? 'justify-center' : '',
+          isActive
+            ? 'bg-emerald-50 text-emerald-700'
+            : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900',
+        ].join(' ')
+      }
+    >
+      <span className="flex h-5 w-5 items-center justify-center">
+        {Icon ? <Icon size={18} /> : <span className="inline-block h-5 w-5" />}
+      </span>
+      {!collapsed && <span className="truncate">{label}</span>}
+    </NavLink>
+  )
+}
+
+export default function Sidebar({ links = [] }) {
+  const [collapsed, setCollapsed] = useState(false)
+
+  const handleToggle = () => setCollapsed((prev) => !prev)
+
+  return (
+    <aside
+      className={[
+        // sticky left, full viewport height
+        'sticky top-0 self-start',
+        'border-r border-slate-200 bg-white',
+        'px-2 pt-3 pb-4',
+        'transition-[width] duration-200 ease-out',
+        collapsed ? 'w-20' : 'w-64',
+        'shrink-0',
+        'h-screen',
+      ].join(' ')}
+    >
+      {/* Small collapsible button – top right */}
       <button
-        className="btn sidebar-toggle fancy"
+        type="button"
+        onClick={handleToggle}
         aria-label="Toggle sidebar"
-        onClick={onToggle}
         title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        className="absolute right-2 top-2 inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-500 shadow-sm hover:bg-slate-100 hover:text-slate-700"
       >
-        {collapsed ? <FiChevronRight size={18} /> : <FiChevronLeft size={18} />}
+        {collapsed ? <FiChevronRight size={16} /> : <FiChevronLeft size={16} />}
       </button>
 
-      <div className="side-sep" />
-
-      <nav className="nav">
-        <NavItem
-          to="/dashboard"
-          label="Dashboard"
-          icon={<FiHome />}
-          collapsed={collapsed}
-        />
-
-        <div className="side-sep" />
-
-        <div className="nav-section-title">
-          {!collapsed ? 'Management' : ''}
-        </div>
-
-        <NavItem
-          to="/users"
-          label="Users"
-          icon={<FiUsers />}
-          collapsed={collapsed}
-        />
-
-        <NavItem
-          to="/products/ai"
-          label="AI Products"
-          icon={<FiCpu />}
-          collapsed={collapsed}
-        />
-
-        <NavItem
-          to="/votes"
-          label="Community Votes"
-          icon={<FiLayers />}
-          collapsed={collapsed}
-        />
-
-        <NavItem
-          to="/votes/summary"
-          label="Votes Summary"
-          icon={<FiBarChart2 />}
-          collapsed={collapsed}
-        />
-
-        <NavItem
-          to="/revenue"
-          label="Revenue"
-          icon={<FiTrendingUp />}
-          collapsed={collapsed}
-        />
-
-        <NavItem
-          to="/shops"
-          label="Shops & Products"
-          icon={<FiShoppingBag />}
-          collapsed={collapsed}
-        />
-
-        <NavItem
-          to="/products/manual"
-          label="Manual Products"
-          icon={<FiEdit3 />}
-          collapsed={collapsed}
-        />
+      {/* Flat nav list */}
+      <nav className="mt-10 space-y-1">
+        {links.map((link) => (
+          <NavItem
+            key={link.to}
+            to={link.to}
+            label={link.label}
+            Icon={link.icon}
+            collapsed={collapsed}
+          />
+        ))}
       </nav>
     </aside>
   )

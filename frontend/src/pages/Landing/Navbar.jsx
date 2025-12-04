@@ -1,15 +1,17 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 
 const Navbar = ({ navItems }) => {
   const { logout, user } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const location = useLocation(); // detect current URL
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     await logout();
-    navigate("/login", { replace: true });
+    setUserMenuOpen(false);
   };
 
   const handleCloseMobile = () => setMobileOpen(false);
@@ -20,36 +22,29 @@ const Navbar = ({ navItems }) => {
   const isActive = (item) => {
     const currentPath = location.pathname + location.hash;
 
-    // Case: route like "/billing" or "/about"
     if (item.type === "route") {
       return location.pathname === item.href;
     }
 
-    // Case: anchor like "/#faq" or "#faq"
     if (item.type === "anchor") {
-      return currentPath === item.href || location.hash === item.href.replace("/", "");
+      return (
+        currentPath === item.href ||
+        location.hash === item.href.replace("/", "")
+      );
     }
 
     return false;
   };
 
-  // STYLE FOR ACTIVE NAV ITEM
   const getClasses = (item) => {
-    const base =
-      "px-3 py-1 rounded-full transition-colors text-sm";
-
-    const active =
-      "bg-emerald-200 text-white shadow-md font-semibold";
-
+    const base = "px-3 py-1 rounded-full transition-colors text-sm";
+    const active = "bg-emerald-200 text-white shadow-md font-semibold";
     const inactive =
       "text-emerald-800 hover:text-emerald-600 hover:bg-emerald-100";
 
     return base + " " + (isActive(item) ? active : inactive);
   };
 
-  // ---------------------------
-  // RENDER NAV ITEM (Link or <a>)
-  // ---------------------------
   const renderNavItem = (item) => {
     if (item.type === "route") {
       return (
@@ -64,7 +59,6 @@ const Navbar = ({ navItems }) => {
       );
     }
 
-    // Anchor link
     return (
       <a
         key={item.href}
@@ -77,14 +71,15 @@ const Navbar = ({ navItems }) => {
     );
   };
 
-  return (
-    <header className="sticky top-0 z-30 bg-emerald-50/90 backdrop-blur border-b border-emerald-100">
-      <div className="mx-auto px-4 py-3 flex items-center justify-between">
+  const userEmailLabel = user?.email || "Account";
 
+  return (
+    <header className="sticky top-0 z-30 border-b border-emerald-100 bg-emerald-50/90 backdrop-blur">
+      <div className="mx-auto flex items-center justify-between px-4 py-3">
         {/* Logo */}
-        <Link className="flex items-center gap-2 cursor-pointer" to="/">
+        <Link className="flex cursor-pointer items-center gap-2" to="/">
           <div className="flex h-11 w-11 items-center justify-center">
-            <img src="Halal_lens_logo.png" alt="logo" />
+            <img src="/Halal_lens_logo.png" alt="logo" />
           </div>
           <div className="flex flex-col leading-tight">
             <span className="font-semibold text-emerald-900">Halal Lens</span>
@@ -95,42 +90,127 @@ const Navbar = ({ navItems }) => {
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-3">
+        <nav className="hidden items-center gap-3 md:flex">
           {navItems.map((item) => renderNavItem(item))}
         </nav>
 
-        {/* Auth buttons */}
-        {user ? (
-          <div className="flex items-center gap-2">
-            <span className="text-xs">{user?.email}</span>
-            <button className="btn primary" onClick={handleLogout}>
-              Logout
-            </button>
-          </div>
-        ) : (
-          <Link to="/login" className="btn primary">
-            Log in
-          </Link>
-        )}
+        {/* Right side: auth / profile */}
+        <div className="flex items-center gap-2">
+          {user ? (
+            <div className="relative">
+              {/* Avatar / trigger */}
+              <button
+                type="button"
+                onClick={() => setUserMenuOpen((o) => !o)}
+                className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-xs font-medium text-emerald-900 shadow-sm hover:bg-emerald-50 cursor-pointer"
+              >
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-600 text-[11px] font-semibold text-white">
+                  {userEmailLabel.charAt(0).toUpperCase()}
+                </span>
+                <span className="hidden max-w-40 truncate text-xs text-emerald-900 sm:inline">
+                  {userEmailLabel}
+                </span>
+                <svg
+                  className="h-3 w-3 text-emerald-700"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                >
+                  <path
+                    d="M5 7.5L10 12.5L15 7.5"
+                    stroke="currentColor"
+                    strokeWidth="1.4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
 
-        {/* Mobile Toggle */}
-        <button
-          className="md:hidden inline-flex items-center justify-center rounded-full border border-emerald-200 p-2 text-emerald-700"
-          onClick={() => setMobileOpen((s) => !s)}
-        >
-          <div className="space-y-1">
-            <span className="block h-0.5 w-5 bg-emerald-700" />
-            <span className="block h-0.5 w-5 bg-emerald-700" />
-            <span className="block h-0.5 w-5 bg-emerald-700" />
-          </div>
-        </button>
+              {/* Dropdown */}
+              {userMenuOpen && (
+                <div className="absolute right-0 mt-2 w-56 rounded-xl border border-emerald-100 bg-white py-2 text-sm shadow-lg">
+                  <div className="border-b border-emerald-50 px-3 pb-2">
+                    <p className="text-[10px] font-semibold uppercase tracking-wide text-emerald-500">
+                      Signed in as
+                    </p>
+                    <p className="mt-1 truncate text-xs font-medium text-emerald-900">
+                      {userEmailLabel}
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setUserMenuOpen(false);
+                      navigate("/dashboard/welcome");
+                    }}
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs hover:bg-emerald-50 cursor-pointer"
+                  >
+                    <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
+                    <span>Go to dashboard</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="mt-1 flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-red-600 hover:bg-red-50 cursor-pointer"
+                  >
+                    <span className="inline-block h-2 w-2 rounded-full bg-red-500" />
+                    <span>Log out</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link to="/login" className="btn primary">
+              Log in
+            </Link>
+          )}
+
+          {/* Mobile Toggle */}
+          <button
+            className="inline-flex items-center justify-center rounded-full border border-emerald-200 p-2 text-emerald-700 md:hidden cursor-pointer"
+            onClick={() => setMobileOpen((s) => !s)}
+          >
+            <div className="space-y-1">
+              <span className="block h-0.5 w-5 bg-emerald-700" />
+              <span className="block h-0.5 w-5 bg-emerald-700" />
+              <span className="block h-0.5 w-5 bg-emerald-700" />
+            </div>
+          </button>
+        </div>
       </div>
 
-      {/* Mobile Dropdown */}
+      {/* Mobile Dropdown nav */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-emerald-100 bg-emerald-50">
-          <div className="px-4 py-3 flex flex-col gap-2">
+        <div className="border-t border-emerald-100 bg-emerald-50 md:hidden">
+          <div className="flex flex-col gap-2 px-4 py-3">
             {navItems.map((item) => renderNavItem(item))}
+
+            {user && (
+              <>
+                <div className="mt-2 border-t border-emerald-100 pt-2 text-[11px] text-emerald-700">
+                  Signed in as {userEmailLabel}
+                </div>
+                <button
+                  onClick={() => {
+                    setMobileOpen(false);
+                    navigate("/dashboard/welcome");
+                  }}
+                  className="w-full rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-left text-xs font-medium text-emerald-900 cursor-pointer"
+                >
+                  Dashboard
+                </button>
+                <button
+                  onClick={async () => {
+                    setMobileOpen(false);
+                    await handleLogout();
+                  }}
+                  className="w-full rounded-full border border-red-200 bg-red-50 px-3 py-1.5 text-left text-xs font-medium text-red-700 cursor-pointer"
+                >
+                  Logout
+                </button>
+              </>
+            )}
           </div>
         </div>
       )}

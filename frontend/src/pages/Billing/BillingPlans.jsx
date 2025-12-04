@@ -124,7 +124,7 @@ const BillingPlans = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 py-10">
+    <div className="min-h-screen bg-linear-to-b from-slate-50 to-slate-100 py-10">
       <div className="mx-auto max-w-6xl px-6">
         <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>

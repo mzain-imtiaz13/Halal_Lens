@@ -8,7 +8,7 @@ const UserLayout = () => {
       <Navbar
         navItems={[
           { label: "Plans", href: "/billing", type: "route" },
-          { label: "Your Subscriptions", href: "/subscriptions", type: "route" },
+          { label: "Your Subscriptions", href: "/dashboard/subscriptions", type: "route" },
         ]}
       />
       <main className="flex-1">

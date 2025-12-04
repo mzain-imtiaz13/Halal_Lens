@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { useLocation, useNavigate } from 'react-router-dom'
-import logo from '../assets/Halal_lens_logo.png'
+import logo from '/Halal_lens_logo.png'
 import { sendPasswordResetEmail } from 'firebase/auth'
 import { auth } from '../firebase'
 import { toast } from 'react-toastify'
@@ -26,8 +26,7 @@ export default function Login() {
     setError('')
     try {
       await login(email, password)
-      const to = location.state?.from?.pathname || '/'
-      navigate(to, { replace: true })
+      navigate('/dashboard/welcome', { replace: true })
     } catch (err) {
       setError(err?.message || 'Login failed')
     }

@@ -1,120 +1,380 @@
 // src/pages/DataDeletion.jsx
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import instance from "../api/axios";
 
-const GOOGLE_FORM_URL = "https://forms.gle/ZhZoXjRc5HWDtunv8";
-import './../styles.css'
-export default function DataDeletion() {
+const DataDeletion = () => {
+  const { user, loading, logout } = useAuth();
+
+  const [form, setForm] = useState({
+    email: "",
+    name: "",
+    reason: "",
+    confirm: false,
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [status, setStatus] = useState(null); // "success" | "error" | null
+
+  // Pre-populate from Firebase user when available
+  useEffect(() => {
+    if (!user) return;
+
+    setForm((prev) => ({
+      ...prev,
+      email: user.email || prev.email,
+      name: user.displayName || prev.name,
+    }));
+  }, [user]);
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus(null);
+
+    // Basic validation
+    if (!form.email || !form.name || !form.confirm) {
+      setStatus("error");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const res = await instance.get('/user/disable');
+      await logout();
+      setStatus("success");
+      setForm((prev) => ({
+        ...prev,
+        reason: "",
+        confirm: false,
+      }));
+    } catch (err) {
+      console.error("Error submitting deletion request:", err);
+      setStatus("error");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const emailDisabled = !!user?.email; // always disabled if we know the email
+  const hasPrefilledName = !!user?.displayName;
+  const nameDisabled = hasPrefilledName; // editable only when we don't have displayName
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-emerald-50 flex items-center justify-center">
+        <div className="flex items-center gap-2 text-emerald-700 text-sm">
+          <span className="h-3 w-3 rounded-full bg-emerald-500 animate-pulse" />
+          <span>Loading account info…</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="legal-page">
-      <header className="legal-hero">
-        <div className="legal-hero-inner">
-          <p className="legal-app-name">Halal Lens</p>
-          <h1 className="legal-hero-title">Data Deletion Request</h1>
-          <p className="legal-hero-subtitle">
-            Request permanent removal of your Halal Lens account and data.
+    <div className="min-h-screen bg-emerald-50 text-emerald-950 flex flex-col">
+      {/* Hero */}
+      <header className="bg-linear-to-b from-emerald-100 to-emerald-50 border-b border-emerald-100">
+        <div className="max-w-4xl mx-auto px-4 py-10 md:py-14">
+          <p className="text-xs font-semibold tracking-[0.2em] uppercase text-emerald-600 mb-2">
+            Halal Lens
+          </p>
+          <h1 className="text-2xl md:text-3xl font-bold text-emerald-950 mb-3">
+            Data Deletion Request
+          </h1>
+          <p className="text-sm md:text-base text-emerald-800 max-w-2xl">
+            Request permanent removal of your Halal Lens account and all
+            associated data.
           </p>
         </div>
       </header>
 
-      <main className="legal-wrapper">
-        <section className="legal-card">
-          <p className="legal-meta">
-            <strong>Halal Lens – Data Deletion Request</strong>
-          </p>
+      {/* Content */}
+      <main className="flex-1">
+        <div className="max-w-4xl mx-auto px-4 py-10 md:py-14">
+          <section className="bg-white border border-emerald-100 rounded-3xl shadow-sm p-6 md:p-8 space-y-6 md:space-y-8">
+            <div className="space-y-3 text-sm text-emerald-900 leading-relaxed">
+              <p className="text-xs font-semibold text-emerald-700">
+                <strong>Halal Lens – Data Deletion Request</strong>
+              </p>
 
-          <p>
-            We respect your privacy and give you full control over your personal
-            data. If you no longer wish to use Halal Lens, you can request to
-            delete your account and all related data by filling out the form
-            below.
-          </p>
-          <p>
-            Once your request is submitted, our team will verify your email and
-            permanently delete your data within <strong>30 days</strong>.
-          </p>
+              <p>
+                We respect your privacy and give you full control over your
+                personal data. If you no longer wish to use Halal Lens, you can
+                request to delete your account and all related data by filling
+                out the form below.
+              </p>
+              <p>
+                Once your request is submitted, our team will verify your email
+                and permanently delete your data within <strong>30 days</strong>
+                .
+              </p>
 
-          {/* What will be deleted */}
-          <h2 className="legal-section-title">🗑️ What Will Be Deleted</h2>
-          <p>When your request is processed, we will permanently remove:</p>
-          <ul className="legal-list">
-            <li>Your user account (email and authentication details)</li>
-            <li>Your scan history and product analysis results</li>
-            <li>Your votes on ingredients (these are anonymized or deleted)</li>
-            <li>Any uploaded product images and related metadata</li>
-          </ul>
+              {/* What will be deleted */}
+              <div>
+                <h2 className="text-sm md:text-base font-semibold text-emerald-950 mb-2">
+                  🗑️ What Will Be Deleted
+                </h2>
+                <p className="mb-2">
+                  When your request is processed, we will permanently remove:
+                </p>
+                <ul className="list-disc list-inside space-y-1">
+                  <li>Your user account (email and authentication details)</li>
+                  <li>Your scan history and product analysis results</li>
+                  <li>
+                    Your votes on ingredients (these are anonymized or deleted)
+                  </li>
+                  <li>
+                    Any uploaded product images and related metadata where
+                    technically possible
+                  </li>
+                </ul>
+              </div>
 
-          {/* What may be retained temporarily */}
-          <h2 className="legal-section-title">
-            ⚙️ What May Be Retained Temporarily
-          </h2>
-          <p>For security and legal purposes:</p>
-          <ul className="legal-list">
-            <li>
-              Backup logs may be retained for up to 30 days before being
-              permanently deleted.
-            </li>
-            <li>
-              Anonymous, aggregated statistics (like total vote counts) may
-              remain but are not linked to your identity.
-            </li>
-          </ul>
+              {/* Retention */}
+              <div>
+                <h2 className="text-sm md:text-base font-semibold text-emerald-950 mb-2">
+                  ⚙️ What May Be Retained Temporarily
+                </h2>
+                <p className="mb-2">For security and legal purposes:</p>
+                <ul className="list-disc list-inside space-y-1">
+                  <li>
+                    Backup logs may be retained for up to 30 days before being
+                    permanently deleted.
+                  </li>
+                  <li>
+                    Anonymous, aggregated statistics (like total vote counts)
+                    may remain but are not linked to your identity.
+                  </li>
+                </ul>
+              </div>
 
-          {/* Processing time */}
-          <h2 className="legal-section-title">🕒 Processing Time</h2>
-          <p>
-            After verifying your email, your account and all associated data
-            will be deleted within <strong>30 days</strong>.
-          </p>
+              {/* Processing time */}
+              <div>
+                <h2 className="text-sm md:text-base font-semibold text-emerald-950 mb-2">
+                  🕒 Processing Time
+                </h2>
+                <p>
+                  After verifying your email, your account and all associated
+                  data will be deleted within <strong>30 days</strong>.
+                </p>
+              </div>
 
-          {/* Contact / help */}
-          <h2 className="legal-section-title">📩 Need Help?</h2>
-          <p>
-            If you have any issues submitting the form or wish to contact us
-            directly, please email:
-          </p>
-          <p>
-            📧{" "}
-            <a href="mailto:support@halallens.org" className="legal-link">
-              support@halallens.org
-            </a>
-          </p>
-          <h2 className="legal-section-title">🧾 How to Request Deletion</h2>
-          <ul className="legal-list">
-            <li>
-              <strong>Step 1:</strong> Fill out the form below with your account
-              information.
-            </li>
-            <li>
-              <strong>Step 2:</strong> Click “Submit” to initiate the account
-              deletion process.
-            </li>
-            <li>
-              <strong>Step 3:</strong> You will receive a confirmation email
-              once your account has been deleted.
-            </li>
-          </ul>
+              {/* Contact */}
+              <div>
+                <h2 className="text-sm md:text-base font-semibold text-emerald-950 mb-2">
+                  📩 Need Help?
+                </h2>
+                <p className="mb-2">
+                  If you have any issues submitting the form or wish to contact
+                  us directly, please email:
+                </p>
+                <p className="text-sm">
+                  📧{" "}
+                  <a
+                    href="mailto:support@halallens.org"
+                    className="text-emerald-700 underline hover:text-emerald-600"
+                  >
+                    support@halallens.org
+                  </a>
+                </p>
+              </div>
 
-          {/* Google Form embed */}
-          <h2 className="legal-form-title">
-            Submit Your Data Deletion Request
-          </h2>
-          <p className="legal-form-intro">
-            Please complete the form below to confirm your identity and request
-            permanent deletion of your Halal Lens account and data.
-          </p>
+              <div>
+                <h2 className="text-sm md:text-base font-semibold text-emerald-950 mb-2">
+                  🧾 How to Request Deletion
+                </h2>
+                <ul className="list-disc list-inside space-y-1">
+                  <li>
+                    <strong>Step 1:</strong> Fill out the form below with your
+                    account information.
+                  </li>
+                  <li>
+                    <strong>Step 2:</strong> Click “Submit” to initiate the
+                    account deletion process.
+                  </li>
+                  <li>
+                    <strong>Step 3:</strong> You will receive a confirmation
+                    email once your account has been deleted.
+                  </li>
+                </ul>
+              </div>
+            </div>
 
-          <div className="legal-form-frame-wrap">
-            <iframe
-              title="Halal Lens Data Deletion Request Form"
-              src={GOOGLE_FORM_URL}
-              className="legal-form-frame"
-              loading="lazy"
-            >
-              Loading…
-            </iframe>
-          </div>
-        </section>
+            {/* Form */}
+            <div className="border-t border-emerald-100 pt-6 md:pt-8">
+              <h2 className="text-base md:text-lg font-semibold text-emerald-950 mb-2">
+                Submit Your Data Deletion Request
+              </h2>
+              <p className="text-sm text-emerald-800 mb-4">
+                Please complete the form below to confirm your identity and
+                request permanent deletion of your Halal Lens account and data.
+              </p>
+
+              <form
+                onSubmit={handleSubmit}
+                className="space-y-4 md:space-y-5 max-w-xl"
+              >
+                {/* Email */}
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block text-xs font-semibold text-emerald-800 mb-1"
+                  >
+                    Email <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    value={form.email}
+                    onChange={handleChange}
+                    placeholder="you@example.com"
+                    disabled={emailDisabled}
+                    className={`w-full rounded-lg border px-3 py-2 text-sm text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                      emailDisabled
+                        ? "bg-emerald-50 border-emerald-200 text-emerald-700 cursor-not-allowed"
+                        : "bg-emerald-50/40 border-emerald-200"
+                    }`}
+                  />
+                  {emailDisabled && (
+                    <p className="mt-1 text-[11px] text-emerald-600">
+                      This email is taken from your Halal Lens account and
+                      cannot be changed here. If this is incorrect, please
+                      contact support.
+                    </p>
+                  )}
+                </div>
+
+                {/* Name */}
+                <div>
+                  <label
+                    htmlFor="name"
+                    className="block text-xs font-semibold text-emerald-800 mb-1"
+                  >
+                    Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    required
+                    value={form.name}
+                    onChange={handleChange}
+                    placeholder="Your full name"
+                    disabled={nameDisabled}
+                    className={`w-full rounded-lg border px-3 py-2 text-sm text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                      nameDisabled
+                        ? "bg-emerald-50 border-emerald-200 text-emerald-700 cursor-not-allowed"
+                        : "bg-emerald-50/40 border-emerald-200"
+                    }`}
+                  />
+                  {nameDisabled ? (
+                    <p className="mt-1 text-[11px] text-emerald-600">
+                      This name is taken from your Halal Lens profile. If you
+                      need it changed, please contact support.
+                    </p>
+                  ) : (
+                    <p className="mt-1 text-[11px] text-emerald-600">
+                      We couldn’t find a name on your profile. Please enter your
+                      full name.
+                    </p>
+                  )}
+                </div>
+
+                {/* Reason (optional) */}
+                <div>
+                  <label
+                    htmlFor="reason"
+                    className="block text-xs font-semibold text-emerald-800 mb-1"
+                  >
+                    Reason for deletion{" "}
+                    <span className="text-emerald-500 text-[10px]">
+                      (optional)
+                    </span>
+                  </label>
+                  <textarea
+                    id="reason"
+                    name="reason"
+                    value={form.reason}
+                    onChange={handleChange}
+                    rows={3}
+                    placeholder="Let us know why you’re leaving (optional)"
+                    className="w-full rounded-lg border border-emerald-200 bg-emerald-50/40 px-3 py-2 text-sm text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none"
+                  />
+                </div>
+
+                {/* Confirmation */}
+                <div className="border border-emerald-100 rounded-xl bg-emerald-50/60 px-3 py-3">
+                  <label className="flex items-start gap-2 text-xs text-emerald-900">
+                    <input
+                      type="checkbox"
+                      name="confirm"
+                      checked={form.confirm}
+                      onChange={handleChange}
+                      className="mt-0.5 h-4 w-4 rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500"
+                      required
+                    />
+                    <span>
+                      <span className="font-semibold">Confirmation *</span>
+                      <br />I confirm that I want to permanently delete my
+                      account and associated data.
+                    </span>
+                  </label>
+                </div>
+
+                {/* Status messages */}
+                {status === "success" && (
+                  <p className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+                    Thank you. Your deletion request has been submitted. Our
+                    team will process it within 30 days.
+                  </p>
+                )}
+                {status === "error" && (
+                  <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                    Please make sure all required fields are filled and try
+                    again. If the problem continues, contact
+                    support@halallens.org.
+                  </p>
+                )}
+
+                {/* Buttons */}
+                <div className="flex items-center gap-3">
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="inline-flex items-center justify-center rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-800 disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {submitting ? "Submitting..." : "Submit"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setForm((prev) => ({
+                        ...prev,
+                        reason: "",
+                        confirm: false,
+                      }))
+                    }
+                    className="text-xs text-emerald-800 underline hover:text-emerald-600"
+                  >
+                    Clear form
+                  </button>
+                </div>
+              </form>
+            </div>
+          </section>
+        </div>
       </main>
     </div>
   );
-}
+};
+
+export default DataDeletion;

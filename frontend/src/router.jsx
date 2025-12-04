@@ -27,6 +27,7 @@ import BillingPlans from "./pages/Billing/BillingPlans";
 import UserLayout from "./components/UserLayout";
 import BillingHistory from "./pages/Billing/BillingHistory";
 import BusinessInfo from "./pages/BusinessInfo";
+import Welcome from "./pages/Welcome";
 
 export default function AppRouter() {
   return (
@@ -43,26 +44,26 @@ export default function AppRouter() {
       </Route>
       <Route element={<UserLayout />}>
         <Route path="/billing" element={<BillingPlans />} />
-        <Route path="/subscriptions" element={<BillingHistory />} />
         <Route path="/billing/success" element={<BillingSuccess />} />
         <Route path="/billing/cancel" element={<BillingCancel />} />
       </Route>
 
-      <Route
-        element={
-          <ProtectedRoute>
-            <Layout />
-          </ProtectedRoute>
-        }
-      >
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/users" element={<Users />} />
-        <Route path="/products/ai" element={<ProductsAI />} />
-        <Route path="/products/manual" element={<ProductsManual />} />
-        <Route path="/votes" element={<Votes />} />
-        <Route path="/votes/summary" element={<VotesSummary />} />
-        <Route path="/revenue" element={<Revenue />} />
-        <Route path="/shops" element={<Shops />} />
+      <Route path="/dashboard" element={<Layout />}>
+        {/* Public (logged-in, any role) dashboard pages */}
+        <Route path="welcome" element={<Welcome />} />
+        <Route path="subscriptions" element={<BillingHistory />} />
+
+        {/* Admin-only section */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="admin" element={<Dashboard />} />
+          <Route path="users" element={<Users />} />
+          <Route path="products/ai" element={<ProductsAI />} />
+          <Route path="products/manual" element={<ProductsManual />} />
+          <Route path="votes" element={<Votes />} />
+          <Route path="votes/summary" element={<VotesSummary />} />
+          <Route path="revenue" element={<Revenue />} />
+          <Route path="shops" element={<Shops />} />
+        </Route>
       </Route>
 
       <Route path="*" element={<NotFound />} />

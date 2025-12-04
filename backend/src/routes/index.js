@@ -3,6 +3,7 @@ const { Router } = require("express");
 const router = Router();
 const billingRoutes = require("./billing.routes");
 const scanRoutes = require("./scan.routes");
+const userRoutes = require("./user.routes");
 
 const defaultRoutes = [
   {
@@ -12,6 +13,10 @@ const defaultRoutes = [
   {
     path: "/scan",
     route: scanRoutes,
+  },
+  {
+    path: "/user",
+    route: userRoutes,
   },
 ];
 

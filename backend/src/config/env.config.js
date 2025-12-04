@@ -20,6 +20,7 @@ const envVarsSchema = Joi.object()
     SMTP_PORT: Joi.number().required(),
     EMAIL_USER: Joi.string().required(),
     EMAIL_PASS: Joi.string().required(),
+    EMAIL_SENDER_NAME: Joi.string().required(),
 
     FRONTEND_URL: Joi.string().required(),
 
@@ -79,6 +80,7 @@ module.exports = {
   SMTP_PORT: process.env.SMTP_PORT,
   EMAIL_USER: process.env.EMAIL_USER,
   EMAIL_PASS: process.env.EMAIL_PASS,
+  EMAIL_SENDER_NAME: process.env.EMAIL_SENDER_NAME,
 
   FRONTEND_URL: process.env.FRONTEND_URL,
 
