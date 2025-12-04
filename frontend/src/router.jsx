@@ -24,7 +24,6 @@ import Support from "./pages/Support";
 import BillingSuccess from "./pages/Billing/BillingSuccess";
 import BillingCancel from "./pages/Billing/BillingCancel";
 import BillingPlans from "./pages/Billing/BillingPlans";
-import UserLayout from "./components/UserLayout";
 import BillingHistory from "./pages/Billing/BillingHistory";
 import BusinessInfo from "./pages/BusinessInfo";
 import Welcome from "./pages/Welcome";
@@ -41,8 +40,6 @@ export default function AppRouter() {
         <Route path="/terms-of-service" element={<TermsOfService />} />
         <Route path="/scta" element={<BusinessInfo />} />
         <Route path="/support" element={<Support />} />
-      </Route>
-      <Route element={<UserLayout />}>
         <Route path="/billing" element={<BillingPlans />} />
         <Route path="/billing/success" element={<BillingSuccess />} />
         <Route path="/billing/cancel" element={<BillingCancel />} />
