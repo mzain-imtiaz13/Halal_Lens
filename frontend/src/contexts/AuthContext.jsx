@@ -65,12 +65,7 @@ export function AuthProvider({ children }) {
           to: "/dashboard/products/manual",
           label: "Manual Products",
           icon: FiEdit3,
-        },
-        {
-          to: "/dashboard/data-deletion",
-          label: "Data Deletion",
-          icon: FiTrash2,
-        },
+        }
       ];
     }
 
@@ -81,12 +76,7 @@ export function AuthProvider({ children }) {
         to: "/dashboard/subscriptions",
         label: "Subscriptions",
         icon: FiBarChart2,
-      },
-      {
-        to: "/dashboard/data-deletion",
-        label: "Data Deletion",
-        icon: FiTrash2,
-      },
+      }
     ];
   };
 

@@ -41,14 +41,14 @@ export default function AppRouter() {
         <Route path="/billing" element={<BillingPlans />} />
         <Route path="/billing/success" element={<BillingSuccess />} />
         <Route path="/billing/cancel" element={<BillingCancel />} />
+        <Route path="data-deletion" element={<DataDeletion />} />
       </Route>
 
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<Layout />}>
           {/* Authenticated (any role) */}
           <Route path="welcome" element={<Welcome />} />
-          <Route path="subscriptions" element={<BillingHistory />} />
-          <Route path="data-deletion" element={<DataDeletion />} />
+          <Route path="subscriptions" element={<BillingHistory />} />          
 
           {/* Admin-only section */}
           <Route element={<ProtectedRoute roles={["admin"]} />}>

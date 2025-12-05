@@ -13,7 +13,10 @@ const DataDeletion = () => {
     confirm: false,
   });
   const [submitting, setSubmitting] = useState(false);
-  const [status, setStatus] = useState(null); // "success" | "error" | null
+  const [status, setStatus] = useState(null); // "success" | "error" | "auth-error" | null
+
+  const isAuthenticated = !!user;
+  const formDisabled = !isAuthenticated;
 
   // Pre-populate from Firebase user when available
   useEffect(() => {
@@ -38,6 +41,12 @@ const DataDeletion = () => {
     e.preventDefault();
     setStatus(null);
 
+    // Require login to submit
+    if (!user) {
+      setStatus("auth-error");
+      return;
+    }
+
     // Basic validation
     if (!form.email || !form.name || !form.confirm) {
       setStatus("error");
@@ -46,7 +55,7 @@ const DataDeletion = () => {
 
     setSubmitting(true);
     try {
-      const res = await instance.get('/user/disable');
+      const res = await instance.get("/user/disable");
       await logout();
       setStatus("success");
       setForm((prev) => ({
@@ -62,9 +71,9 @@ const DataDeletion = () => {
     }
   };
 
-  const emailDisabled = !!user?.email; // always disabled if we know the email
+  const emailDisabled = !!user?.email || formDisabled; // always disabled if we know the email OR user not logged in
   const hasPrefilledName = !!user?.displayName;
-  const nameDisabled = hasPrefilledName; // editable only when we don't have displayName
+  const nameDisabled = hasPrefilledName || formDisabled; // editable only when we don't have displayName and user is logged in
 
   if (loading) {
     return (
@@ -217,6 +226,15 @@ const DataDeletion = () => {
                 request permanent deletion of your Halal Lens account and data.
               </p>
 
+              {/* Auth required notice */}
+              {!isAuthenticated && (
+                <p className="mb-4 text-xs text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+                  You need to be signed in to your Halal Lens account to submit
+                  a data deletion request. Please sign in from the main app and
+                  then return to this page.
+                </p>
+              )}
+
               <form
                 onSubmit={handleSubmit}
                 className="space-y-4 md:space-y-5 max-w-xl"
@@ -244,7 +262,7 @@ const DataDeletion = () => {
                         : "bg-emerald-50/40 border-emerald-200"
                     }`}
                   />
-                  {emailDisabled && (
+                  {user && user.email && (
                     <p className="mt-1 text-[11px] text-emerald-600">
                       This email is taken from your Halal Lens account and
                       cannot be changed here. If this is incorrect, please
@@ -276,17 +294,19 @@ const DataDeletion = () => {
                         : "bg-emerald-50/40 border-emerald-200"
                     }`}
                   />
-                  {nameDisabled ? (
-                    <p className="mt-1 text-[11px] text-emerald-600">
-                      This name is taken from your Halal Lens profile. If you
-                      need it changed, please contact support.
-                    </p>
-                  ) : (
-                    <p className="mt-1 text-[11px] text-emerald-600">
-                      We couldn’t find a name on your profile. Please enter your
-                      full name.
-                    </p>
-                  )}
+                  {user ? (
+                    hasPrefilledName ? (
+                      <p className="mt-1 text-[11px] text-emerald-600">
+                        This name is taken from your Halal Lens profile. If you
+                        need it changed, please contact support.
+                      </p>
+                    ) : (
+                      <p className="mt-1 text-[11px] text-emerald-600">
+                        We couldn’t find a name on your profile. Please enter
+                        your full name.
+                      </p>
+                    )
+                  ) : null}
                 </div>
 
                 {/* Reason (optional) */}
@@ -307,7 +327,12 @@ const DataDeletion = () => {
                     onChange={handleChange}
                     rows={3}
                     placeholder="Let us know why you’re leaving (optional)"
-                    className="w-full rounded-lg border border-emerald-200 bg-emerald-50/40 px-3 py-2 text-sm text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none"
+                    disabled={formDisabled}
+                    className={`w-full rounded-lg border border-emerald-200 px-3 py-2 text-sm text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none ${
+                      formDisabled
+                        ? "bg-emerald-50 text-emerald-700 cursor-not-allowed"
+                        : "bg-emerald-50/40"
+                    }`}
                   />
                 </div>
 
@@ -319,7 +344,8 @@ const DataDeletion = () => {
                       name="confirm"
                       checked={form.confirm}
                       onChange={handleChange}
-                      className="mt-0.5 h-4 w-4 rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500"
+                      disabled={formDisabled}
+                      className="mt-0.5 h-4 w-4 rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500 disabled:cursor-not-allowed"
                       required
                     />
                     <span>
@@ -344,15 +370,26 @@ const DataDeletion = () => {
                     support@halallens.org.
                   </p>
                 )}
+                {status === "auth-error" && (
+                  <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                    You must be signed in to submit a data deletion request.
+                    Please sign in to your Halal Lens account and then try
+                    again.
+                  </p>
+                )}
 
                 {/* Buttons */}
                 <div className="flex items-center gap-3">
                   <button
                     type="submit"
-                    disabled={submitting}
+                    disabled={submitting || formDisabled}
                     className="inline-flex items-center justify-center rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-800 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    {submitting ? "Submitting..." : "Submit"}
+                    {formDisabled
+                      ? "Sign in to submit"
+                      : submitting
+                      ? "Submitting..."
+                      : "Submit"}
                   </button>
                   <button
                     type="button"
