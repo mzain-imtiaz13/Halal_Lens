@@ -1,14 +1,41 @@
-import React from 'react'
+import React from "react";
 
 export default function Pagination({ page, pageSize, total, onChange }) {
-  const totalPages = Math.max(1, Math.ceil(total / pageSize))
-  const prev = () => onChange(Math.max(1, page - 1))
-  const next = () => onChange(Math.min(totalPages, page + 1))
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+  const prev = () => onChange(Math.max(1, page - 1));
+  const next = () => onChange(Math.min(totalPages, page + 1));
+
   return (
-    <div className="pager">
-      <span className="helper">Page {page} of {totalPages} • {total} items</span>
-      <button className="btn" onClick={prev} disabled={page <= 1}>Prev</button>
-      <button className="btn" onClick={next} disabled={page >= totalPages}>Next</button>
+    <div className="mt-4 flex flex-wrap items-center gap-3 rounded-lg border border-slate-200 bg-white px-4 py-2 shadow-sm">
+      {/* Info */}
+      <span className="text-sm text-slate-600">
+        Page <span className="font-medium">{page}</span> of{" "}
+        <span className="font-medium">{totalPages}</span> •{" "}
+        <span className="font-medium">{total}</span> items
+      </span>
+
+      {/* Spacer */}
+      <div className="flex-1" />
+
+      {/* Buttons */}
+      <div className="flex items-center gap-2">
+        <button
+          className="cursor-pointer rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-700 shadow-sm hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+          onClick={prev}
+          disabled={page <= 1}
+        >
+          Prev
+        </button>
+
+        <button
+          className="cursor-pointer rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-700 shadow-sm hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+          onClick={next}
+          disabled={page >= totalPages}
+        >
+          Next
+        </button>
+      </div>
     </div>
-  )
+  );
 }

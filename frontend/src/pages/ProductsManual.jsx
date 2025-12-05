@@ -1,194 +1,350 @@
-import React, { useEffect, useState } from 'react'
-import DataTable from '../components/DataTable'
-import Toolbar from '../components/Toolbar'
-import Pagination from '../components/Pagination'
-import { listManualProducts } from '../api/services/products'
-import './../styles.css'
+import React, { useEffect, useState } from "react";
+import DataTable from "../components/DataTable";
+import Toolbar from "../components/Toolbar";
+import Pagination from "../components/Pagination";
+import Modal from "../components/Modal"; // ⬅️ use your Modal here
+import { listManualProducts } from "../api/services/products";
+import "./../styles.css";
+
 const PLACEHOLDER_IMG =
-  'data:image/svg+xml;utf8,' +
+  "data:image/svg+xml;utf8," +
   encodeURIComponent(`
     <svg xmlns="http://www.w3.org/2000/svg" width="120" height="80">
       <rect width="120" height="80" fill="#e5e7eb"/>
       <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
             font-family="Arial" font-size="10" fill="#6b7280">No Image</text>
     </svg>
-  `)
+  `);
 
-function Drawer({ open, onClose, data }) {
-  if (!open) return null
-  const x = data?._extra || {}
-  const ing = Array.isArray(x.ingredients) ? x.ingredients : []
-  const refs = Array.isArray(x.references) ? x.references : []
+function VerdictBadge({ value }) {
+  let badgeClasses =
+    "inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium ";
+  let dotClasses = "h-1.5 w-1.5 rounded-full ";
+
+  if (value === "halal") {
+    badgeClasses += "border-emerald-200 bg-emerald-50 text-emerald-700";
+    dotClasses += "bg-emerald-500";
+  } else if (value === "haram") {
+    badgeClasses += "border-red-200 bg-red-50 text-red-700";
+    dotClasses += "bg-red-500";
+  } else if (value === "suspicious") {
+    badgeClasses += "border-amber-200 bg-amber-50 text-amber-700";
+    dotClasses += "bg-amber-500";
+  } else {
+    badgeClasses += "border-slate-200 bg-slate-50 text-slate-600";
+    dotClasses += "bg-slate-400";
+  }
 
   return (
-    <>
-      <div className="drawer-backdrop" onClick={onClose} />
-      <aside className="drawer">
-        <div className="drawer-header">
-          <div className="drawer-title">Manual product details</div>
-          <button className="btn pill ghost" onClick={onClose}>Close</button>
+    <span className={badgeClasses}>
+      <span className={dotClasses} />
+      {value || "-"}
+    </span>
+  );
+}
+
+function ManualProductDetailsModal({ open, onClose, data }) {
+  if (!open || !data) return null;
+
+  const extra = data?._extra || {};
+  const ingredients = Array.isArray(extra.ingredients) ? extra.ingredients : [];
+  const references = Array.isArray(extra.references) ? extra.references : [];
+
+  return (
+    <Modal isOpen={open} onClose={onClose}>
+      {/* Header */}
+      <div className="mb-4 flex items-start justify-between gap-3 border-b border-slate-200 pb-3">
+        <div>
+          <h3 className="text-lg font-semibold text-slate-900">
+            Manual product details
+          </h3>
+          <p className="mt-1 text-sm font-medium text-slate-800">
+            {data?.product_name || "-"}
+          </p>
         </div>
+      </div>
 
-        <div className="drawer-section">
-          <div style={{fontWeight:800, fontSize:16, margin:'4px 0 10px'}}>{data?.product_name}</div>
-          <div className="gallery">
-            {x.frontImageUrl && <img src={x.frontImageUrl} alt="front" />}
-            {x.backImageUrl && <img src={x.backImageUrl} alt="back" />}
-          </div>
-        </div>
-
-        <div className="grid cols-2 drawer-section">
-          <div className="card">
-            <div className="card-title">Overview</div>
-            <div className="kv" style={{marginTop:8}}>
-              <div className="muted">Product ID</div><div>{x.id || '-'}</div>
-              <div className="muted">Barcode</div><div>{x.barcode || '-'}</div>
-              <div className="muted">Brands</div><div>{x.brands || '-'}</div>
-              <div className="muted">Source</div><div>{x.dataSource || '-'}</div>
-              <div className="muted">Added By</div><div>{x.addedByUserId || '-'}</div>
-              <div className="muted">Verified</div><div>{x.isVerified ? 'Yes' : 'No'}</div>
-              <div className="muted">Admin Verdict</div>
-              <div>
-                <span className={`chip ${data?.admin_verdict==='halal'?'green':data?.admin_verdict==='haram'?'red':'amber'}`}>
-                  <span className="dot" /> {data?.admin_verdict || '-'}
-                </span>
-              </div>
-              <div className="muted">Reason</div><div>{x.statusReason || '-'}</div>
-              <div className="muted">Submitted</div><div>{x.createdAt || '-'}</div>
-              <div className="muted">Updated</div><div>{x.updatedAt || '-'}</div>
-            </div>
-          </div>
-
-          <div className="card">
-            <div className="card-title">Ingredients</div>
-            {!ing.length ? (
-              <div className="table-empty">No ingredients</div>
-            ) : (
-              <table className="table compact" style={{marginTop:8}}>
-                <thead><tr><th>Name</th><th>Status</th><th>Reason</th><th>Votes</th></tr></thead>
-                <tbody>
-                  {ing.map((it, i)=>(
-                    <tr key={i}>
-                      <td>{it?.name || '-'}</td>
-                      <td>
-                        <span className={`chip ${it?.status==='halal'?'green':it?.status==='haram'?'red':'amber'}`}>
-                          <span className="dot" /> {it?.status || '-'}
-                        </span>
-                      </td>
-                      <td style={{maxWidth:260, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis'}} title={it?.reason || ''}>
-                        {it?.reason || '-'}
-                      </td>
-                      <td>{(it?.halalVotes ?? 0) + (it?.haramVotes ?? 0) + (it?.suspiciousVotes ?? 0)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+      {/* Scrollable body */}
+      <div className="max-h-[70vh] space-y-6">
+        {/* Images */}
+        <section>
+          <h4 className="mb-2 text-sm font-semibold text-slate-800">
+            Uploaded Images
+          </h4>
+          <div className="flex flex-wrap items-center gap-3">
+            {extra.frontImageUrl && (
+              <img
+                src={extra.frontImageUrl}
+                alt="front"
+                className="h-32 w-40 rounded-lg border border-slate-200 object-cover"
+              />
+            )}
+            {extra.backImageUrl && (
+              <img
+                src={extra.backImageUrl}
+                alt="back"
+                className="h-32 w-40 rounded-lg border border-slate-200 object-cover"
+              />
+            )}
+            {!extra.frontImageUrl && !extra.backImageUrl && (
+              <p className="text-sm text-slate-500">No images available.</p>
             )}
           </div>
-        </div>
+        </section>
 
-        <div className="card drawer-section">
-          <div className="card-title">References</div>
-          {!refs.length ? (
-            <div className="table-empty">No references</div>
+        {/* Overview + Ingredients */}
+        <section className="flex flex-col gap-6">
+          {/* Overview */}
+          <div className="rounded-lg border border-slate-200 bg-slate-50/60 p-4">
+            <h4 className="text-sm font-semibold text-slate-800">Overview</h4>
+            <dl className="mt-3 grid grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] gap-x-3 gap-y-2 text-sm">
+              <dt className="text-slate-500">Product ID</dt>
+              <dd className="text-slate-800">{extra.id || "-"}</dd>
+
+              <dt className="text-slate-500">Barcode</dt>
+              <dd className="text-slate-800">{extra.barcode || "-"}</dd>
+
+              <dt className="text-slate-500">Brands</dt>
+              <dd className="text-slate-800">{extra.brands || "-"}</dd>
+
+              <dt className="text-slate-500">Source</dt>
+              <dd className="text-slate-800">{extra.dataSource || "-"}</dd>
+
+              <dt className="text-slate-500">Added By</dt>
+              <dd className="text-slate-800">{extra.addedByUserId || "-"}</dd>
+
+              <dt className="text-slate-500">Verified</dt>
+              <dd className="text-slate-800">
+                {extra.isVerified ? "Yes" : "No"}
+              </dd>
+
+              <dt className="text-slate-500">Admin Verdict</dt>
+              <dd>
+                <VerdictBadge value={data?.admin_verdict} />
+              </dd>
+
+              <dt className="text-slate-500">Reason</dt>
+              <dd className="text-slate-800">{extra.statusReason || "-"}</dd>
+
+              <dt className="text-slate-500">Submitted</dt>
+              <dd className="text-slate-800">{extra.createdAt || "-"}</dd>
+
+              <dt className="text-slate-500">Updated</dt>
+              <dd className="text-slate-800">{extra.updatedAt || "-"}</dd>
+            </dl>
+          </div>
+
+          {/* Ingredients */}
+          <div className="rounded-lg border border-slate-200 bg-white p-4">
+            <h4 className="text-sm font-semibold text-slate-800">
+              Ingredients
+            </h4>
+            {!ingredients.length ? (
+              <div className="mt-4 text-center text-sm text-slate-500">
+                No ingredients
+              </div>
+            ) : (
+              <div className="mt-3 overflow-x-auto">
+                <table className="w-full border-collapse text-sm">
+                  <thead>
+                    <tr className="bg-slate-50 text-left text-xs font-semibold text-slate-600">
+                      <th className="border-b border-slate-200 px-3 py-2">
+                        Name
+                      </th>
+                      <th className="border-b border-slate-200 px-3 py-2">
+                        Status
+                      </th>
+                      <th className="border-b border-slate-200 px-3 py-2">
+                        Reason
+                      </th>
+                      <th className="border-b border-slate-200 px-3 py-2">
+                        Votes
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {ingredients.map((it, i) => {
+                      const totalVotes =
+                        (it?.halalVotes ?? 0) +
+                        (it?.haramVotes ?? 0) +
+                        (it?.suspiciousVotes ?? 0);
+                      return (
+                        <tr
+                          key={i}
+                          className="border-b border-slate-100 hover:bg-slate-50/70"
+                        >
+                          <td className="px-3 py-2 text-slate-800">
+                            {it?.name || "-"}
+                          </td>
+                          <td className="px-3 py-2">
+                            <VerdictBadge value={it?.status} />
+                          </td>
+                          <td
+                            className="max-w-xs truncate px-3 py-2 text-slate-700"
+                            title={it?.reason || ""}
+                          >
+                            {it?.reason || "-"}
+                          </td>
+                          <td className="px-3 py-2 text-slate-800">
+                            {totalVotes}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* References */}
+        <section className="rounded-lg border border-slate-200 bg-white p-4">
+          <h4 className="text-sm font-semibold text-slate-800">References</h4>
+          {!references.length ? (
+            <div className="mt-4 text-center text-sm text-slate-500">
+              No references
+            </div>
           ) : (
-            <ul style={{margin:0, paddingLeft:16}}>
-              {refs.map((r, i)=>(
-                <li key={i} style={{marginBottom:10}}>
-                  <div style={{fontWeight:700}}>{r?.title || '-'}</div>
-                  <div className="helper">{r?.notes || '-'}</div>
-                  {r?.url && <div style={{marginTop:6}}><a className="btn link" href={r.url} target="_blank" rel="noreferrer">Open link</a></div>}
+            <ul className="mt-3 space-y-3 text-sm">
+              {references.map((r, i) => (
+                <li key={i}>
+                  <div className="font-semibold text-slate-900">
+                    {r?.title || "-"}
+                  </div>
+                  <div className="text-xs text-slate-500">
+                    {r?.notes || "-"}
+                  </div>
+                  {r?.url && (
+                    <div className="mt-2">
+                      <a
+                        href={r.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex cursor-pointer items-center text-xs font-medium text-emerald-700 hover:text-emerald-800"
+                      >
+                        Open link
+                      </a>
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>
           )}
-        </div>
-      </aside>
-    </>
-  )
+        </section>
+      </div>
+    </Modal>
+  );
 }
 
 export default function ProductsManual() {
-  const [rows, setRows] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [verdict, setVerdict] = useState('')
-  const [q, setQ] = useState('')
-  const [page, setPage] = useState(1)
-  const [pageSize] = useState(10)
-  const [total, setTotal] = useState(0)
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [verdict, setVerdict] = useState("");
+  const [q, setQ] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(10);
+  const [total, setTotal] = useState(0);
 
-  const [drawerOpen, setDrawerOpen] = useState(false)
-  const [activeRow, setActiveRow] = useState(null)
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [activeRow, setActiveRow] = useState(null);
 
   const fetchData = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      // Manual page => admin only
-      const resp = await listManualProducts({ verdict, q, page, pageSize })
-      setRows(resp.data.items)
-      setTotal(resp.data.total)
-    } finally { setLoading(false) }
-  }
+      const resp = await listManualProducts({ verdict, q, page, pageSize });
+      setRows(resp.data.items);
+      setTotal(resp.data.total);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  useEffect(() => { fetchData() }, [verdict, q, page])
+  useEffect(() => {
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [verdict, q, page]);
 
-  const reset = () => { setVerdict(''); setQ(''); setPage(1) }
+  const reset = () => {
+    setVerdict("");
+    setQ("");
+    setPage(1);
+  };
 
   const Img = ({ src }) => (
     <img
       src={src || PLACEHOLDER_IMG}
-      onError={(e)=>{ e.currentTarget.src = PLACEHOLDER_IMG }}
-      width={64} height={46}
-      style={{objectFit:'cover', borderRadius:8, border:'1px solid var(--border)'}}
+      onError={(e) => {
+        e.currentTarget.src = PLACEHOLDER_IMG;
+      }}
+      width={64}
+      height={46}
+      className="h-[46px] w-16 rounded-md border border-slate-200 object-cover"
+      alt="product"
     />
-  )
+  );
 
   const columns = [
-    { title:'Product ID', dataIndex:'id' },
-    { title:'Product Name', dataIndex:'product_name' },
+    { title: "Product ID", dataIndex: "id" },
+    { title: "Product Name", dataIndex: "product_name" },
     {
-      title:'Uploaded Images',
-      key:'images',
-      render:(_, row)=>(
-        <div style={{display:'flex', gap:8, alignItems:'center'}}>
+      title: "Uploaded Images",
+      key: "images",
+      render: (_, row) => (
+        <div className="flex items-center gap-2">
           <Img src={row.img_front_url} />
           <Img src={row.img_ingredients_url} />
         </div>
-      )
+      ),
     },
     {
-      title:'Verdict',
-      dataIndex:'admin_verdict',
-      render:v=>(
-        <span className={`chip ${v==='halal'?'green':v==='haram'?'red':'amber'}`}>
-          <span className="dot" /> {v}
-        </span>
-      )
+      title: "Verdict",
+      dataIndex: "admin_verdict",
+      render: (v) => <VerdictBadge value={v} />,
     },
-    { title:'Date of Submission', dataIndex:'submitted_at' },
-    { title:'Actions', key:'actions', render:(_, row)=>(
-      <button className="btn ghost" onClick={()=>{ setActiveRow(row); setDrawerOpen(true) }}>View</button>
-    )}
-  ]
+    { title: "Date of Submission", dataIndex: "submitted_at" },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_, row) => (
+        <button
+          type="button"
+          className="inline-flex cursor-pointer items-center rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50"
+          onClick={() => {
+            setActiveRow(row);
+            setDetailsOpen(true);
+          }}
+        >
+          View
+        </button>
+      ),
+    },
+  ];
 
   return (
     <>
       <Toolbar
         title="Manual Product Listing"
         onReset={reset}
-        left={(
+        left={
           <>
             <input
               className="input"
-              style={{minWidth:240}}
+              style={{ minWidth: 240 }}
               placeholder="Search product..."
               value={q}
-              onChange={e=>{ setQ(e.target.value); setPage(1) }}
+              onChange={(e) => {
+                setQ(e.target.value);
+                setPage(1);
+              }}
             />
             <select
               className="select"
               value={verdict}
-              onChange={e => { setVerdict(e.target.value); setPage(1) }}
+              onChange={(e) => {
+                setVerdict(e.target.value);
+                setPage(1);
+              }}
             >
               <option value="">All</option>
               <option value="halal">Halal</option>
@@ -196,17 +352,28 @@ export default function ProductsManual() {
               <option value="suspicious">Suspicious</option>
             </select>
           </>
-        )}
+        }
       />
 
-      {loading ? 'Loading...' : (
+      {loading ? (
+        <div className="py-8 text-sm text-slate-500">Loading…</div>
+      ) : (
         <>
           <DataTable columns={columns} data={rows} pageSize={rows.length || 10} />
-          <Pagination page={page} pageSize={pageSize} total={total} onChange={setPage} />
+          <Pagination
+            page={page}
+            pageSize={pageSize}
+            total={total}
+            onChange={setPage}
+          />
         </>
       )}
 
-      <Drawer open={drawerOpen} onClose={()=>setDrawerOpen(false)} data={activeRow} />
+      <ManualProductDetailsModal
+        open={detailsOpen}
+        onClose={() => setDetailsOpen(false)}
+        data={activeRow}
+      />
     </>
-  )
+  );
 }

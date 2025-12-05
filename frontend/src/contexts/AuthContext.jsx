@@ -50,10 +50,9 @@ export function AuthProvider({ children }) {
         { to: "/dashboard/admin", label: "Dashboard", icon: FiHome },
         { to: "/dashboard/users", label: "Users", icon: FiUsers },
         { to: "/dashboard/products/ai", label: "AI Products", icon: FiCpu },
-        { to: "/dashboard/votes", label: "Community Votes", icon: FiLayers },
         {
           to: "/dashboard/votes/summary",
-          label: "Votes Summary",
+          label: "Community Votes",
           icon: FiBarChart2,
         },
         { to: "/dashboard/revenue", label: "Revenue", icon: FiTrendingUp },

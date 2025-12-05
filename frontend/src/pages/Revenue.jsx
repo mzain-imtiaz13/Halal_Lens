@@ -82,8 +82,6 @@ export default function Revenue() {
     { title: 'Month', dataIndex: 'month' },
     { title: 'Total Revenue', dataIndex: 'total_revenue', render: v => `$${v}` },
     { title: 'Total Subscriptions', dataIndex: 'total_subscriptions' },
-    { title: 'ARPU', dataIndex: 'arpu' },
-    { title: 'Source', dataIndex: 'transaction_source' },
     { title: 'Generated On', dataIndex: 'generated_on' }
   ]
 
@@ -91,7 +89,6 @@ export default function Revenue() {
     <>
       <Toolbar
         title="Revenue Reports"
-        right={<span className="badge">Aggregated from Users (active subscriptions)</span>}
       />
       {loading ? 'Loading...' : <DataTable columns={columns} data={rows} pageSize={12} />}
     </>

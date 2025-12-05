@@ -46,7 +46,6 @@ export default function VotesSummary() {
     { title: 'Halal Votes', dataIndex: 'halal_votes' },
     { title: 'Haram Votes', dataIndex: 'haram_votes' },
     { title: 'Suspicious Votes', dataIndex: 'suspicious_votes' },
-    { title: 'Total', dataIndex: 'total_votes' },
     { title: 'AI Status', dataIndex: 'ai_status', render: v => Chip(v) },
   ]
 

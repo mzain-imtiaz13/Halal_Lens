@@ -9,7 +9,6 @@ import Dashboard from "./pages/Dashboard";
 import Users from "./pages/Users";
 import ProductsAI from "./pages/ProductsAI";
 import ProductsManual from "./pages/ProductsManual";
-import Votes from "./pages/Votes";
 import VotesSummary from "./pages/VotesSummary";
 import Revenue from "./pages/Revenue";
 import Shops from "./pages/Shops";
@@ -57,7 +56,6 @@ export default function AppRouter() {
             <Route path="users" element={<Users />} />
             <Route path="products/ai" element={<ProductsAI />} />
             <Route path="products/manual" element={<ProductsManual />} />
-            <Route path="votes" element={<Votes />} />
             <Route path="votes/summary" element={<VotesSummary />} />
             <Route path="revenue" element={<Revenue />} />
             <Route path="shops" element={<Shops />} />
