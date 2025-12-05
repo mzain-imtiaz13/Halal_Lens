@@ -1,15 +1,42 @@
-import React from 'react'
-import { Navigate, useLocation, Outlet } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext'
+import React from "react";
+import { Navigate, useLocation, Outlet } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
-export default function ProtectedRoute() {
-  const { user, loading, isAdmin } = useAuth()
-  const location = useLocation()
-  if (loading) return <div style={{ padding: 24 }}>Loading...</div>
-  if (!user) return <Navigate to="/login" replace state={{ from: location }} />
-  if (!loading && !isAdmin)
-    return <Navigate to="/unauthorized" replace state={{ from: location }} />
+export default function ProtectedRoute({ roles }) {
+  const { user, loading, role } = useAuth();
+  const location = useLocation();
 
-  // IMPORTANT: render nested routes via Outlet
-  return <Outlet />
+  // Still loading auth state
+  if (loading) {
+    return (
+      <div className="min-h-[50vh] flex items-center justify-center">
+        <div className="text-sm text-slate-500">Loading…</div>
+      </div>
+    );
+  }
+
+  // Not authenticated → go to login
+  if (!user) {
+    return (
+      <Navigate
+        to="/login"
+        replace
+        state={{ from: location }}
+      />
+    );
+  }
+
+  // Authenticated but role not allowed → go to unauthorized
+  if (roles && roles.length > 0 && !roles.includes(role)) {
+    return (
+      <Navigate
+        to="/unauthorized"
+        replace
+        state={{ from: location }}
+      />
+    );
+  }
+
+  // Auth OK (and role OK if required) → render nested routes
+  return <Outlet />;
 }

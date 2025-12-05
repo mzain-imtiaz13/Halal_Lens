@@ -35,7 +35,6 @@ export default function AppRouter() {
         <Route path="/" element={<HalalLensLanding />} />
         <Route path="/login" element={<Login />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/data-deletion" element={<DataDeletion />} />
         <Route path="/about" element={<About />} />
         <Route path="/terms-of-service" element={<TermsOfService />} />
         <Route path="/scta" element={<BusinessInfo />} />
@@ -45,21 +44,24 @@ export default function AppRouter() {
         <Route path="/billing/cancel" element={<BillingCancel />} />
       </Route>
 
-      <Route path="/dashboard" element={<Layout />}>
-        {/* Public (logged-in, any role) dashboard pages */}
-        <Route path="welcome" element={<Welcome />} />
-        <Route path="subscriptions" element={<BillingHistory />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path="/dashboard" element={<Layout />}>
+          {/* Authenticated (any role) */}
+          <Route path="welcome" element={<Welcome />} />
+          <Route path="subscriptions" element={<BillingHistory />} />
+          <Route path="data-deletion" element={<DataDeletion />} />
 
-        {/* Admin-only section */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="admin" element={<Dashboard />} />
-          <Route path="users" element={<Users />} />
-          <Route path="products/ai" element={<ProductsAI />} />
-          <Route path="products/manual" element={<ProductsManual />} />
-          <Route path="votes" element={<Votes />} />
-          <Route path="votes/summary" element={<VotesSummary />} />
-          <Route path="revenue" element={<Revenue />} />
-          <Route path="shops" element={<Shops />} />
+          {/* Admin-only section */}
+          <Route element={<ProtectedRoute roles={["admin"]} />}>
+            <Route path="admin" element={<Dashboard />} />
+            <Route path="users" element={<Users />} />
+            <Route path="products/ai" element={<ProductsAI />} />
+            <Route path="products/manual" element={<ProductsManual />} />
+            <Route path="votes" element={<Votes />} />
+            <Route path="votes/summary" element={<VotesSummary />} />
+            <Route path="revenue" element={<Revenue />} />
+            <Route path="shops" element={<Shops />} />
+          </Route>
         </Route>
       </Route>
 

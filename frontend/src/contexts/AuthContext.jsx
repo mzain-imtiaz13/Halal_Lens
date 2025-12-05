@@ -1,14 +1,22 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { auth } from "../firebase";
+import { appleProvider, auth, googleProvider } from "../firebase";
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  signInWithPopup,
+  signInWithRedirect,
   signOut,
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { db } from "../firebase";
-import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  serverTimestamp,
+} from "firebase/firestore";
 
 // 🔹 Sidebar icons
 import {
@@ -21,6 +29,7 @@ import {
   FiShoppingBag,
   FiEdit3,
   FiSmile,
+  FiTrash2,
 } from "react-icons/fi";
 
 const AuthContext = createContext(null);
@@ -58,6 +67,11 @@ export function AuthProvider({ children }) {
           label: "Manual Products",
           icon: FiEdit3,
         },
+        {
+          to: "/dashboard/data-deletion",
+          label: "Data Deletion",
+          icon: FiTrash2,
+        },
       ];
     }
 
@@ -69,18 +83,24 @@ export function AuthProvider({ children }) {
         label: "Subscriptions",
         icon: FiBarChart2,
       },
+      {
+        to: "/dashboard/data-deletion",
+        label: "Data Deletion",
+        icon: FiTrash2,
+      },
     ];
   };
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
-      setUser(u || null);
+      setLoading(true);
 
-      // Not logged in
+      // Not logged in at all
       if (!u) {
+        setUser(null); // ✅ clear user
         setRole("user");
         setIsAdmin(false);
-        setSidebarLinks([]); // no sidebar when not logged in
+        setSidebarLinks([]);
         setLoading(false);
         return;
       }
@@ -90,40 +110,42 @@ export function AuthProvider({ children }) {
         const snap = await getDoc(ref);
 
         if (!snap.exists()) {
-          // First time login: create a user doc with default role "user"
-          const baseData = {
-            email: u.email || "",
-            role: "user",
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
-          };
+          toast.error(
+            "Your account is not enabled yet. Please contact support or sign up through the Halal Lens Mobile App.",
+            {
+              position: "top-right",
+              autoClose: 5000,
+            }
+          );
 
-          await setDoc(ref, baseData, { merge: true });
+          await signOut(auth);
+          setUser(null); // ✅ ensure cleared
           setRole("user");
           setIsAdmin(false);
-          setSidebarLinks(buildSidebarLinks("user"));
-        } else {
-          const data = snap.data() || {};
-
-          // Get role, default to "user" if missing
-          const userRole = data.role || "user";
-
-          // Optional: backfill missing fields
-          const updates = {};
-          if (!data.email && u.email) updates.email = u.email;
-          if (!data.role) updates.role = userRole;
-          if (Object.keys(updates).length > 0) {
-            updates.updatedAt = serverTimestamp();
-            await updateDoc(ref, updates);
-          }
-
-          setRole(userRole);
-          setIsAdmin(userRole === "admin");
-          setSidebarLinks(buildSidebarLinks(userRole));
+          setSidebarLinks([]);
+          setLoading(false);
+          return;
         }
+
+        // ✅ Existing Firestore user – allow login
+        const data = snap.data() || {};
+        const userRole = data.role || "user";
+
+        const updates = {};
+        if (!data.email && u.email) updates.email = u.email;
+        if (!data.role) updates.role = userRole;
+        if (Object.keys(updates).length > 0) {
+          updates.updatedAt = serverTimestamp();
+          await updateDoc(ref, updates);
+        }
+
+        setUser(u); // 🔥 this was missing
+        setRole(userRole);
+        setIsAdmin(userRole === "admin");
+        setSidebarLinks(buildSidebarLinks(userRole));
       } catch (err) {
         console.error("[AuthProvider] User role check failed:", err);
-        // Fail-safe: treat as normal user
+        setUser(null); // ✅ fail-safe
         setRole("user");
         setIsAdmin(false);
         setSidebarLinks([]);
@@ -138,6 +160,18 @@ export function AuthProvider({ children }) {
 
   const login = (email, password) =>
     signInWithEmailAndPassword(auth, email, password);
+
+  const loginWithGoogle = () => signInWithPopup(auth, googleProvider);
+
+  const loginWithApple = async () => {
+    try {
+      // For Apple, popup works only on desktop. Use redirect fallback.
+      return await signInWithPopup(auth, appleProvider);
+    } catch (err) {
+      console.warn("Popup failed, using redirect...");
+      return await signInWithRedirect(auth, appleProvider);
+    }
+  };
 
   const logout = async () => {
     try {
@@ -169,6 +203,8 @@ export function AuthProvider({ children }) {
         isAdmin,
         sidebarLinks,
         login,
+        loginWithGoogle,
+        loginWithApple,
         logout,
       }}
     >

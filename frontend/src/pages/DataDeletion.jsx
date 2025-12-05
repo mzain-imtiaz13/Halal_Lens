@@ -78,10 +78,10 @@ const DataDeletion = () => {
   }
 
   return (
-    <div className="min-h-screen bg-emerald-50 text-emerald-950 flex flex-col">
+    <div className="min-h-screen text-emerald-950 flex flex-col">
       {/* Hero */}
-      <header className="bg-linear-to-b from-emerald-100 to-emerald-50 border-b border-emerald-100">
-        <div className="max-w-4xl mx-auto px-4 py-10 md:py-14">
+      <header className="pt-4">
+        <div className="max-w-4xl mx-auto p-4">
           <p className="text-xs font-semibold tracking-[0.2em] uppercase text-emerald-600 mb-2">
             Halal Lens
           </p>
@@ -97,7 +97,7 @@ const DataDeletion = () => {
 
       {/* Content */}
       <main className="flex-1">
-        <div className="max-w-4xl mx-auto px-4 py-10 md:py-14">
+        <div className="max-w-4xl mx-auto p-4">
           <section className="bg-white border border-emerald-100 rounded-3xl shadow-sm p-6 md:p-8 space-y-6 md:space-y-8">
             <div className="space-y-3 text-sm text-emerald-900 leading-relaxed">
               <p className="text-xs font-semibold text-emerald-700">
