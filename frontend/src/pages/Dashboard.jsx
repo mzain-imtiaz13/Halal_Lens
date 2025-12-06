@@ -5,7 +5,10 @@ import ChartBar from "../components/ChartBar";
 import ChartLine from "../components/ChartLine";
 import { db } from "../firebase";
 import { collection, getDocs } from "firebase/firestore";
-import './../styles.css'
+import "./../styles.css";
+import DataTable from "../components/DataTable";
+import { fetchSubscriptionStats } from "../api/services/billing";
+
 /* ----------------------- helpers ----------------------- */
 const toDate = (v) => {
   try {
@@ -15,10 +18,12 @@ const toDate = (v) => {
   } catch (_) {}
   return null;
 };
+
 const norm = (s) =>
   String(s || "")
     .trim()
     .toLowerCase();
+
 const fmtDay = (d) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
     d.getDate()
@@ -35,9 +40,30 @@ const lastNDays = (n) => {
   }
   return out;
 };
-const startOfMonth = (d) => new Date(d.getFullYear(), d.getMonth(), 1);
-const endOfMonth = (d) =>
-  new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59, 999);
+
+/* ------------------ subscription placeholders ------------------ */
+/**
+ * Placeholder for subscription / revenue metrics.
+ * Replace this with a real backend API call, e.g.
+ * GET /api/dashboard/subscriptions
+ *
+ * Expected response shape:
+ * {
+ *   activeSubscriptions: number;           // total active subscriptions
+ *   activeSubscriptionsAmount: number;    // total active MRR / recurring amount
+ *   revenueMTD: number;                   // revenue month-to-date
+ *   revenueTrendLast12Days: number[];     // length 12, oldest -> newest daily revenue
+ * }
+ */
+async function fetchSubscriptionStatsPlaceholder() {
+  return await fetchSubscriptionStats();
+  return {
+    activeSubscriptions: 0,
+    activeSubscriptionsAmount: 0,
+    revenueMTD: 0,
+    revenueTrendLast12Days: new Array(12).fill(0),
+  };
+}
 
 /* ----------------------- page ----------------------- */
 export default function Dashboard() {
@@ -47,11 +73,20 @@ export default function Dashboard() {
   const [scans, setScans] = useState([]);
   const [products, setProducts] = useState([]);
 
+  // subscription / revenue metrics (from backend, not Firebase)
+  const [subStats, setSubStats] = useState({
+    activeSubscriptions: 0,
+    activeSubscriptionsAmount: 0,
+    revenueMTD: 0,
+    revenueTrendLast12Days: [],
+  });
+
   useEffect(() => {
     (async () => {
       setLoading(true);
       setErr("");
       try {
+        // ---------- Firebase reads (only from available collections) ----------
         // users
         const uSnap = await getDocs(collection(db, "users"));
         const usersData = uSnap.docs.map((d) => ({
@@ -60,33 +95,40 @@ export default function Dashboard() {
         }));
         setUsers(usersData);
 
-        // scans – walk each user's scan_history subcollection
-        const allScans = [];
-        for (const u of uSnap.docs) {
-          try {
-            const sSnap = await getDocs(
-              collection(db, `users/${u.id}/scan_history`)
-            );
-            sSnap.docs.forEach((sd) =>
-              allScans.push({ id: sd.id, ...(sd.data() || {}) })
-            );
-          } catch (scanErr) {
-            console.error(
-              `Failed to read scan_history for user ${u.id}:`,
-              scanErr
-            );
-          }
-        }
+        // scans – read each user's scan_history subcollection in parallel
+        const scanSnaps = await Promise.all(
+          uSnap.docs.map((u) =>
+            getDocs(collection(db, `users/${u.id}/scan_history`))
+              .then((sSnap) =>
+                sSnap.docs.map((sd) => ({ id: sd.id, ...(sd.data() || {}) }))
+              )
+              .catch((scanErr) => {
+                console.error(
+                  `Failed to read scan_history for user ${u.id}:`,
+                  scanErr
+                );
+                return [];
+              })
+          )
+        );
+        const allScans = scanSnaps.flat();
         allScans.sort((a, b) => {
           const da = toDate(a.scannedAt) || toDate(a.createdAt) || new Date(0);
-          const dbb = toDate(b.scannedAt) || toDate(b.createdAt) || new Date(0);
+          const dbb =
+            toDate(b.scannedAt) || toDate(b.createdAt) || new Date(0);
           return dbb - da;
         });
         setScans(allScans);
 
-        // products
+        // products_v2
         const pSnap = await getDocs(collection(db, "products_v2"));
-        setProducts(pSnap.docs.map((d) => ({ id: d.id, ...(d.data() || {}) })));
+        setProducts(
+          pSnap.docs.map((d) => ({ id: d.id, ...(d.data() || {}) }))
+        );
+
+        // ---------- Subscription / revenue metrics (placeholder: backend API) ----------
+        const subsFromBackend = await fetchSubscriptionStatsPlaceholder();
+        setSubStats(subsFromBackend);
       } catch (e) {
         console.error("Dashboard load error:", e);
         setErr("Failed to load dashboard.");
@@ -96,7 +138,7 @@ export default function Dashboard() {
     })();
   }, []);
 
-  /* ----------------------- calculations ----------------------- */
+  /* ----------------------- calculations (Firebase only) ----------------------- */
   const calc = useMemo(() => {
     const daysArr = lastNDays(12);
     const dayLabels = daysArr.map(fmtDay);
@@ -104,14 +146,6 @@ export default function Dashboard() {
 
     // --- Users metrics ---
     const totalUsers = users.length;
-    const activeUsers = users.filter(
-      (u) => norm(u.subscriptionStatus) === "active"
-    );
-    const activeSubscriptionsCount = activeUsers.length;
-    const activeSubscriptionsAmount = activeUsers.reduce(
-      (sum, u) => sum + Number(u.price || 0),
-      0
-    );
 
     // new users per day
     const usersPerDay = new Array(daysArr.length).fill(0);
@@ -121,27 +155,6 @@ export default function Dashboard() {
       const key = fmtDay(new Date(d.getFullYear(), d.getMonth(), d.getDate()));
       const idx = dayIndex[key];
       if (idx != null) usersPerDay[idx]++;
-    }
-
-    // Revenue
-    const today = new Date();
-    const monthStart = startOfMonth(today);
-    const monthEnd = endOfMonth(today);
-    let revenueMTD = 0;
-    const revenuePerDay = new Array(daysArr.length).fill(0);
-    for (const u of users) {
-      const price = Number(u.price || 0);
-      const status = norm(u.subscriptionStatus);
-      const started = toDate(u.subscriptionStartDate);
-      if (!started || !price) continue;
-      if (started >= monthStart && started <= monthEnd && status === "active") {
-        revenueMTD += price;
-      }
-      const key = fmtDay(
-        new Date(started.getFullYear(), started.getMonth(), started.getDate())
-      );
-      const idx = dayIndex[key];
-      if (idx != null && status === "active") revenuePerDay[idx] += price;
     }
 
     // --- Verdict breakdown from products_v2 (all sources) ---
@@ -157,7 +170,6 @@ export default function Dashboard() {
     }
 
     // --- Medium wise (Scans + Admin submissions) ---
-    // Now only 2 types: barcode and userSubmitted
     const scansPerDay = new Array(daysArr.length).fill(0);
     const mediumWise = { barcode: 0, userSubmitted: 0 };
 
@@ -263,15 +275,11 @@ export default function Dashboard() {
       days: dayLabels.map((l) => l.slice(5)),
       scansPerDay,
       usersPerDay,
-      revenuePerDay,
       mediumWise,
     };
 
     return {
       totalUsers,
-      activeSubscriptionsCount,
-      activeSubscriptionsAmount,
-      revenueEarned: revenueMTD,
       verdictBreakdown,
       series,
       recent,
@@ -290,21 +298,35 @@ export default function Dashboard() {
 
   const m = {
     totalUsers: calc.totalUsers,
-    activeSubscriptionsCount: calc.activeSubscriptionsCount,
-    activeSubscriptionsAmount: calc.activeSubscriptionsAmount.toFixed(2),
-    revenueEarned: calc.revenueEarned.toFixed(2),
     series: calc.series,
     recent: calc.recent,
     topProducts: calc.topProducts,
   };
   const vb = calc.verdictBreakdown;
 
+  // Use backend-provided revenue trend, fallback to zeros matching labels length
+  const revenueTrendSeries =
+    subStats.revenueTrendLast12Days &&
+    subStats.revenueTrendLast12Days.length === m.series.days.length
+      ? subStats.revenueTrendLast12Days
+      : new Array(m.series.days.length).fill(0);
+
   return (
     <>
-      <h2 style={{ marginTop: 0, marginBottom: 14 }}>Dashboard</h2>
+      {/* Header */}
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h2 className="mb-1 text-2xl font-semibold tracking-tight text-slate-900">
+            Dashboard
+          </h2>
+          <p className="text-sm text-slate-500">
+            Overview of users, subscriptions, verdicts, and revenue performance.
+          </p>
+        </div>
+      </div>
 
       {/* KPIs */}
-      <div className="grid cols-4">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatCard
           label="Total Users"
           value={m.totalUsers}
@@ -312,25 +334,28 @@ export default function Dashboard() {
         />
         <StatCard
           label="Active Subscriptions"
-          value={m.activeSubscriptionsCount}
+          value={subStats.activeSubscriptions}
           delta="+1.2%"
         />
         <StatCard
           label="Active Subs Amount"
-          value={`$${m.activeSubscriptionsAmount}`}
+          value={`$${Number(
+            subStats.activeSubscriptionsAmount || 0
+          ).toFixed(2)}`}
           delta="+0.8%"
         />
         <StatCard
           label="Revenue (MTD)"
-          value={`$${m.revenueEarned}`}
+          value={`$${Number(subStats.revenueMTD || 0).toFixed(2)}`}
           delta="+2.3%"
         />
       </div>
 
-      <div className="space" />
+      {/* Spacer */}
+      <div className="h-8" />
 
       {/* Charts row */}
-      <div className="grid cols-3">
+      <div className="grid gap-4 lg:grid-cols-2">
         <ChartBar
           title="Scans & New Users (last 12 days)"
           labels={m.series.days}
@@ -339,92 +364,23 @@ export default function Dashboard() {
           labelA="Scans"
           labelB="New Users"
         />
+        <ChartLine
+          title="Revenue Trend (last 12 days)"
+          labels={m.series.days}
+          series={revenueTrendSeries}
+          label="Revenue"
+        />
+      </div>
+
+      <div className="h-8" />
+
+      <div className="grid gap-4 lg:grid-cols-2">
         <ChartDonut
           title="Verdict Breakdown (All Products)"
           labels={["Halal", "Haram", "Suspicious"]}
           values={[vb.halal, vb.haram, vb.suspicious]}
         />
-        <ChartLine
-          title="Revenue Trend (last 12 days)"
-          labels={m.series.days}
-          series={m.series.revenuePerDay}
-          label="Revenue"
-        />
-      </div>
-
-      <div className="space" />
-
-      {/* Bottom row: activity + top products + medium-wise */}
-      <div className="grid cols-3">
-        <div className="card">
-          <div style={{ fontWeight: 700, marginBottom: 10 }}>
-            Recent Activity
-          </div>
-          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            {calc.recent.map((item) => (
-              <li
-                key={item.id}
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  padding: "10px 0",
-                  borderBottom: "1px solid #e5e7eb",
-                }}
-              >
-                <span>
-                  <span
-                    className={`badge ${item.type === "warn" ? "warn" : "ok"}`}
-                    style={{ marginRight: 8 }}
-                  >
-                    {item.type === "warn" ? "!" : "✓"}
-                  </span>
-                  {item.title}
-                </span>
-                <span style={{ color: "#94a3b8", fontSize: 12 }}>
-                  {item.time}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="card">
-          <div style={{ fontWeight: 700, marginBottom: 10 }}>
-            Top Products by Scans
-          </div>
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Product</th>
-                <th>Scans</th>
-                <th>Verdict</th>
-              </tr>
-            </thead>
-            <tbody>
-              {calc.topProducts.map((p) => (
-                <tr key={p.id}>
-                  <td>{p.name}</td>
-                  <td>{p.scans}</td>
-                  <td>
-                    <span
-                      className={`chip ${
-                        p.verdict === "halal"
-                          ? "green"
-                          : p.verdict === "haram"
-                          ? "red"
-                          : "amber"
-                      }`}
-                    >
-                      <span className="dot" />
-                      {p.verdict}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
+        {/* Medium Wise Scans */}
         <ChartDonut
           title="Medium Wise Scans"
           labels={["Barcode", "User Submitted"]}
@@ -434,6 +390,106 @@ export default function Dashboard() {
           ]}
           colors={["#D946EF", "#7c3aed"]}
         />
+      </div>
+
+      {/* Spacer */}
+      <div className="h-8" />
+
+      {/* Bottom row: activity + top products */}
+      <div className="grid gap-4 lg:grid-cols-2">
+        {/* Recent Activity */}
+        <div className="w-full rounded-2xl border border-(--border) bg-(--panel) p-4 shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md">
+          <div className="mb-2 flex items-center justify-between">
+            <h3 className="text-sm font-semibold tracking-tight text-slate-900">
+              Recent Activity
+            </h3>
+          </div>
+          <ul className="divide-y divide-slate-200">
+            {calc.recent.map((item) => {
+              const isWarn = item.type === "warn";
+              const badgeClasses = isWarn
+                ? "border-amber-200 bg-amber-50 text-amber-700"
+                : "border-emerald-200 bg-emerald-50 text-emerald-700";
+
+              return (
+                <li
+                  key={item.id}
+                  className="flex items-center justify-between py-2.5 text-sm"
+                >
+                  <span className="flex items-center text-slate-700">
+                    <span
+                      className={`mr-2 inline-flex h-6 items-center justify-center rounded-full border px-2.5 text-xs font-medium ${badgeClasses}`}
+                    >
+                      {isWarn ? "!" : "✓"}
+                    </span>
+                    <span className="line-clamp-1">{item.title}</span>
+                  </span>
+                  <span className="ml-3 whitespace-nowrap text-xs text-slate-400">
+                    {item.time}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+
+        {/* Top Products by Scans using DataTable */}
+        <div className="w-full rounded-2xl border border-(--border) bg-(--panel) p-4 shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="text-sm font-semibold tracking-tight text-slate-900">
+              Top Products by Scans
+            </h3>
+          </div>
+
+          <DataTable
+            columns={[
+              {
+                title: "Product",
+                dataIndex: "name",
+                key: "name",
+              },
+              {
+                title: "Scans",
+                dataIndex: "scans",
+                key: "scans",
+              },
+              {
+                title: "Verdict",
+                dataIndex: "verdict",
+                key: "verdict",
+                render: (value, row) => {
+                  const verdict = value || row.verdict;
+                  const baseChip =
+                    "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium";
+                  const dot = "h-1.5 w-1.5 rounded-full";
+
+                  let chipClasses = "";
+                  let dotClasses = "";
+
+                  if (verdict === "halal") {
+                    chipClasses =
+                      "border-emerald-200 bg-emerald-50 text-emerald-700";
+                    dotClasses = "bg-emerald-500";
+                  } else if (verdict === "haram") {
+                    chipClasses = "border-red-200 bg-red-50 text-red-700";
+                    dotClasses = "bg-red-500";
+                  } else {
+                    chipClasses = "border-amber-200 bg-amber-50 text-amber-700";
+                    dotClasses = "bg-amber-500";
+                  }
+
+                  return (
+                    <span className={`${baseChip} ${chipClasses}`}>
+                      <span className={dotClasses + " " + dot} />
+                      {verdict}
+                    </span>
+                  );
+                },
+              },
+            ]}
+            data={calc.topProducts}
+          />
+        </div>
       </div>
     </>
   );

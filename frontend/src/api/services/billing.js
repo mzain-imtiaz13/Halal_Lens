@@ -10,8 +10,18 @@ export const fetchBillingOverview = async () => {
   return res.data
 }
 
-export const fetchSubscriptionHistory = async () => {
-  const res = await api.get('/billing/history')
+export const fetchSubscriptionHistory = async ( user_id ) => {
+  const res = await api.get(`/billing/history/${user_id}`)
+  return res.data
+}
+
+export const fetchSubscriptionStats = async () => {
+  const res = await api.get('/billing/dashboard-subscriptions')
+  return res.data // { history: [...] }
+}
+
+export const fetchRevenueReports = async () => {
+  const res = await api.get('/billing/revenue-reports')
   return res.data // { history: [...] }
 }
 
