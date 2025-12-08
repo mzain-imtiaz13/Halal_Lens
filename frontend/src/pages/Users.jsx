@@ -26,7 +26,7 @@ export default function Users() {
 
   // pagination
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageSize] = useState(25);
   const [total, setTotal] = useState(0);
   const [cursors, setCursors] = useState([]);
 
@@ -88,6 +88,7 @@ export default function Users() {
           pageSize,
           cursorDoc,
         });
+        console.log(items)
 
         if (!cancelled) {
           setRows(items);
@@ -165,6 +166,7 @@ export default function Users() {
     { title: "Name", dataIndex: "name" },
     { title: "Email", dataIndex: "email" },
     { title: "Role", dataIndex: "role" },
+    { title: "Source", dataIndex: "authProvider" },
     { title: "Status", dataIndex: "status" },
     { title: "Country", dataIndex: "country" },
     { title: "Mobile", dataIndex: "mobile" },

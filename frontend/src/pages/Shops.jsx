@@ -11,6 +11,82 @@ import {
 import Modal from "../components/Modal";
 import "./../styles.css"; // keep if you still use global vars like --bg, etc.
 
+// ===== Core Firestore Models =====
+
+// // shops collection
+// export interface Shop {
+//   id: string;            // Firestore doc id
+//   name: string;
+//   address?: string;
+//   // optional denormalized products if you want
+//   productsCount?: number;
+// }
+
+// // shops/{shopId}/products subcollection
+// export interface Product {
+//   id: string;            // Firestore doc id
+//   shopId: string;        // parent shop id (for easy querying)
+
+//   // core
+//   name: string;          // productName in form
+//   barcode?: string;
+//   brands?: string;       // brands field
+//   quantity?: string;
+
+//   // status & flags
+//   overallStatus?: "halal" | "haram" | "suspicious" | "";
+//   statusReason?: string;
+//   isVerified: boolean;   // (or verified)
+
+//   // images (store URL or base64, your choice)
+//   frontImage?: string;
+//   backImage?: string;
+
+//   // tags/meta
+//   categories: string[];
+//   allergens: string[];
+//   additives: string[];
+//   nutriscore?: string;
+
+//   // nutriments (dynamic keys)
+//   nutriments?: Nutriments;
+
+//   // nested arrays
+//   ingredients: Ingredient[];
+//   references: Reference[];
+
+//   // timestamps
+//   createdAt: FirebaseFirestore.Timestamp;
+//   updatedAt: FirebaseFirestore.Timestamp;
+// }
+
+// // ===== Nested Value Objects =====
+
+// export interface Ingredient {
+//   name: string;
+//   status: "halal" | "haram" | "suspicious";
+//   reason: string;
+
+//   halalVotes: number;
+//   suspiciousVotes: number;
+//   haramVotes: number;
+
+//   votedUserIds: string[];  // user ids who already voted
+// }
+
+// export interface Reference {
+//   title: string;
+//   url: string;
+//   notes: string;
+// }
+
+// // key-value nutriments (energy-kcal_100g → number/string)
+// export type Nutriments = {
+//   [key: string]: number | string;
+// };
+
+
+
 /* ========= Helpers ========= */
 const readAsDataURL = (file) =>
   new Promise((res, rej) => {

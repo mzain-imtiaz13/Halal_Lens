@@ -89,8 +89,7 @@ export async function addProduct(shopId, payload) {
 
   // upload images to Storage if they are data URLs
   const frontUrl = await ensureImageUrl(payload.frontImage || '', uid || 'admin', 'front')
-  const backUrl  = await ensureImageUrl(payload.backImage || '',  uid || 'admin', 'back')
-
+  const backUrl  = await ensureImageUrl(payload.backImage || '',  uid || 'admin', 'back')  
   const v2 = {
     productName: payload.productName || '',
     barcode: payload.barcode || '',
@@ -140,7 +139,7 @@ export async function updateProduct(shopId, productId, payload) {
   const uid = auth.currentUser?.uid || null
   const frontUrl = await ensureImageUrl(payload.frontImage || '', uid || 'admin', 'front')
   const backUrl  = await ensureImageUrl(payload.backImage || '',  uid || 'admin', 'back')
-
+  console.log("payload", payload)
   const v2 = {
     productName: payload.productName || '',
     barcode: payload.barcode || '',

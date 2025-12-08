@@ -26,25 +26,21 @@ function tsToDateTime(ts) {
 function mapUserDoc(id, data) {
   return {
     id,
+    authProvider: data.authProvider ?? '-', // 🔹 everything from Firestore here
+    // 🔹 “view model” fields used by the UI
     name: data.displayName ?? '-',
     email: data.email ?? '-',
-
-    // user-level info (NOT subscription)
     role: data.role ?? 'user',
     status: data.status ?? 'inactive',
-
     country: data.country ?? '-',
     mobile: data.mobileNumber ?? '-',
-
-    // subscription displayed only inside modal now
     subscription_plan: data.subscriptionPlan ?? 'free',
-
     active_months: data.activeMonths ?? 0,
     total_scans: data.totalScans ?? 0,
-
     created_at: tsToDateTime(data.createdAt),
   }
 }
+
 
 function buildFilters({ plan, status }) {
   const filters = []

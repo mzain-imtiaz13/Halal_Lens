@@ -25,77 +25,54 @@ export default function IngredientRow({ value, onChange, onRemove }) {
   };
 
   const votesRow = (
-    <div className="grid gap-2 md:grid-cols-2 items-end">
-      {/* Halal */}
-      <div className="space-y-1">
-        <label className="text-[11px] font-medium text-slate-600">
-          Halal votes
-        </label>
-        <input
-          type="number"
-          min="0"
-          className="w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-right text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
-          value={x.halalVotes}
-          onChange={(e) =>
-            upd({ halalVotes: Number(e.target.value || 0) })
-          }
-        />
-      </div>
+    <div>
+      <div className="grid gap-2 md:grid-cols-3 items-end">
+        {/* Halal */}
+        <div className="space-y-1">
+          <label className="text-[11px] font-medium text-slate-600">
+            Halal votes
+          </label>
+          <input
+            type="number"
+            min="0"
+            className="w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-right text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
+            value={x.halalVotes}
+            onChange={(e) => upd({ halalVotes: Number(e.target.value || 0) })}
+          />
+        </div>
 
-      {/* Suspicious */}
-      <div className="space-y-1">
-        <label className="text-[11px] font-medium text-slate-600">
-          Suspicious votes
-        </label>
-        <input
-          type="number"
-          min="0"
-          className="w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-right text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
-          value={x.suspiciousVotes}
-          onChange={(e) =>
-            upd({ suspiciousVotes: Number(e.target.value || 0) })
-          }
-        />
-      </div>
+        {/* Suspicious */}
+        <div className="space-y-1">
+          <label className="text-[11px] font-medium text-slate-600">
+            Suspicious votes
+          </label>
+          <input
+            type="number"
+            min="0"
+            className="w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-right text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
+            value={x.suspiciousVotes}
+            onChange={(e) =>
+              upd({ suspiciousVotes: Number(e.target.value || 0) })
+            }
+          />
+        </div>
 
-      {/* Haram */}
-      <div className="space-y-1">
-        <label className="text-[11px] font-medium text-slate-600">
-          Haram votes
-        </label>
-        <input
-          type="number"
-          min="0"
-          className="w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-right text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
-          value={x.haramVotes}
-          onChange={(e) =>
-            upd({ haramVotes: Number(e.target.value || 0) })
-          }
-        />
+        {/* Haram */}
+        <div className="space-y-1">
+          <label className="text-[11px] font-medium text-slate-600">
+            Haram votes
+          </label>
+          <input
+            type="number"
+            min="0"
+            className="w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-right text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
+            value={x.haramVotes}
+            onChange={(e) => upd({ haramVotes: Number(e.target.value || 0) })}
+          />
+        </div>
       </div>
-
-      {/* Voted user IDs */}
-      <div className="space-y-1">
-        <label className="text-[11px] font-medium text-slate-600">
-          Voted user IDs
-        </label>
-        <input
-          className="w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
-          placeholder="user1, user2"
-          value={(x.votedUserIds || []).join(", ")}
-          onChange={(e) =>
-            upd({
-              votedUserIds: e.target.value
-                .split(",")
-                .map((s) => s.trim())
-                .filter(Boolean),
-            })
-          }
-        />
-      </div>
-
       {/* Remove */}
-      <div className="flex justify-end pt-5 md:pt-0">
+      <div className="flex justify-start mt-5">
         <button
           type="button"
           onClick={onRemove}
@@ -110,11 +87,9 @@ export default function IngredientRow({ value, onChange, onRemove }) {
   return (
     <div className="space-y-3 rounded-md border border-slate-200 bg-slate-50/60 px-3 py-3 text-xs">
       {/* Top row: name / status / reason */}
-      <div className="grid gap-2 md:grid-cols-2">
+      <div className="grid gap-2 md:grid-cols-3">
         <div className="space-y-1">
-          <label className="text-[11px] font-medium text-slate-600">
-            Name
-          </label>
+          <label className="text-[11px] font-medium text-slate-600">Name</label>
           <input
             className="w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
             placeholder="Ingredient name"

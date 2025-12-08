@@ -1,6 +1,6 @@
 // src/pages/Billing/BillingPlans.jsx
-import { useEffect, useState, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   FiCheckCircle,
   FiZap,
@@ -9,119 +9,119 @@ import {
   FiArrowRight,
   FiLoader,
   FiAlertCircle,
-} from 'react-icons/fi'
+} from "react-icons/fi";
 import {
   fetchBillingOverview,
   createCheckoutSession,
-} from '../../api/services/billing'
+} from "../../api/services/billing";
 
 const BillingPlans = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const [plans, setPlans] = useState([])
-  const [subscription, setSubscription] = useState(null)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [loading, setLoading] = useState(true)
-  const [actionLoading, setActionLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [plans, setPlans] = useState([]);
+  const [subscription, setSubscription] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        setLoading(true)
-        setError('')
-        const data = await fetchBillingOverview()
-        setPlans(data.plans || [])
-        setSubscription(data.subscription || null)
-        setIsAuthenticated(!!data.isAuthenticated)
+        setLoading(true);
+        setError("");
+        const data = await fetchBillingOverview();
+        setPlans(data.plans || []);
+        setSubscription(data.subscription || null);
+        setIsAuthenticated(!!data.isAuthenticated);
       } catch (err) {
-        console.error(err)
-        setError('Failed to load billing information.')
+        console.error(err);
+        setError("Failed to load billing information.");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    loadData()
-  }, [])
+    loadData();
+  }, []);
 
   // Find monthly price so we can show 12 * monthly (e.g. $36) crossed out on yearly
   const yearlyOriginalPrice = useMemo(() => {
-    const monthlyPlan = plans.find((p) => p.code === 'STANDARD_MONTHLY')
-    if (!monthlyPlan || !monthlyPlan.price) return null
-    return monthlyPlan.price * 12
-  }, [plans])
+    const monthlyPlan = plans.find((p) => p.code === "STANDARD_MONTHLY");
+    if (!monthlyPlan || !monthlyPlan.price) return null;
+    return monthlyPlan.price * 12;
+  }, [plans]);
 
   const handlePlanAction = async (plan) => {
-    const action = plan.ui?.action
-    if (!action) return
+    const action = plan.ui?.action;
+    if (!action) return;
 
-    if (action === 'login') {
-      navigate('/login?returnUrl=/billing', {
-        state: { from: { pathname: '/billing' } },
+    if (action === "login") {
+      navigate("/login?returnUrl=/billing", {
+        state: { from: { pathname: "/billing" } },
         replace: true,
-      })
-      return
+      });
+      return;
     }
 
     try {
-      setError('')
-      setActionLoading(true)
+      setError("");
+      setActionLoading(true);
 
-      if (action === 'subscribe') {
-        const { url } = await createCheckoutSession(plan.code)
+      if (action === "subscribe") {
+        const { url } = await createCheckoutSession(plan.code);
         if (url) {
-          window.location.href = url
+          window.location.href = url;
         } else {
-          setError('Could not create checkout session.')
+          setError("Could not create checkout session.");
         }
-        return
+        return;
       }
     } catch (err) {
-      console.error(err)
-      setError(err?.response?.data?.message || 'Action failed.')
+      console.error(err);
+      setError(err?.response?.data?.message || "Action failed.");
     } finally {
-      setActionLoading(false)
+      setActionLoading(false);
     }
-  }
+  };
 
   const renderPlanBadge = (plan) => {
-    const badgeType = plan.ui?.badgeType
+    const badgeType = plan.ui?.badgeType;
 
-    if (badgeType === 'trial') {
+    if (badgeType === "trial") {
       return (
         <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
           <FiClock className="h-3 w-3" />
           Trial
         </span>
-      )
+      );
     }
-    if (badgeType === 'free') {
+    if (badgeType === "free") {
       return (
         <span className="inline-flex items-center gap-1 rounded-full bg-brand-100 px-2 py-0.5 text-xs font-medium text-brand-800">
           <FiStar className="h-3 w-3" />
           Free
         </span>
-      )
+      );
     }
-    if (badgeType === 'monthly') {
+    if (badgeType === "monthly") {
       return (
         <span className="inline-flex items-center gap-1 rounded-full bg-sky-100 px-2 py-0.5 text-xs font-medium text-sky-800">
           <FiZap className="h-3 w-3" />
           Monthly
         </span>
-      )
+      );
     }
-    if (badgeType === 'yearly') {
+    if (badgeType === "yearly") {
       return (
         <span className="inline-flex items-center gap-1 rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-medium text-indigo-800">
           <FiZap className="h-3 w-3" />
           Yearly
         </span>
-      )
+      );
     }
-    return null
-  }
+    return null;
+  };
 
   return (
     <div className="min-h-screen bg-linear-to-b from-slate-50 to-slate-100 py-10">
@@ -133,8 +133,8 @@ const BillingPlans = () => {
             </h1>
             <p className="mt-2 text-sm text-slate-600">
               {isAuthenticated
-                ? 'Manage your Halal Lens subscription and scan limits in one place.'
-                : 'View available Halal Lens plans. Sign in to subscribe and unlock more scans.'}
+                ? "Manage your Halal Lens subscription and scan limits in one place."
+                : "View available Halal Lens plans. Sign in to subscribe and unlock more scans."}
             </p>
           </div>
           {subscription && (
@@ -142,22 +142,20 @@ const BillingPlans = () => {
               <div className="flex items-center gap-2">
                 <FiCheckCircle className="h-4 w-4" />
                 <span className="font-medium">
-                  Current Plan:{' '}
+                  Current Plan:{" "}
                   {subscription.plan?.name ||
                     subscription.plan?.code ||
-                    'Unknown'}
+                    "Unknown"}
                 </span>
               </div>
               {subscription.currentPeriodEnd && (
                 <div className="text-xs text-brand-800">
-                  Ends on:{' '}
-                  {new Date(
-                    subscription.currentPeriodEnd
-                  ).toLocaleDateString()}
+                  Ends on:{" "}
+                  {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
                 </div>
               )}
               <div className="text-xs text-brand-800">
-                Status:{' '}
+                Status:{" "}
                 <span className="font-semibold">{subscription.status}</span>
               </div>
             </div>
@@ -179,14 +177,15 @@ const BillingPlans = () => {
         ) : (
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4 auto-rows-fr">
             {plans.map((plan) => {
-              const ui = plan.ui || {}
-              const showButton = ui.showButton
-              const buttonLabel = ui.buttonLabel || 'Select'
-              const buttonVariant = ui.buttonVariant || 'outline'
-              const disabled = ui.disabled || actionLoading
+              console.log("PLAN UI", plan.code, plan.ui);
+              const ui = plan.ui || {};
+              const showButton = ui.showButton;
+              const buttonLabel = ui.buttonLabel || "Select";
+              const buttonVariant = ui.buttonVariant || "outline";
+              const disabled = ui.disabled || actionLoading;
 
               const isYearlyRecurring =
-                plan.billingType === 'recurring' && plan.interval === 'year'
+                plan.billingType === "recurring" && plan.interval === "year";
 
               return (
                 <div
@@ -248,13 +247,13 @@ const BillingPlans = () => {
                         <FiCheckCircle className="h-4 w-4 text-brand-500" />
                         <span>{plan.scansPerDay} scans per day</span>
                       </li>
-                      {plan.billingType === 'trial' && (
+                      {plan.billingType === "trial" && (
                         <li className="flex items-center gap-2">
                           <FiClock className="h-4 w-4 text-amber-500" />
                           <span>{plan.trialDays} days trial</span>
                         </li>
                       )}
-                      {plan.billingType === 'recurring' && (
+                      {plan.billingType === "recurring" && (
                         <li className="flex items-center gap-2">
                           <FiStar className="h-4 w-4 text-sky-500" />
                           <span>Priority access to future features</span>
@@ -269,16 +268,16 @@ const BillingPlans = () => {
                           disabled={disabled}
                           onClick={() => handlePlanAction(plan)}
                           className={
-                            'flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition ' +
+                            "flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition " +
                             (disabled
-                              ? 'cursor-not-allowed bg-slate-100 text-slate-400'
-                              : buttonVariant === 'primary'
-                              ? 'bg-brand-600 text-white hover:bg-brand-700 cursor-pointer'
-                              : 'border border-slate-300 bg-white text-slate-800 hover:bg-slate-50 cursor-pointer')
+                              ? "cursor-not-allowed bg-slate-100 text-slate-400"
+                              : buttonVariant === "primary"
+                              ? "bg-brand-600 text-white hover:bg-brand-700 cursor-pointer"
+                              : "border border-slate-300 bg-white text-slate-800 hover:bg-slate-50 cursor-pointer")
                           }
                         >
                           <span>{buttonLabel}</span>
-                          {!disabled && buttonVariant === 'primary' && (
+                          {!disabled && buttonVariant === "primary" && (
                             <FiArrowRight className="h-4 w-4" />
                           )}
                         </button>
@@ -286,13 +285,13 @@ const BillingPlans = () => {
                     )}
                   </div>
                 </div>
-              )
+              );
             })}
           </div>
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default BillingPlans
+export default BillingPlans;

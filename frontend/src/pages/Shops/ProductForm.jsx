@@ -23,11 +23,13 @@ export default function ProductForm({
   onSave,
   saving,
 }) {
+  console.log(initial)
   // core
   const [productName, setProductName] = useState(
     initial.productName || initial.name || ""
   );
   const [barcode, setBarcode] = useState(initial.barcode || "");
+  const [origin, setOrigin] = useState(initial.origin || "");
   const [brands, setBrands] = useState(initial.brands || initial.brand || "");
 
   // status & flags
@@ -121,6 +123,7 @@ export default function ProductForm({
       productName,
       barcode,
       brands,
+      origin,
       overallStatus: (overallStatus || "").trim(),
       statusReason: (statusReason || "").trim(),
       isVerified,
@@ -176,6 +179,17 @@ export default function ProductForm({
               value={barcode}
               onChange={(e) => setBarcode(e.target.value)}
               placeholder="7622210449283"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-slate-700">
+              Origin
+            </label>
+            <input
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+              value={origin}
+              onChange={(e) => setOrigin(e.target.value)}
+              placeholder="e.g. Canada"
             />
           </div>
           <div className="space-y-1.5">

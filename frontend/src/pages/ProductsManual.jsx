@@ -243,7 +243,7 @@ export default function ProductsManual() {
   const [verdict, setVerdict] = useState("");
   const [q, setQ] = useState("");
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageSize] = useState(25);
   const [total, setTotal] = useState(0);
 
   const [detailsOpen, setDetailsOpen] = useState(false);
