@@ -126,7 +126,7 @@ export default function Login() {
     <div className="min-h-screen grid place-items-center px-6 bg-[radial-gradient(1200px_600px_at_20%_-10%,#dcfce7_0%,transparent_60%),var(--bg)]">
       <div className="w-full max-w-[900px] bg-(--panel) border border-(--border) rounded-2xl shadow-(--shadow) overflow-hidden grid md:grid-cols-[1.05fr_1fr]">
         {/* Left: Hero */}
-        <div className="relative min-h-[420px] p-7 bg-[linear-gradient(135deg,var(--green-500),var(--green-600))] text-white flex flex-col items-center justify-center gap-3.5">
+        <div className="relative min-h-[420px] p-7 bg-[linear-gradient(135deg,var(--brand-500),var(--brand-600))] text-white flex flex-col items-center justify-center gap-3.5">
           <div className="w-[132px] h-[132px] rounded-full grid place-items-center bg-white/90 border border-white/60 shadow-[0_14px_28px_rgba(0,0,0,0.12)] ring-8 ring-white/25">
             <img
               src={logo}
@@ -163,7 +163,7 @@ export default function Login() {
           )}
 
           {info && (
-            <div className="mt-3 inline-flex items-center rounded-full border border-green-200 bg-green-50 px-3 py-1 text-xs font-medium text-green-700">
+            <div className="mt-3 inline-flex items-center rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700">
               {info}
             </div>
           )}
@@ -183,7 +183,7 @@ export default function Login() {
                     Email
                   </label>
                   <input
-                    className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                     placeholder="example@gmail.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -195,7 +195,7 @@ export default function Login() {
                     Password
                   </label>
                   <input
-                    className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                     type="password"
                     placeholder="••••••••"
                     value={password}
@@ -206,7 +206,7 @@ export default function Login() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="cursor-pointer w-full inline-flex items-center justify-center rounded-lg bg-green-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1"
+                  className="cursor-pointer w-full inline-flex items-center justify-center rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-700 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1"
                 >
                   {submitting ? "Signing in..." : "Sign In"}
                 </button>
@@ -214,7 +214,7 @@ export default function Login() {
                 <div className="flex justify-between items-center mt-1">
                   <button
                     type="button"
-                    className="cursor-pointer text-sm font-medium text-green-700 hover:text-green-800"
+                    className="cursor-pointer text-sm font-medium text-brand-700 hover:text-brand-800"
                     onClick={goToReset}
                   >
                     Forgot password?
@@ -252,7 +252,7 @@ export default function Login() {
                 </label>
                 <input
                   type="email"
-                  className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -262,7 +262,7 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={resetting}
-                className="cursor-pointer w-full inline-flex items-center justify-center rounded-lg bg-green-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1"
+                className="cursor-pointer w-full inline-flex items-center justify-center rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-700 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1"
               >
                 {resetting ? "Sending reset link..." : "Send Reset Link"}
               </button>

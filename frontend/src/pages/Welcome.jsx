@@ -17,7 +17,7 @@ export default function Welcome() {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-          <span className="h-3 w-3 animate-pulse rounded-full bg-green-500" />
+          <span className="h-3 w-3 animate-pulse rounded-full bg-brand-500" />
           <span className="text-sm text-slate-600">
             Loading your dashboard…
           </span>
@@ -75,10 +75,10 @@ export default function Welcome() {
   return (
     <div className="space-y-6">
       {/* Header / Greeting */}
-      <section className="rounded-2xl border border-green-100 bg-linear-to-r from-green-50 via-white to-green-50 p-6 shadow-sm">
+      <section className="rounded-2xl border border-brand-100 bg-linear-to-r from-brand-50 via-white to-brand-50 p-6 shadow-sm">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-green-600">
+            <p className="text-xs font-semibold uppercase tracking-wide text-brand-600">
               Welcome back
             </p>
             <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">
@@ -90,15 +90,15 @@ export default function Welcome() {
             </p>
           </div>
 
-          <div className="mt-2 flex flex-col items-start gap-2 rounded-xl border border-green-100 bg-white px-4 py-3 text-xs text-slate-700 shadow-sm md:mt-0">
+          <div className="mt-2 flex flex-col items-start gap-2 rounded-xl border border-brand-100 bg-white px-4 py-3 text-xs text-slate-700 shadow-sm md:mt-0">
             <div className="flex items-center gap-2">
-              <FiUser className="text-green-600" />
+              <FiUser className="text-brand-600" />
               <span className="font-semibold text-slate-900">
                 {user.email}
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <FiShield className="text-green-600" />
+              <FiShield className="text-brand-600" />
               <span>
                 Role:{" "}
                 <span className="font-medium text-slate-900">
@@ -107,7 +107,7 @@ export default function Welcome() {
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <FiClock className="text-green-600" />
+              <FiClock className="text-brand-600" />
               <span>Last login: {formattedLastLogin}</span>
             </div>
           </div>
@@ -126,7 +126,7 @@ export default function Welcome() {
                 Active
               </p>
             </div>
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-green-50 text-green-600">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-50 text-brand-600">
               <FiCheckCircle />
             </div>
           </div>
@@ -199,14 +199,14 @@ export default function Welcome() {
                 className={[
                   "inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
                   variant === "primary"
-                    ? "border border-green-200 bg-green-50 text-green-800 hover:bg-green-100"
+                    ? "border border-brand-200 bg-brand-50 text-brand-800 hover:bg-brand-100"
                     : "border border-slate-200 bg-slate-50 text-slate-800 hover:bg-slate-100",
                 ].join(" ")}
               >
                 <Icon
                   className={
                     variant === "primary"
-                      ? "text-green-600"
+                      ? "text-brand-600"
                       : "text-slate-500"
                   }
                 />

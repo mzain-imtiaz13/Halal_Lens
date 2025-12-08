@@ -41,13 +41,13 @@ const Features = () => {
     <section id="features">
       <div className="mx-auto max-w-6xl px-4 py-12 md:py-16">
         <div className="text-center mb-10">
-          <p className="text-xs font-semibold text-green-600 tracking-[0.2em] uppercase">
+          <p className="text-xs font-semibold text-brand-600 tracking-[0.2em] uppercase">
             Features
           </p>
-          <h2 className="mt-2 text-2xl md:text-3xl font-bold text-green-950">
+          <h2 className="mt-2 text-2xl md:text-3xl font-bold text-brand-950">
             Built for Muslims who read labels seriously
           </h2>
-          <p className="mt-3 text-sm text-green-700 max-w-2xl mx-auto">
+          <p className="mt-3 text-sm text-brand-700 max-w-2xl mx-auto">
             Halal Lens connects mobile scanning, AI classification, and a
             powerful admin dashboard to give you trusted guidance in seconds.
           </p>
@@ -57,15 +57,15 @@ const Features = () => {
           {features.map((f) => (
             <div
               key={f.title}
-              className="group rounded-2xl border border-green-100 bg-white p-5 shadow-sm hover:-translate-y-1 hover:shadow-md hover:bg-green-50 transition duration-300"
+              className="group rounded-2xl border border-brand-100 bg-white p-5 shadow-sm hover:-translate-y-1 hover:shadow-md hover:bg-brand-50 transition duration-300"
             >
-              <div className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-xl bg-green-100 text-xl">
+              <div className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-xl bg-brand-100 text-xl">
                 {f.icon}
               </div>
-              <h3 className="text-sm font-semibold text-green-900 mb-1">
+              <h3 className="text-sm font-semibold text-brand-900 mb-1">
                 {f.title}
               </h3>
-              <p className="text-xs text-green-700 leading-relaxed">
+              <p className="text-xs text-brand-700 leading-relaxed">
                 {f.description}
               </p>
             </div>

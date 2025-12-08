@@ -34,13 +34,13 @@ const FAQs = () => {
     <section id="faq">
       <div className="mx-auto max-w-4xl px-4 py-12 md:py-16">
         <div className="text-center mb-8">
-          <p className="text-xs font-semibold text-green-600 tracking-[0.2em] uppercase">
+          <p className="text-xs font-semibold text-brand-600 tracking-[0.2em] uppercase">
             FAQ
           </p>
-          <h2 className="mt-2 text-2xl md:text-3xl font-bold text-green-950">
+          <h2 className="mt-2 text-2xl md:text-3xl font-bold text-brand-950">
             Frequently asked questions
           </h2>
-          <p className="mt-3 text-sm text-green-700">
+          <p className="mt-3 text-sm text-brand-700">
             If you can’t find your answer here, you can always reach out to us
             through the contact section.
           </p>
@@ -52,7 +52,7 @@ const FAQs = () => {
             return (
               <div
                 key={faq.question}
-                className="rounded-2xl border border-green-100 bg-white transition"
+                className="rounded-2xl border border-brand-100 bg-white transition"
               >
                 <button
                   className="w-full flex items-center justify-between px-4 py-3 text-left cursor-pointer"
@@ -60,15 +60,15 @@ const FAQs = () => {
                     setActiveFAQ((prev) => (prev === index ? -1 : index))
                   }
                 >
-                  <span className="text-sm font-semibold text-green-900">
+                  <span className="text-sm font-semibold text-brand-900">
                     {faq.question}
                   </span>
-                  <span className="ml-4 text-lg text-green-700">
+                  <span className="ml-4 text-lg text-brand-700">
                     {open ? "−" : "+"}
                   </span>
                 </button>
                 {open && (
-                  <div className="p-6 text-xs text-green-700 border-t border-green-100">
+                  <div className="p-6 text-xs text-brand-700 border-t border-brand-100">
                     {faq.answer}
                   </div>
                 )}

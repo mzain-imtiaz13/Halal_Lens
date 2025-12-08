@@ -103,8 +103,8 @@ function StatusBadge({ value }) {
   let dot = "h-1.5 w-1.5 rounded-full ";
 
   if (value === "halal") {
-    base += "border-green-200 bg-green-50 text-green-700";
-    dot += "bg-green-500";
+    base += "border-brand-200 bg-brand-50 text-brand-700";
+    dot += "bg-brand-500";
   } else if (value === "haram") {
     base += "border-red-200 bg-red-50 text-red-700";
     dot += "bg-red-500";
@@ -151,7 +151,7 @@ function ShopForm({ initial = { name: "", address: "" }, onCancel, onSave, savin
             Shop name <span className="text-red-500">*</span>
           </label>
           <input
-            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Al-Noor Mart"
@@ -162,7 +162,7 @@ function ShopForm({ initial = { name: "", address: "" }, onCancel, onSave, savin
         <div className="space-y-1.5">
           <label className="text-xs font-medium text-slate-700">Address</label>
           <input
-            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
             placeholder="Street, City"
@@ -181,7 +181,7 @@ function ShopForm({ initial = { name: "", address: "" }, onCancel, onSave, savin
         <button
           type="submit"
           disabled={saving}
-          className="inline-flex items-center rounded-md bg-green-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-green-700 disabled:opacity-60"
+          className="inline-flex items-center rounded-md bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-brand-700 disabled:opacity-60"
         >
           {saving ? "Saving..." : "Save"}
         </button>
@@ -217,13 +217,13 @@ function IngredientRow({ value, onChange, onRemove }) {
   return (
     <div className="grid gap-2 rounded-md border border-slate-200 bg-slate-50/60 px-3 py-2 text-xs md:grid-cols-[1.1fr,0.9fr,1.3fr,0.6fr,0.6fr,0.6fr,1.4fr,auto]">
       <input
-        className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-green-500"
+        className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
         placeholder="Name"
         value={x.name}
         onChange={(e) => upd({ name: e.target.value })}
       />
       <select
-        className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-green-500"
+        className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
         value={x.status}
         onChange={(e) => upd({ status: e.target.value })}
       >
@@ -232,7 +232,7 @@ function IngredientRow({ value, onChange, onRemove }) {
         <option value="suspicious">suspicious</option>
       </select>
       <input
-        className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-green-500"
+        className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
         placeholder="Reason"
         value={x.reason}
         onChange={(e) => upd({ reason: e.target.value })}
@@ -240,7 +240,7 @@ function IngredientRow({ value, onChange, onRemove }) {
       <input
         type="number"
         min="0"
-        className="rounded-md border border-slate-300 bg-white px-2 py-1 text-right text-xs focus:outline-none focus:ring-1 focus:ring-green-500"
+        className="rounded-md border border-slate-300 bg-white px-2 py-1 text-right text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
         value={x.halalVotes}
         onChange={(e) =>
           upd({ halalVotes: Number(e.target.value || 0) })
@@ -249,7 +249,7 @@ function IngredientRow({ value, onChange, onRemove }) {
       <input
         type="number"
         min="0"
-        className="rounded-md border border-slate-300 bg-white px-2 py-1 text-right text-xs focus:outline-none focus:ring-1 focus:ring-green-500"
+        className="rounded-md border border-slate-300 bg-white px-2 py-1 text-right text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
         value={x.suspiciousVotes}
         onChange={(e) =>
           upd({ suspiciousVotes: Number(e.target.value || 0) })
@@ -258,14 +258,14 @@ function IngredientRow({ value, onChange, onRemove }) {
       <input
         type="number"
         min="0"
-        className="rounded-md border border-slate-300 bg-white px-2 py-1 text-right text-xs focus:outline-none focus:ring-1 focus:ring-green-500"
+        className="rounded-md border border-slate-300 bg-white px-2 py-1 text-right text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
         value={x.haramVotes}
         onChange={(e) =>
           upd({ haramVotes: Number(e.target.value || 0) })
         }
       />
       <input
-        className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-green-500"
+        className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
         placeholder="user1, user2"
         value={(x.votedUserIds || []).join(", ")}
         onChange={(e) =>
@@ -307,19 +307,19 @@ function ReferenceRow({ value, onChange, onRemove }) {
   return (
     <div className="grid gap-2 rounded-md border border-slate-200 bg-slate-50/60 px-3 py-2 text-xs md:grid-cols-[1.2fr,1.2fr,1.4fr,auto]">
       <input
-        className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-green-500"
+        className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
         placeholder="Title"
         value={x.title}
         onChange={(e) => upd({ title: e.target.value })}
       />
       <input
-        className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-green-500"
+        className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
         placeholder="URL"
         value={x.url}
         onChange={(e) => upd({ url: e.target.value })}
       />
       <input
-        className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-green-500"
+        className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
         placeholder="Notes"
         value={x.notes}
         onChange={(e) => upd({ notes: e.target.value })}
@@ -418,14 +418,14 @@ function NutrimentRow({ value, onChange, onRemove }) {
   return (
     <div className="grid gap-2 rounded-md border border-slate-200 bg-slate-50/60 px-3 py-2 text-xs md:grid-cols-[1.5fr,1fr,auto]">
       <input
-        className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-green-500"
+        className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
         placeholder="Key (e.g., energy-kcal_100g)"
         value={x.key}
         onChange={(e) => upd({ key: e.target.value })}
       />
       <input
         type="number"
-        className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-green-500"
+        className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
         placeholder="Value"
         value={x.value}
         onChange={(e) => upd({ value: e.target.value })}
@@ -590,7 +590,7 @@ function ProductForm({ initial = {}, onCancel, onSave, saving }) {
               Product name <span className="text-red-500">*</span>
             </label>
             <input
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
               value={productName}
               onChange={(e) => setProductName(e.target.value)}
               placeholder="Prince Goût Chocolat"
@@ -602,7 +602,7 @@ function ProductForm({ initial = {}, onCancel, onSave, saving }) {
               Barcode
             </label>
             <input
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
               value={barcode}
               onChange={(e) => setBarcode(e.target.value)}
               placeholder="7622210449283"
@@ -613,7 +613,7 @@ function ProductForm({ initial = {}, onCancel, onSave, saving }) {
               Brands
             </label>
             <input
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
               value={brands}
               onChange={(e) => setBrands(e.target.value)}
               placeholder="Lu"
@@ -624,7 +624,7 @@ function ProductForm({ initial = {}, onCancel, onSave, saving }) {
               Quantity
             </label>
             <input
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
               placeholder="300 g"
@@ -678,7 +678,7 @@ function ProductForm({ initial = {}, onCancel, onSave, saving }) {
           <label className="ml-auto flex items-center gap-2 text-xs text-slate-700">
             <input
               type="checkbox"
-              className="h-4 w-4 rounded border-slate-300 text-green-600 focus:ring-green-500"
+              className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
               checked={isVerified}
               onChange={(e) => setIsVerified(e.target.checked)}
             />
@@ -789,7 +789,7 @@ function ProductForm({ initial = {}, onCancel, onSave, saving }) {
               Overall Status
             </label>
             <select
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
               value={overallStatus}
               onChange={(e) => setOverallStatus(e.target.value)}
             >
@@ -805,7 +805,7 @@ function ProductForm({ initial = {}, onCancel, onSave, saving }) {
             </label>
             <textarea
               rows={3}
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
               value={statusReason}
               onChange={(e) => setStatusReason(e.target.value)}
               placeholder="Optional"
@@ -848,7 +848,7 @@ function ProductForm({ initial = {}, onCancel, onSave, saving }) {
         <button
           type="submit"
           disabled={saving}
-          className="inline-flex items-center rounded-md bg-green-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-green-700 disabled:opacity-60"
+          className="inline-flex items-center rounded-md bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-brand-700 disabled:opacity-60"
         >
           {saving ? "Saving..." : "Save product"}
         </button>
@@ -970,7 +970,7 @@ export default function Shops() {
         <button
           type="button"
           onClick={() => setCreateShopOpen(true)}
-          className="inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-700"
+          className="inline-flex items-center rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-700"
         >
           + Add Shop
         </button>

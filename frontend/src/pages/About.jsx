@@ -33,20 +33,20 @@ const values = [
 
 const About = () => {
   return (
-    <div className="min-h-screen text-green-950 flex flex-col">
+    <div className="min-h-screen text-brand-950 flex flex-col">
       <main className="flex-1">
         {/* Hero / Intro */}
         <section className="relative overflow-hidden">
           <div className="max-w-6xl mx-auto px-4 py-12 md:py-16 lg:py-20 grid md:grid-cols-2 gap-10 items-center">
             <div className="space-y-5">
-              <p className="text-xs font-semibold text-green-600 tracking-[0.2em] uppercase">
+              <p className="text-xs font-semibold text-brand-600 tracking-[0.2em] uppercase">
                 About Halal Lens
               </p>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-green-950 leading-tight">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-brand-950 leading-tight">
                 Helping you see{" "}
-                <span className="text-green-600">clarity in every label</span>
+                <span className="text-brand-600">clarity in every label</span>
               </h1>
-              <p className="text-sm md:text-base text-green-700 max-w-xl">
+              <p className="text-sm md:text-base text-brand-700 max-w-xl">
                 Halal Lens was created to make it easier for Muslims to verify
                 what they eat—whether they are at home, traveling, or living in
                 countries where halal options aren’t always obvious. By blending
@@ -57,27 +57,27 @@ const About = () => {
 
             <div className="flex justify-center md:justify-end">
               <div className="relative max-w-sm w-full">
-                <div className="absolute -top-7 rounded-3xl bg-white/80 px-4 py-3 shadow-md text-xs text-green-800">
+                <div className="absolute -top-7 rounded-3xl bg-white/80 px-4 py-3 shadow-md text-xs text-brand-800">
                   <p className="font-semibold">Our Vision</p>
                   <p className="text-[11px]">
                     A world where every Muslim can check any product, anywhere,
                     in seconds.
                   </p>
                 </div>
-                <div className="absolute -bottom-10 rounded-2xl bg-green-600 px-3 py-2 text-[11px] text-green-50 shadow-lg">
+                <div className="absolute -bottom-10 rounded-2xl bg-brand-600 px-3 py-2 text-[11px] text-brand-50 shadow-lg">
                   1M+ potential products covered via Open Food Facts & growing
                   crowdsourced data.
                 </div>
-                <div className="rounded-3xl border border-green-100 bg-white shadow-xl p-6 mt-6 hover:-translate-y-1 hover:shadow-2xl transition">
-                  <p className="text-xs font-semibold text-green-900 mb-3">
+                <div className="rounded-3xl border border-brand-100 bg-white shadow-xl p-6 mt-6 hover:-translate-y-1 hover:shadow-2xl transition">
+                  <p className="text-xs font-semibold text-brand-900 mb-3">
                     Why we exist
                   </p>
-                  <p className="text-xs text-green-700 mb-3">
+                  <p className="text-xs text-brand-700 mb-3">
                     Long ingredient lists, unfamiliar terms, and foreign
                     languages can make halal decisions stressful. Halal Lens
                     simplifies this with:
                   </p>
-                  <ul className="space-y-1 text-xs text-green-800 list-disc list-inside">
+                  <ul className="space-y-1 text-xs text-brand-800 list-disc list-inside">
                     <li>Instant scanning and photo upload options</li>
                     <li>Ingredient-level halal, haram, and suspicious tags</li>
                     <li>Community voting on doubtful items</li>
@@ -90,18 +90,18 @@ const About = () => {
         </section>
 
         {/* Mission & Story */}
-        <section className="border-y border-green-100">
+        <section className="border-y border-brand-100">
           <div className="max-w-6xl mx-auto px-4 py-12 md:py-16 grid md:grid-cols-2 gap-10">
             <div>
-              <h2 className="text-xl md:text-2xl font-bold text-green-950 mb-3">
+              <h2 className="text-xl md:text-2xl font-bold text-brand-950 mb-3">
                 Our Mission
               </h2>
-              <p className="text-sm text-green-700 mb-3">
+              <p className="text-sm text-brand-700 mb-3">
                 Our mission is to make halal awareness practical and
                 actionable—especially for Muslims living in non-Muslim majority
                 countries. Halal Lens offers a simple way to:
               </p>
-              <ul className="list-disc list-inside text-sm text-green-800 space-y-1">
+              <ul className="list-disc list-inside text-sm text-brand-800 space-y-1">
                 <li>Identify halal-friendly products with a quick scan.</li>
                 <li>
                   Understand exactly which ingredients may be doubtful or
@@ -118,24 +118,24 @@ const About = () => {
               </ul>
             </div>
             <div>
-              <h2 className="text-xl md:text-2xl font-bold text-green-950 mb-3">
+              <h2 className="text-xl md:text-2xl font-bold text-brand-950 mb-3">
                 Our Story
               </h2>
-              <p className="text-sm text-green-700 mb-3">
+              <p className="text-sm text-brand-700 mb-3">
                 Halal Lens started when a small team of developers and students
                 abroad realized how often they were standing in supermarket
                 aisles, searching ingredient names online and still feeling
                 unsure. Different countries, different labels, same question:
                 “Is this actually halal?”
               </p>
-              <p className="text-sm text-green-700 mb-3">
+              <p className="text-sm text-brand-700 mb-3">
                 We began by experimenting with barcode scanning, open food
                 databases, and AI classification. With feedback from scholars
                 and halal-conscious families, the idea grew into a complete
                 workflow—mobile app for scanning, backend for classification,
                 and an admin panel to manage rulings and community polls.
               </p>
-              <p className="text-sm text-green-700">
+              <p className="text-sm text-brand-700">
                 Today, Halal Lens is being shaped with one goal in mind: helping
                 Muslims feel confident about the products they buy, without
                 needing to be a chemistry expert every time they visit a store.
@@ -143,22 +143,22 @@ const About = () => {
             </div>
           </div>
         </section>
-        <section className="bg-green-900 text-green-50">
+        <section className="bg-brand-900 text-brand-50">
           <div className="max-w-6xl mx-auto px-4 py-12 md:py-16 grid md:grid-cols-2 gap-10 items-center">
             <div>
-              <p className="text-xs font-semibold tracking-[0.2em] uppercase text-green-200 mb-2">
+              <p className="text-xs font-semibold tracking-[0.2em] uppercase text-brand-200 mb-2">
                 Our Founder
               </p>
               <h2 className="text-2xl md:text-3xl font-bold mb-3">
                 Prince Faisal – vision behind Halal Lens
               </h2>
-              <p className="text-sm text-green-100 mb-3">
+              <p className="text-sm text-brand-100 mb-3">
                 Halal Lens is guided by the vision of{" "}
                 <span className="font-semibold">Prince Faisal</span>, who
                 believes that access to trustworthy halal information should be
                 effortless for every Muslim, regardless of where they live.
               </p>
-              <p className="text-sm text-green-100 mb-3">
+              <p className="text-sm text-brand-100 mb-3">
                 With a passion for technology and community welfare, Prince
                 Faisal championed the idea of combining barcode and QR scanning,
                 open data, and AI-powered ingredient analysis into one simple
@@ -166,7 +166,7 @@ const About = () => {
                 transparency, and ease-of-use—so families can shop with
                 confidence instead of confusion.
               </p>
-              <p className="text-sm text-green-100">
+              <p className="text-sm text-brand-100">
                 Under his leadership, Halal Lens aims to grow into a trusted
                 global companion for halal-conscious users, partnering with
                 scholars, certification bodies, and brands that share the same
@@ -175,24 +175,24 @@ const About = () => {
             </div>
 
             <div className="flex justify-center md:justify-end">
-              <div className="rounded-3xl bg-green-800/70 border border-green-600 p-6 shadow-xl max-w-sm w-full">
+              <div className="rounded-3xl bg-brand-800/70 border border-brand-600 p-6 shadow-xl max-w-sm w-full">
                 <div className="flex items-center gap-3 mb-4">
-                  <img src="/prince-faisal.jfif" className="h-12 w-12 rounded-full bg-green-700 flex items-center justify-center text-lg font-semibold"/>                   
+                  <img src="/prince-faisal.jfif" className="h-12 w-12 rounded-full bg-brand-700 flex items-center justify-center text-lg font-semibold"/>                   
                   <div>
                     <p className="text-sm font-semibold text-white">
                       Prince Faisal
                     </p>
-                    <p className="text-[11px] text-green-200">
+                    <p className="text-[11px] text-brand-200">
                       Founder & Patron of Halal Lens
                     </p>
                   </div>
                 </div>
-                <p className="text-xs text-green-100 mb-3">
+                <p className="text-xs text-brand-100 mb-3">
                   “Technology should make it easier to follow our principles,
                   not harder. Halal Lens is my attempt to give the Ummah a tool
                   that turns everyday shopping into a source of peace of mind.”
                 </p>
-                <div className="mt-4 text-[11px] text-green-200">
+                <div className="mt-4 text-[11px] text-brand-200">
                   <p>Key focus areas:</p>
                   <ul className="mt-1 list-disc list-inside space-y-1">
                     <li>Supporting Muslims in minority communities</li>
@@ -209,16 +209,16 @@ const About = () => {
           </div>
         </section>
         {/* Values */}
-        <section className="bg-green-50">
+        <section className="bg-brand-50">
           <div className="max-w-6xl mx-auto px-4 py-12 md:py-16">
             <div className="text-center mb-8">
-              <p className="text-xs font-semibold text-green-600 tracking-[0.2em] uppercase">
+              <p className="text-xs font-semibold text-brand-600 tracking-[0.2em] uppercase">
                 Our Values
               </p>
-              <h2 className="mt-2 text-2xl md:text-3xl font-bold text-green-950">
+              <h2 className="mt-2 text-2xl md:text-3xl font-bold text-brand-950">
                 Principles that guide every decision
               </h2>
-              <p className="mt-3 text-sm text-green-700 max-w-2xl mx-auto">
+              <p className="mt-3 text-sm text-brand-700 max-w-2xl mx-auto">
                 These values influence how we design features, choose data
                 sources, speak to the community, and grow the platform.
               </p>
@@ -227,15 +227,15 @@ const About = () => {
               {values.map((v) => (
                 <div
                   key={v.title}
-                  className="group rounded-2xl bg-white border border-green-100 p-5 shadow-sm hover:-translate-y-1 hover:shadow-md hover:bg-green-50 transition duration-300"
+                  className="group rounded-2xl bg-white border border-brand-100 p-5 shadow-sm hover:-translate-y-1 hover:shadow-md hover:bg-brand-50 transition duration-300"
                 >
-                  <h3 className="text-sm font-semibold text-green-900 mb-1">
+                  <h3 className="text-sm font-semibold text-brand-900 mb-1">
                     {v.title}
                   </h3>
-                  <p className="text-xs text-green-700 leading-relaxed">
+                  <p className="text-xs text-brand-700 leading-relaxed">
                     {v.description}
                   </p>
-                  <div className="mt-3 h-0.5 w-10 bg-green-200 group-hover:w-16 group-hover:bg-green-500 transition-all" />
+                  <div className="mt-3 h-0.5 w-10 bg-brand-200 group-hover:w-16 group-hover:bg-brand-500 transition-all" />
                 </div>
               ))}
             </div>

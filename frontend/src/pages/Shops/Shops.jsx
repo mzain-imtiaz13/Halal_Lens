@@ -127,7 +127,7 @@ export default function Shops() {
         <button
           type="button"
           onClick={() => setCreateShopOpen(true)}
-          className="inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-700"
+          className="inline-flex items-center rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-700"
         >
           + Add Shop
         </button>

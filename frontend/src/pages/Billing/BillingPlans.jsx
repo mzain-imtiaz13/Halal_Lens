@@ -98,7 +98,7 @@ const BillingPlans = () => {
     }
     if (badgeType === "free") {
       return (
-        <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
+        <span className="inline-flex items-center gap-1 rounded-full bg-brand-100 px-2 py-0.5 text-xs font-medium text-brand-800">
           <FiStar className="h-3 w-3" />
           Free
         </span>
@@ -138,7 +138,7 @@ const BillingPlans = () => {
             </p>
           </div>
           {subscription && (
-            <div className="flex max-w-sm flex-col gap-1 rounded-2xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-900 shadow-sm">
+            <div className="flex max-w-sm flex-col gap-1 rounded-2xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm text-brand-900 shadow-sm">
               <div className="flex items-center gap-2">
                 <FiCheckCircle className="h-4 w-4" />
                 <span className="font-medium">
@@ -149,12 +149,12 @@ const BillingPlans = () => {
                 </span>
               </div>
               {subscription.currentPeriodEnd && (
-                <div className="text-xs text-green-800">
+                <div className="text-xs text-brand-800">
                   Ends on:{" "}
                   {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
                 </div>
               )}
-              <div className="text-xs text-green-800">
+              <div className="text-xs text-brand-800">
                 Status:{" "}
                 <span className="font-semibold">{subscription.status}</span>
               </div>
@@ -229,7 +229,7 @@ const BillingPlans = () => {
                         </>
                       ) : (
                         <div className="flex items-baseline gap-1">
-                          <span className="text-3xl font-bold text-green-600">
+                          <span className="text-3xl font-bold text-brand-600">
                             Free
                           </span>
                           {plan.interval && (
@@ -242,9 +242,9 @@ const BillingPlans = () => {
                     </div>
 
                     {/* Features */}
-                    <ul className="mt-4 flex-1 space-y-1.5 text-sm text-slate-700">
+                    <ul className="mt-4 flex-1 space-y-1.5 text-sm text-slate-700 min-h-32">
                       <li className="flex items-center gap-2">
-                        <FiCheckCircle className="h-4 w-4 text-green-500" />
+                        <FiCheckCircle className="h-4 w-4 text-brand-500" />
                         <span>{plan.scansPerDay} scans per day</span>
                       </li>
                       {plan.billingType === "trial" && (
@@ -263,25 +263,23 @@ const BillingPlans = () => {
 
                     {/* Button pinned to bottom */}
                     {showButton && (
-                      <div className="mt-auto border-t border-slate-100 pt-4">
-                        <button
-                          disabled={disabled}
-                          onClick={() => handlePlanAction(plan)}
-                          className={
-                            "flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition " +
-                            (disabled
-                              ? "cursor-not-allowed bg-slate-100 text-slate-400"
-                              : buttonVariant === "primary"
-                              ? "bg-green-600 text-white hover:bg-green-700 cursor-pointer"
-                              : "border border-slate-300 bg-white text-slate-800 hover:bg-slate-50 cursor-pointer")
-                          }
-                        >
-                          <span>{buttonLabel}</span>
-                          {!disabled && buttonVariant === "primary" && (
-                            <FiArrowRight className="h-4 w-4" />
-                          )}
-                        </button>
-                      </div>
+                      <button
+                        disabled={disabled}
+                        onClick={() => handlePlanAction(plan)}
+                        className={
+                          "mt-auto border-t border-slate-100 flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition " +
+                          (disabled
+                            ? "cursor-not-allowed bg-slate-100 text-slate-400"
+                            : buttonVariant === "primary"
+                            ? "bg-brand-600 text-white hover:bg-brand-700 cursor-pointer"
+                            : "border border-slate-300 bg-white text-slate-800 hover:bg-slate-50 cursor-pointer")
+                        }
+                      >
+                        <span>{buttonLabel}</span>
+                        {!disabled && buttonVariant === "primary" && (
+                          <FiArrowRight className="h-4 w-4" />
+                        )}
+                      </button>
                     )}
                   </div>
                 </div>

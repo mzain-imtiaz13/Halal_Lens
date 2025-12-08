@@ -25,13 +25,13 @@ const Testimonials = () => {
     >
       <div className="mx-auto max-w-6xl px-4 py-12 md:py-16">
         <div className="text-center mb-8">
-          <p className="text-xs font-semibold text-green-600 tracking-[0.2em] uppercase">
+          <p className="text-xs font-semibold text-brand-600 tracking-[0.2em] uppercase">
             Reviews
           </p>
-          <h2 className="mt-2 text-2xl md:text-3xl font-bold text-green-950">
+          <h2 className="mt-2 text-2xl md:text-3xl font-bold text-brand-950">
             Trusted by Muslims who care about what they eat
           </h2>
-          <p className="mt-3 text-sm text-green-700 max-w-2xl mx-auto">
+          <p className="mt-3 text-sm text-brand-700 max-w-2xl mx-auto">
             Here’s what early users say about the Halal Lens experience.
           </p>
         </div>
@@ -40,20 +40,20 @@ const Testimonials = () => {
           {testimonials.map((t) => (
             <figure
               key={t.name}
-              className="rounded-3xl bg-white border border-green-100 p-5 shadow-sm hover:-translate-y-1 hover:shadow-lg transition-transform duration-300"
+              className="rounded-3xl bg-white border border-brand-100 p-5 shadow-sm hover:-translate-y-1 hover:shadow-lg transition-transform duration-300"
             >
               <div className="flex items-center gap-3 mb-3">
-                <div className="h-9 w-9 rounded-full bg-green-100 flex items-center justify-center text-sm">
+                <div className="h-9 w-9 rounded-full bg-brand-100 flex items-center justify-center text-sm">
                   {t.name.charAt(0)}
                 </div>
                 <div>
-                  <figcaption className="text-sm font-semibold text-green-900">
+                  <figcaption className="text-sm font-semibold text-brand-900">
                     {t.name}
                   </figcaption>
-                  <p className="text-[11px] text-green-600">{t.role}</p>
+                  <p className="text-[11px] text-brand-600">{t.role}</p>
                 </div>
               </div>
-              <blockquote className="text-xs leading-relaxed text-green-800">
+              <blockquote className="text-xs leading-relaxed text-brand-800">
                 “{t.quote}”
               </blockquote>
             </figure>
