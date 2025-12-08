@@ -4,7 +4,7 @@ import Toolbar from "../components/Toolbar";
 import Pagination from "../components/Pagination";
 import Modal from "../components/Modal"; // ⬅️ use your Modal here
 import { listManualProducts } from "../api/services/products";
-import "./../styles.css";
+
 
 const PLACEHOLDER_IMG =
   "data:image/svg+xml;utf8," +

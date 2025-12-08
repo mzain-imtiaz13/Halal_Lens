@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import logo from "/Halal_lens_logo.png";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../firebase";
-import "./../styles.css";
+
 
 export default function Login() {
   const { user, login, loginWithApple, loginWithGoogle } = useAuth();

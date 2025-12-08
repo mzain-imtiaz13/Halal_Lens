@@ -11,7 +11,7 @@ import {
 } from "../api/services/users_firebase";
 import { useAuth } from "../contexts/AuthContext";
 import BillingHistoryTable from "./Billing/BillingHistoryTable";
-import "./../styles.css";
+
 
 export default function Users() {
   const { user, loading: authLoading, isAdmin } = useAuth();

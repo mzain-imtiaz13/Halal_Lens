@@ -9,7 +9,7 @@ import {
   deleteProduct,
 } from "../api/services/shops";
 import Modal from "../components/Modal";
-import "./../styles.css"; // keep if you still use global vars like --bg, etc.
+ // keep if you still use global vars like --bg, etc.
 
 // ===== Core Firestore Models =====
 

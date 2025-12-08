@@ -5,7 +5,7 @@ import ChartBar from "../components/ChartBar";
 import ChartLine from "../components/ChartLine";
 import { db } from "../firebase";
 import { collection, getDocs } from "firebase/firestore";
-import "./../styles.css";
+
 import DataTable from "../components/DataTable";
 import { fetchSubscriptionStats } from "../api/services/billing";
 

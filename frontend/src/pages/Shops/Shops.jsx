@@ -12,7 +12,7 @@ import {
 import StatusBadge from "./StatusBadge";
 import ShopForm from "./ShopForm";
 import ProductForm from "./ProductForm";
-import "../../styles.css";
+
 import Modal from "../../components/Modal";
 
 export default function Shops() {

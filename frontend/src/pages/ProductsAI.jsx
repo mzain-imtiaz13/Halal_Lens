@@ -4,7 +4,7 @@ import Toolbar from "../components/Toolbar";
 import Pagination from "../components/Pagination";
 import Modal from "../components/Modal";
 import { listAIProducts } from "../api/services/products";
-import "./../styles.css";
+
 
 function ProductDetailsModal({ open, onClose, data }) {
   if (!open || !data) return null;

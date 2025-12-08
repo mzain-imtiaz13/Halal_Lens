@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react'
 import DataTable from '../components/DataTable'
 import Toolbar from '../components/Toolbar'
-import './../styles.css'
 import { fetchRevenueReports } from '../api/services/billing'
 
 export default function Revenue() {
