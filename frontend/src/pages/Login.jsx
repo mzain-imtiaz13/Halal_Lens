@@ -19,12 +19,34 @@ export default function Login() {
   const [submitting, setSubmitting] = useState(false);
   const [resetting, setResetting] = useState(false);
 
+  // 🔹 Where we will redirect after login
+  const [redirectTo, setRedirectTo] = useState("/dashboard/welcome");
+
+  // 🔹 Read and sanitize returnUrl from query string
   useEffect(() => {
-    if (user) navigate("/dashboard/welcome", { replace: true });
+    const params = new URLSearchParams(location.search);
+    const rawReturnUrl = params.get("returnUrl");
+
+    if (
+      rawReturnUrl &&
+      rawReturnUrl.startsWith("/") && // internal route
+      !rawReturnUrl.startsWith("//") // avoid protocol-relative URLs
+    ) {
+      setRedirectTo(rawReturnUrl);
+    } else {
+      setRedirectTo("/dashboard/welcome");
+    }
+  }, [location.search]);
+
+  useEffect(() => {
+    if (user) {
+      // If already logged in, go to returnUrl or default
+      navigate(redirectTo, { replace: true });
+    }
     if (location.state?.loggedOut) {
       setInfo("You have been logged out.");
     }
-  }, [user, navigate, location.state]);
+  }, [user, navigate, location.state, redirectTo]);
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
@@ -34,7 +56,8 @@ export default function Login() {
 
     try {
       await login(email.trim(), password);
-      navigate("/dashboard/welcome", { replace: true });
+      // 🔹 After successful login, go to redirectTo
+      navigate(redirectTo, { replace: true });
     } catch (err) {
       setError(err?.message || "Login failed");
     } finally {
@@ -76,6 +99,27 @@ export default function Login() {
     setMode("login");
     setError("");
     // keep info so the success message is visible on login screen
+  };
+
+  // 🔹 Helpers for social login so they also respect returnUrl
+  const handleGoogleLogin = async () => {
+    setError("");
+    try {
+      await loginWithGoogle();
+      navigate(redirectTo, { replace: true });
+    } catch (err) {
+      setError(err?.message || "Google login failed");
+    }
+  };
+
+  const handleAppleLogin = async () => {
+    setError("");
+    try {
+      await loginWithApple();
+      navigate(redirectTo, { replace: true });
+    } catch (err) {
+      setError(err?.message || "Apple login failed");
+    }
   };
 
   return (
@@ -183,9 +227,7 @@ export default function Login() {
                 <button
                   type="button"
                   className="cursor-pointer w-full inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
-                  onClick={() =>
-                    loginWithGoogle().catch((err) => setError(err.message))
-                  }
+                  onClick={handleGoogleLogin}
                 >
                   Continue with Google
                 </button>
@@ -193,9 +235,7 @@ export default function Login() {
                 <button
                   type="button"
                   className="cursor-pointer w-full inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
-                  onClick={() =>
-                    loginWithApple().catch((err) => setError(err.message))
-                  }
+                  onClick={handleAppleLogin}
                 >
                   Continue with Apple
                 </button>

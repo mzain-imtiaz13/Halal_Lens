@@ -57,7 +57,7 @@ const BillingPlans = () => {
     if (!action) return
 
     if (action === 'login') {
-      navigate('/login', {
+      navigate('/login?returnUrl=/billing', {
         state: { from: { pathname: '/billing' } },
         replace: true,
       })

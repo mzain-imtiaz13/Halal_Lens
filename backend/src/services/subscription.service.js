@@ -294,10 +294,26 @@ const SubscriptionService = {
     if (periodEnd) updateDoc.currentPeriodEnd = periodEnd;
 
     const saved = await subscriptionModel
+      .findOneAndUpdate({ firebaseUid, stripeSubscriptionId }, updateDoc, {
+        upsert: true,
+        new: true,
+      })
+      .populate("plan");
+
+    return saved;
+  },
+  // Set current period dates for the user's current subscription
+  setCurrentPeriodForUser: async ({ firebaseUid, periodStart, periodEnd }) => {
+    const update = {};
+
+    if (periodStart) update.currentPeriodStart = periodStart;
+    if (periodEnd) update.currentPeriodEnd = periodEnd;
+
+    const saved = await subscriptionModel
       .findOneAndUpdate(
-        { firebaseUid, stripeSubscriptionId },
-        updateDoc,
-        { upsert: true, new: true }
+        { firebaseUid, isCurrent: true }, // update the current sub for this user
+        update,
+        { new: true }
       )
       .populate("plan");
 
