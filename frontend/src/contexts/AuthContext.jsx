@@ -48,7 +48,7 @@ export function AuthProvider({ children }) {
       return [
         { to: "/dashboard/welcome", label: "Welcome", icon: FiSmile },
         { to: "/dashboard/admin", label: "Dashboard", icon: FiHome },
-        { to: "/dashboard/users", label: "Users", icon: FiUsers },
+        { to: "/dashboard/users", label: "Users & Subscriptions", icon: FiUsers },
         { to: "/dashboard/products/ai", label: "AI Products", icon: FiCpu },
         {
           to: "/dashboard/votes/summary",
