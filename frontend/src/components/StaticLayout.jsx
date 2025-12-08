@@ -4,7 +4,7 @@ import Navbar from "../pages/Landing/Navbar";
 
 const StaticLayout = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-brand-50 text-brand-950">
+    <div className="min-h-screen flex flex-col bg-green-50 text-green-950">
       <Navbar
         navItems={[
           { label: "Plans", href: "/billing", type: "route" },

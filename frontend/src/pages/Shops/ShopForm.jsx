@@ -32,7 +32,7 @@ export default function ShopForm({
             Shop name <span className="text-red-500">*</span>
           </label>
           <input
-            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Al-Noor Mart"
@@ -43,7 +43,7 @@ export default function ShopForm({
         <div className="space-y-1.5">
           <label className="text-xs font-medium text-slate-700">Address</label>
           <input
-            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
             placeholder="Street, City"
@@ -62,7 +62,7 @@ export default function ShopForm({
         <button
           type="submit"
           disabled={saving}
-          className="inline-flex items-center rounded-md bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-brand-700 disabled:opacity-60"
+          className="inline-flex items-center rounded-md bg-green-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-green-700 disabled:opacity-60"
         >
           {saving ? "Saving..." : "Save"}
         </button>

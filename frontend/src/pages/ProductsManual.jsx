@@ -22,8 +22,8 @@ function VerdictBadge({ value }) {
   let dotClasses = "h-1.5 w-1.5 rounded-full ";
 
   if (value === "halal") {
-    badgeClasses += "border-brand-200 bg-brand-50 text-brand-700";
-    dotClasses += "bg-brand-500";
+    badgeClasses += "border-green-200 bg-green-50 text-green-700";
+    dotClasses += "bg-green-500";
   } else if (value === "haram") {
     badgeClasses += "border-red-200 bg-red-50 text-red-700";
     dotClasses += "bg-red-500";
@@ -221,7 +221,7 @@ function ManualProductDetailsModal({ open, onClose, data }) {
                         href={r.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex cursor-pointer items-center text-xs font-medium text-brand-700 hover:text-brand-800"
+                        className="inline-flex cursor-pointer items-center text-xs font-medium text-green-700 hover:text-green-800"
                       >
                         Open link
                       </a>

@@ -163,7 +163,7 @@ export default function ProductForm({
               Product name <span className="text-red-500">*</span>
             </label>
             <input
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
               value={productName}
               onChange={(e) => setProductName(e.target.value)}
               placeholder="Prince Goût Chocolat"
@@ -175,7 +175,7 @@ export default function ProductForm({
               Barcode
             </label>
             <input
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
               value={barcode}
               onChange={(e) => setBarcode(e.target.value)}
               placeholder="7622210449283"
@@ -186,7 +186,7 @@ export default function ProductForm({
               Origin
             </label>
             <input
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
               value={origin}
               onChange={(e) => setOrigin(e.target.value)}
               placeholder="e.g. Canada"
@@ -197,7 +197,7 @@ export default function ProductForm({
               Brands
             </label>
             <input
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
               value={brands}
               onChange={(e) => setBrands(e.target.value)}
               placeholder="Lu"
@@ -208,7 +208,7 @@ export default function ProductForm({
               Quantity
             </label>
             <input
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
               placeholder="300 g"
@@ -262,7 +262,7 @@ export default function ProductForm({
           <label className="ml-auto flex items-center gap-2 text-xs text-slate-700">
             <input
               type="checkbox"
-              className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+              className="h-4 w-4 rounded border-slate-300 text-green-600 focus:ring-green-500"
               checked={isVerified}
               onChange={(e) => setIsVerified(e.target.checked)}
             />
@@ -376,7 +376,7 @@ export default function ProductForm({
               Overall Status
             </label>
             <select
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
               value={overallStatus}
               onChange={(e) => setOverallStatus(e.target.value)}
             >
@@ -392,7 +392,7 @@ export default function ProductForm({
             </label>
             <textarea
               rows={3}
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
               value={statusReason}
               onChange={(e) => setStatusReason(e.target.value)}
               placeholder="Optional"
@@ -435,7 +435,7 @@ export default function ProductForm({
         <button
           type="submit"
           disabled={saving}
-          className="inline-flex items-center rounded-md bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-brand-700 disabled:opacity-60"
+          className="inline-flex items-center rounded-md bg-green-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-green-700 disabled:opacity-60"
         >
           {saving ? "Saving..." : "Save product"}
         </button>

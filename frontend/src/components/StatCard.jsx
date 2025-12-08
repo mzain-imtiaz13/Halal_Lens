@@ -6,7 +6,7 @@ export default function StatCard({ label, value, delta, deltaType = 'up', icon }
   return (
     <div className="w-full rounded-2xl border border-(--border) bg-(--panel) p-4 shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md">
       <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-50 text-green-700">
           {icon || (
             <svg width="20" height="20" viewBox="0 0 24 24">
               <path
@@ -32,7 +32,7 @@ export default function StatCard({ label, value, delta, deltaType = 'up', icon }
                   "inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium",
                   isDown
                     ? "border-red-200 bg-red-50 text-red-700"
-                    : "border-brand-200 bg-brand-50 text-brand-700",
+                    : "border-green-200 bg-green-50 text-green-700",
                 ].join(" ")}
               >
                 <span className="text-[10px]">

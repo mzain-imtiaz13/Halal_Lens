@@ -6,8 +6,8 @@ export default function StatusBadge({ value }) {
   let dot = "h-1.5 w-1.5 rounded-full ";
 
   if (value === "halal") {
-    base += "border-brand-200 bg-brand-50 text-brand-700";
-    dot += "bg-brand-500";
+    base += "border-green-200 bg-green-50 text-green-700";
+    dot += "bg-green-500";
   } else if (value === "haram") {
     base += "border-red-200 bg-red-50 text-red-700";
     dot += "bg-red-500";

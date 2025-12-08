@@ -8,7 +8,7 @@ import Features from "./Landing/Features";
 
 const HalalLensLanding = () => {
   return (
-    <div className="min-h-screen text-brand-950 flex flex-col">
+    <div className="min-h-screen text-green-950 flex flex-col">
       <Hero />
       <Features/>
       <Discover />

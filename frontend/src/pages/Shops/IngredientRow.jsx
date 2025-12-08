@@ -35,7 +35,7 @@ export default function IngredientRow({ value, onChange, onRemove }) {
           <input
             type="number"
             min="0"
-            className="w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-right text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-right text-xs focus:outline-none focus:ring-1 focus:ring-green-500"
             value={x.halalVotes}
             onChange={(e) => upd({ halalVotes: Number(e.target.value || 0) })}
           />
@@ -49,7 +49,7 @@ export default function IngredientRow({ value, onChange, onRemove }) {
           <input
             type="number"
             min="0"
-            className="w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-right text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-right text-xs focus:outline-none focus:ring-1 focus:ring-green-500"
             value={x.suspiciousVotes}
             onChange={(e) =>
               upd({ suspiciousVotes: Number(e.target.value || 0) })
@@ -65,7 +65,7 @@ export default function IngredientRow({ value, onChange, onRemove }) {
           <input
             type="number"
             min="0"
-            className="w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-right text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-right text-xs focus:outline-none focus:ring-1 focus:ring-green-500"
             value={x.haramVotes}
             onChange={(e) => upd({ haramVotes: Number(e.target.value || 0) })}
           />
@@ -91,7 +91,7 @@ export default function IngredientRow({ value, onChange, onRemove }) {
         <div className="space-y-1">
           <label className="text-[11px] font-medium text-slate-600">Name</label>
           <input
-            className="w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-green-500"
             placeholder="Ingredient name"
             value={x.name}
             onChange={(e) => upd({ name: e.target.value })}
@@ -103,7 +103,7 @@ export default function IngredientRow({ value, onChange, onRemove }) {
             Status
           </label>
           <select
-            className="w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-green-500"
             value={x.status}
             onChange={(e) => upd({ status: e.target.value })}
           >
@@ -118,7 +118,7 @@ export default function IngredientRow({ value, onChange, onRemove }) {
             Reason
           </label>
           <input
-            className="w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-green-500"
             placeholder="Short reason"
             value={x.reason}
             onChange={(e) => upd({ reason: e.target.value })}

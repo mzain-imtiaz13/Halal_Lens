@@ -409,7 +409,7 @@ export default function Dashboard() {
               const isWarn = item.type === "warn";
               const badgeClasses = isWarn
                 ? "border-amber-200 bg-amber-50 text-amber-700"
-                : "border-brand-200 bg-brand-50 text-brand-700";
+                : "border-green-200 bg-green-50 text-green-700";
 
               return (
                 <li
@@ -468,8 +468,8 @@ export default function Dashboard() {
 
                   if (verdict === "halal") {
                     chipClasses =
-                      "border-brand-200 bg-brand-50 text-brand-700";
-                    dotClasses = "bg-brand-500";
+                      "border-green-200 bg-green-50 text-green-700";
+                    dotClasses = "bg-green-500";
                   } else if (verdict === "haram") {
                     chipClasses = "border-red-200 bg-red-50 text-red-700";
                     dotClasses = "bg-red-500";
