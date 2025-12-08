@@ -273,7 +273,7 @@ const BillingPlans = () => {
                             (disabled
                               ? 'cursor-not-allowed bg-slate-100 text-slate-400'
                               : buttonVariant === 'primary'
-                              ? 'bg-emerald-600 text-white hover:bg-emerald-700 cursor-pointer'
+                              ? 'bg-green-600 text-white hover:bg-green-700 cursor-pointer'
                               : 'border border-slate-300 bg-white text-slate-800 hover:bg-slate-50 cursor-pointer')
                           }
                         >

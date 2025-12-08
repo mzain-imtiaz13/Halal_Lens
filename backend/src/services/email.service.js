@@ -54,7 +54,7 @@ const EmailService = {
         { label: "Usage", value: "10 scans per day" },
         { label: "Trial ends on", value: end },
       ],
-      ctaUrl: FRONTEND_URL,
+      ctaUrl: `${FRONTEND_URL}/billing`,
       ctaLabel: "View plans & usage",
       footerNote:
         "You can continue using the app normally. After your trial ends, your account will automatically move to the free plan (2 scans per day). You can upgrade anytime from the website.",

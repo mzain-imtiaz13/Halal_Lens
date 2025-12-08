@@ -20,7 +20,7 @@ const Hero = () => {
             Suspicious—ingredient by ingredient.
           </p>
           <div className="flex flex-wrap gap-3">
-            <button className="flex items-center gap-2 rounded-xl bg-emerald-700 px-4 py-2 text-xs md:text-sm font-semibold text-white shadow-md hover:-translate-y-0.5 hover:shadow-lg transition">
+            <button className="flex items-center gap-2 rounded-xl bg-green-600 px-4 py-2 text-xs md:text-sm font-semibold text-white shadow-md hover:-translate-y-0.5 hover:shadow-lg transition">
               <span className="text-xl">
                 <FaApple />{" "}
               </span>
