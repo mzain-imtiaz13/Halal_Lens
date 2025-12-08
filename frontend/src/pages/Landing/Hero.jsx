@@ -20,18 +20,18 @@ const Hero = () => {
             Suspicious—ingredient by ingredient.
           </p>
           <div className="flex flex-wrap gap-3">
-            <button className="flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2 text-xs md:text-sm font-semibold text-white shadow-md hover:-translate-y-0.5 hover:shadow-lg transition">
-              <span className="text-xl">
+            <a href={import.meta.env.VITE_APP_STORE_URL} className="text-white flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2 text-xs md:text-sm font-semibold shadow-md hover:-translate-y-0.5 hover:shadow-lg transition">
+              <span className="text-xl text-white">
                 <FaApple />{" "}
               </span>
-              <span className="flex flex-col leading-tight">
+              <span className="flex flex-col leading-tight text-white">
                 <span className="text-[10px] uppercase tracking-wide">
                   Download on the
                 </span>
                 <span>App Store</span>
               </span>
-            </button>
-            <a href="https://play.google.com/store/apps/details?id=com.integer.halallens" className="flex items-center gap-2 rounded-xl bg-brand-100 px-4 py-2 text-xs md:text-sm font-semibold text-brand-800 border border-brand-200 hover:bg-brand-200/70 hover:-translate-y-0.5 hover:shadow-md transition">
+            </a>
+            <a href={import.meta.env.VITE_GOOGLE_PLAY_URL} className="flex items-center gap-2 rounded-xl bg-brand-100 px-4 py-2 text-xs md:text-sm font-semibold text-brand-800 border border-brand-200 hover:bg-brand-200/70 hover:-translate-y-0.5 hover:shadow-md transition">
               <span className="text-xl">
                 <FaGooglePlay />
               </span>

@@ -11,7 +11,6 @@ import ProductsAI from "./pages/ProductsAI";
 import ProductsManual from "./pages/ProductsManual";
 import VotesSummary from "./pages/VotesSummary";
 import Revenue from "./pages/Revenue";
-import Shops from "./pages/Shops";
 import NotFound from "./pages/NotFound";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import DataDeletion from "./pages/DataDeletion";
@@ -26,6 +25,7 @@ import BillingPlans from "./pages/Billing/BillingPlans";
 import BillingHistory from "./pages/Billing/BillingHistory";
 import BusinessInfo from "./pages/BusinessInfo";
 import Welcome from "./pages/Welcome";
+import Shops from "./pages/Shops/Shops";
 
 export default function AppRouter() {
   return (
