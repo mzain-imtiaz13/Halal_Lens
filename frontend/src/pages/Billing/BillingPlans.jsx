@@ -263,9 +263,7 @@ const BillingPlans = () => {
 
                     {/* Button pinned to bottom */}
                     {showButton && (
-                      <button
-                        disabled={disabled}
-                        onClick={() => handlePlanAction(plan)}
+                      <div
                         className={
                           "mt-auto border-t border-slate-100 flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition " +
                           (disabled
@@ -275,11 +273,17 @@ const BillingPlans = () => {
                             : "border border-slate-300 bg-white text-slate-800 hover:bg-slate-50 cursor-pointer")
                         }
                       >
-                        <span>{buttonLabel}</span>
-                        {!disabled && buttonVariant === "primary" && (
-                          <FiArrowRight className="h-4 w-4" />
-                        )}
-                      </button>
+                        <button
+                          disabled={disabled}
+                          onClick={() => handlePlanAction(plan)}
+                          className="flex gap-2 items-center"
+                        >
+                          <span>{buttonLabel}</span>
+                          {!disabled && buttonVariant === "primary" && (
+                            <FiArrowRight className="h-4 w-4" />
+                          )}
+                        </button>
+                      </div>
                     )}
                   </div>
                 </div>
