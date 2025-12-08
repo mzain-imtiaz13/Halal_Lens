@@ -23,8 +23,8 @@ const BillingSuccess = () => {
     <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
       <div className="max-w-md rounded-2xl bg-white p-8 shadow-lg border border-slate-200">
         <div className="flex justify-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100">
-            <FiCheckCircle className="h-6 w-6 text-emerald-600" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-100">
+            <FiCheckCircle className="h-6 w-6 text-brand-600" />
           </div>
         </div>
         <h1 className="mt-4 text-center text-xl font-semibold text-slate-900">
@@ -35,7 +35,7 @@ const BillingSuccess = () => {
         </p>
 
         {sub && (
-          <div className="mt-4 rounded-lg bg-emerald-50 p-3 text-xs text-emerald-900">
+          <div className="mt-4 rounded-lg bg-brand-50 p-3 text-xs text-brand-900">
             <div>
               Current plan:{' '}
               <span className="font-semibold">
@@ -53,7 +53,7 @@ const BillingSuccess = () => {
 
         <button
           onClick={() => navigate('/billing')}
-          className="mt-6 w-full rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+          className="mt-6 w-full rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
         >
           Go to Billing
         </button>

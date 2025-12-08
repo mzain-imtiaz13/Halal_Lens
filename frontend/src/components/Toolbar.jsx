@@ -34,7 +34,7 @@ export default function Toolbar({
               <button
                 type="button"
                 onClick={onReset}
-                className="cursor-pointer rounded-md border border-slate-200 bg-white px-4 py-3 text-xs font-medium text-slate-600 shadow-sm hover:bg-slate-50 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1"
+                className="cursor-pointer rounded-md border border-slate-200 bg-white px-4 py-3 text-xs font-medium text-slate-600 shadow-sm hover:bg-slate-50 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1"
               >
                 Reset
               </button>

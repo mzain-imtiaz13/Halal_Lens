@@ -38,9 +38,9 @@ const Navbar = ({ navItems }) => {
 
   const getClasses = (item) => {
     const base = "px-3 py-1 rounded-full transition-colors text-sm";
-    const active = "bg-emerald-200 text-white shadow-md font-semibold";
+    const active = "bg-brand-200 text-white shadow-md font-semibold";
     const inactive =
-      "text-emerald-800 hover:text-emerald-600 hover:bg-emerald-100";
+      "text-brand-800 hover:text-brand-600 hover:bg-brand-100";
 
     return base + " " + (isActive(item) ? active : inactive);
   };
@@ -74,7 +74,7 @@ const Navbar = ({ navItems }) => {
   const userEmailLabel = user?.email || "Account";
 
   return (
-    <header className="sticky top-0 z-30 border-b border-emerald-100 bg-emerald-50/90 backdrop-blur">
+    <header className="sticky top-0 z-30 border-b border-brand-100 bg-brand-50/90 backdrop-blur">
       <div className="mx-auto flex items-center justify-between px-4 py-3">
         {/* Logo */}
         <Link className="flex cursor-pointer items-center gap-2" to="/">
@@ -82,8 +82,8 @@ const Navbar = ({ navItems }) => {
             <img src="/Halal_lens_logo.png" alt="logo" />
           </div>
           <div className="flex flex-col leading-tight">
-            <span className="font-semibold text-emerald-900">Halal Lens</span>
-            <span className="text-xs text-emerald-600">
+            <span className="font-semibold text-brand-900">Halal Lens</span>
+            <span className="text-xs text-brand-600">
               Scan. Verify. Eat with confidence.
             </span>
           </div>
@@ -102,16 +102,16 @@ const Navbar = ({ navItems }) => {
               <button
                 type="button"
                 onClick={() => setUserMenuOpen((o) => !o)}
-                className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-xs font-medium text-emerald-900 shadow-sm hover:bg-emerald-50 cursor-pointer"
+                className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white px-3 py-1.5 text-xs font-medium text-brand-900 shadow-sm hover:bg-brand-50 cursor-pointer"
               >
-                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-600 text-[11px] font-semibold text-white">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-600 text-[11px] font-semibold text-white">
                   {userEmailLabel.charAt(0).toUpperCase()}
                 </span>
-                <span className="hidden max-w-40 truncate text-xs text-emerald-900 sm:inline">
+                <span className="hidden max-w-40 truncate text-xs text-brand-900 sm:inline">
                   {userEmailLabel}
                 </span>
                 <svg
-                  className="h-3 w-3 text-emerald-700"
+                  className="h-3 w-3 text-brand-700"
                   viewBox="0 0 20 20"
                   fill="none"
                 >
@@ -127,12 +127,12 @@ const Navbar = ({ navItems }) => {
 
               {/* Dropdown */}
               {userMenuOpen && (
-                <div className="absolute right-0 mt-2 w-56 rounded-xl border border-emerald-100 bg-white py-2 text-sm shadow-lg">
-                  <div className="border-b border-emerald-50 px-3 pb-2">
-                    <p className="text-[10px] font-semibold uppercase tracking-wide text-emerald-500">
+                <div className="absolute right-0 mt-2 w-56 rounded-xl border border-brand-100 bg-white py-2 text-sm shadow-lg">
+                  <div className="border-b border-brand-50 px-3 pb-2">
+                    <p className="text-[10px] font-semibold uppercase tracking-wide text-brand-500">
                       Signed in as
                     </p>
-                    <p className="mt-1 truncate text-xs font-medium text-emerald-900">
+                    <p className="mt-1 truncate text-xs font-medium text-brand-900">
                       {userEmailLabel}
                     </p>
                   </div>
@@ -143,9 +143,9 @@ const Navbar = ({ navItems }) => {
                       setUserMenuOpen(false);
                       navigate("/dashboard/welcome");
                     }}
-                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs hover:bg-emerald-50 cursor-pointer"
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs hover:bg-brand-50 cursor-pointer"
                   >
-                    <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
+                    <span className="inline-block h-2 w-2 rounded-full bg-brand-500" />
                     <span>Go to dashboard</span>
                   </button>
 
@@ -168,13 +168,13 @@ const Navbar = ({ navItems }) => {
 
           {/* Mobile Toggle */}
           <button
-            className="inline-flex items-center justify-center rounded-full border border-emerald-200 p-2 text-emerald-700 md:hidden cursor-pointer"
+            className="inline-flex items-center justify-center rounded-full border border-brand-200 p-2 text-brand-700 md:hidden cursor-pointer"
             onClick={() => setMobileOpen((s) => !s)}
           >
             <div className="space-y-1">
-              <span className="block h-0.5 w-5 bg-emerald-700" />
-              <span className="block h-0.5 w-5 bg-emerald-700" />
-              <span className="block h-0.5 w-5 bg-emerald-700" />
+              <span className="block h-0.5 w-5 bg-brand-700" />
+              <span className="block h-0.5 w-5 bg-brand-700" />
+              <span className="block h-0.5 w-5 bg-brand-700" />
             </div>
           </button>
         </div>
@@ -182,13 +182,13 @@ const Navbar = ({ navItems }) => {
 
       {/* Mobile Dropdown nav */}
       {mobileOpen && (
-        <div className="border-t border-emerald-100 bg-emerald-50 md:hidden">
+        <div className="border-t border-brand-100 bg-brand-50 md:hidden">
           <div className="flex flex-col gap-2 px-4 py-3">
             {navItems.map((item) => renderNavItem(item))}
 
             {user && (
               <>
-                <div className="mt-2 border-t border-emerald-100 pt-2 text-[11px] text-emerald-700">
+                <div className="mt-2 border-t border-brand-100 pt-2 text-[11px] text-brand-700">
                   Signed in as {userEmailLabel}
                 </div>
                 <button
@@ -196,7 +196,7 @@ const Navbar = ({ navItems }) => {
                     setMobileOpen(false);
                     navigate("/dashboard/welcome");
                   }}
-                  className="w-full rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-left text-xs font-medium text-emerald-900 cursor-pointer"
+                  className="w-full rounded-full border border-brand-200 bg-white px-3 py-1.5 text-left text-xs font-medium text-brand-900 cursor-pointer"
                 >
                   Dashboard
                 </button>

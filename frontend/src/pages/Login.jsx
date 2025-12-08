@@ -119,7 +119,7 @@ export default function Login() {
           )}
 
           {info && (
-            <div className="mt-3 inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+            <div className="mt-3 inline-flex items-center rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700">
               {info}
             </div>
           )}
@@ -139,7 +139,7 @@ export default function Login() {
                     Email
                   </label>
                   <input
-                    className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                     placeholder="example@gmail.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -151,7 +151,7 @@ export default function Login() {
                     Password
                   </label>
                   <input
-                    className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                     type="password"
                     placeholder="••••••••"
                     value={password}
@@ -162,7 +162,7 @@ export default function Login() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="cursor-pointer w-full inline-flex items-center justify-center rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1"
+                  className="cursor-pointer w-full inline-flex items-center justify-center rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-700 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1"
                 >
                   {submitting ? "Signing in..." : "Sign In"}
                 </button>
@@ -170,7 +170,7 @@ export default function Login() {
                 <div className="flex justify-between items-center mt-1">
                   <button
                     type="button"
-                    className="cursor-pointer text-sm font-medium text-emerald-700 hover:text-emerald-800"
+                    className="cursor-pointer text-sm font-medium text-brand-700 hover:text-brand-800"
                     onClick={goToReset}
                   >
                     Forgot password?
@@ -212,7 +212,7 @@ export default function Login() {
                 </label>
                 <input
                   type="email"
-                  className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -222,7 +222,7 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={resetting}
-                className="cursor-pointer w-full inline-flex items-center justify-center rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1"
+                className="cursor-pointer w-full inline-flex items-center justify-center rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-700 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1"
               >
                 {resetting ? "Sending reset link..." : "Send Reset Link"}
               </button>

@@ -77,9 +77,9 @@ const DataDeletion = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-emerald-50 flex items-center justify-center">
-        <div className="flex items-center gap-2 text-emerald-700 text-sm">
-          <span className="h-3 w-3 rounded-full bg-emerald-500 animate-pulse" />
+      <div className="min-h-screen bg-brand-50 flex items-center justify-center">
+        <div className="flex items-center gap-2 text-brand-700 text-sm">
+          <span className="h-3 w-3 rounded-full bg-brand-500 animate-pulse" />
           <span>Loading account info…</span>
         </div>
       </div>
@@ -87,17 +87,17 @@ const DataDeletion = () => {
   }
 
   return (
-    <div className="min-h-screen text-emerald-950 flex flex-col">
+    <div className="min-h-screen text-brand-950 flex flex-col">
       {/* Hero */}
       <header className="pt-4">
         <div className="max-w-4xl mx-auto p-4">
-          <p className="text-xs font-semibold tracking-[0.2em] uppercase text-emerald-600 mb-2">
+          <p className="text-xs font-semibold tracking-[0.2em] uppercase text-brand-600 mb-2">
             Halal Lens
           </p>
-          <h1 className="text-2xl md:text-3xl font-bold text-emerald-950 mb-3">
+          <h1 className="text-2xl md:text-3xl font-bold text-brand-950 mb-3">
             Data Deletion Request
           </h1>
-          <p className="text-sm md:text-base text-emerald-800 max-w-2xl">
+          <p className="text-sm md:text-base text-brand-800 max-w-2xl">
             Request permanent removal of your Halal Lens account and all
             associated data.
           </p>
@@ -107,9 +107,9 @@ const DataDeletion = () => {
       {/* Content */}
       <main className="flex-1">
         <div className="max-w-4xl mx-auto p-4">
-          <section className="bg-white border border-emerald-100 rounded-3xl shadow-sm p-6 md:p-8 space-y-6 md:space-y-8">
-            <div className="space-y-3 text-sm text-emerald-900 leading-relaxed">
-              <p className="text-xs font-semibold text-emerald-700">
+          <section className="bg-white border border-brand-100 rounded-3xl shadow-sm p-6 md:p-8 space-y-6 md:space-y-8">
+            <div className="space-y-3 text-sm text-brand-900 leading-relaxed">
+              <p className="text-xs font-semibold text-brand-700">
                 <strong>Halal Lens – Data Deletion Request</strong>
               </p>
 
@@ -127,7 +127,7 @@ const DataDeletion = () => {
 
               {/* What will be deleted */}
               <div>
-                <h2 className="text-sm md:text-base font-semibold text-emerald-950 mb-2">
+                <h2 className="text-sm md:text-base font-semibold text-brand-950 mb-2">
                   🗑️ What Will Be Deleted
                 </h2>
                 <p className="mb-2">
@@ -148,7 +148,7 @@ const DataDeletion = () => {
 
               {/* Retention */}
               <div>
-                <h2 className="text-sm md:text-base font-semibold text-emerald-950 mb-2">
+                <h2 className="text-sm md:text-base font-semibold text-brand-950 mb-2">
                   ⚙️ What May Be Retained Temporarily
                 </h2>
                 <p className="mb-2">For security and legal purposes:</p>
@@ -166,7 +166,7 @@ const DataDeletion = () => {
 
               {/* Processing time */}
               <div>
-                <h2 className="text-sm md:text-base font-semibold text-emerald-950 mb-2">
+                <h2 className="text-sm md:text-base font-semibold text-brand-950 mb-2">
                   🕒 Processing Time
                 </h2>
                 <p>
@@ -177,7 +177,7 @@ const DataDeletion = () => {
 
               {/* Contact */}
               <div>
-                <h2 className="text-sm md:text-base font-semibold text-emerald-950 mb-2">
+                <h2 className="text-sm md:text-base font-semibold text-brand-950 mb-2">
                   📩 Need Help?
                 </h2>
                 <p className="mb-2">
@@ -188,7 +188,7 @@ const DataDeletion = () => {
                   📧{" "}
                   <a
                     href="mailto:support@halallens.org"
-                    className="text-emerald-700 underline hover:text-emerald-600"
+                    className="text-brand-700 underline hover:text-brand-600"
                   >
                     support@halallens.org
                   </a>
@@ -196,7 +196,7 @@ const DataDeletion = () => {
               </div>
 
               <div>
-                <h2 className="text-sm md:text-base font-semibold text-emerald-950 mb-2">
+                <h2 className="text-sm md:text-base font-semibold text-brand-950 mb-2">
                   🧾 How to Request Deletion
                 </h2>
                 <ul className="list-disc list-inside space-y-1">
@@ -217,18 +217,18 @@ const DataDeletion = () => {
             </div>
 
             {/* Form */}
-            <div className="border-t border-emerald-100 pt-6 md:pt-8">
-              <h2 className="text-base md:text-lg font-semibold text-emerald-950 mb-2">
+            <div className="border-t border-brand-100 pt-6 md:pt-8">
+              <h2 className="text-base md:text-lg font-semibold text-brand-950 mb-2">
                 Submit Your Data Deletion Request
               </h2>
-              <p className="text-sm text-emerald-800 mb-4">
+              <p className="text-sm text-brand-800 mb-4">
                 Please complete the form below to confirm your identity and
                 request permanent deletion of your Halal Lens account and data.
               </p>
 
               {/* Auth required notice */}
               {!isAuthenticated && (
-                <p className="mb-4 text-xs text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+                <p className="mb-4 text-xs text-brand-800 bg-brand-50 border border-brand-200 rounded-lg px-3 py-2">
                   You need to be signed in to your Halal Lens account to submit
                   a data deletion request. Please sign in from the main app and
                   then return to this page.
@@ -243,7 +243,7 @@ const DataDeletion = () => {
                 <div>
                   <label
                     htmlFor="email"
-                    className="block text-xs font-semibold text-emerald-800 mb-1"
+                    className="block text-xs font-semibold text-brand-800 mb-1"
                   >
                     Email <span className="text-red-500">*</span>
                   </label>
@@ -256,14 +256,14 @@ const DataDeletion = () => {
                     onChange={handleChange}
                     placeholder="you@example.com"
                     disabled={emailDisabled}
-                    className={`w-full rounded-lg border px-3 py-2 text-sm text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                    className={`w-full rounded-lg border px-3 py-2 text-sm text-brand-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 ${
                       emailDisabled
-                        ? "bg-emerald-50 border-emerald-200 text-emerald-700 cursor-not-allowed"
-                        : "bg-emerald-50/40 border-emerald-200"
+                        ? "bg-brand-50 border-brand-200 text-brand-700 cursor-not-allowed"
+                        : "bg-brand-50/40 border-brand-200"
                     }`}
                   />
                   {user && user.email && (
-                    <p className="mt-1 text-[11px] text-emerald-600">
+                    <p className="mt-1 text-[11px] text-brand-600">
                       This email is taken from your Halal Lens account and
                       cannot be changed here. If this is incorrect, please
                       contact support.
@@ -275,7 +275,7 @@ const DataDeletion = () => {
                 <div>
                   <label
                     htmlFor="name"
-                    className="block text-xs font-semibold text-emerald-800 mb-1"
+                    className="block text-xs font-semibold text-brand-800 mb-1"
                   >
                     Name <span className="text-red-500">*</span>
                   </label>
@@ -288,20 +288,20 @@ const DataDeletion = () => {
                     onChange={handleChange}
                     placeholder="Your full name"
                     disabled={nameDisabled}
-                    className={`w-full rounded-lg border px-3 py-2 text-sm text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                    className={`w-full rounded-lg border px-3 py-2 text-sm text-brand-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 ${
                       nameDisabled
-                        ? "bg-emerald-50 border-emerald-200 text-emerald-700 cursor-not-allowed"
-                        : "bg-emerald-50/40 border-emerald-200"
+                        ? "bg-brand-50 border-brand-200 text-brand-700 cursor-not-allowed"
+                        : "bg-brand-50/40 border-brand-200"
                     }`}
                   />
                   {user ? (
                     hasPrefilledName ? (
-                      <p className="mt-1 text-[11px] text-emerald-600">
+                      <p className="mt-1 text-[11px] text-brand-600">
                         This name is taken from your Halal Lens profile. If you
                         need it changed, please contact support.
                       </p>
                     ) : (
-                      <p className="mt-1 text-[11px] text-emerald-600">
+                      <p className="mt-1 text-[11px] text-brand-600">
                         We couldn’t find a name on your profile. Please enter
                         your full name.
                       </p>
@@ -313,10 +313,10 @@ const DataDeletion = () => {
                 <div>
                   <label
                     htmlFor="reason"
-                    className="block text-xs font-semibold text-emerald-800 mb-1"
+                    className="block text-xs font-semibold text-brand-800 mb-1"
                   >
                     Reason for deletion{" "}
-                    <span className="text-emerald-500 text-[10px]">
+                    <span className="text-brand-500 text-[10px]">
                       (optional)
                     </span>
                   </label>
@@ -328,24 +328,24 @@ const DataDeletion = () => {
                     rows={3}
                     placeholder="Let us know why you’re leaving (optional)"
                     disabled={formDisabled}
-                    className={`w-full rounded-lg border border-emerald-200 px-3 py-2 text-sm text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none ${
+                    className={`w-full rounded-lg border border-brand-200 px-3 py-2 text-sm text-brand-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 resize-none ${
                       formDisabled
-                        ? "bg-emerald-50 text-emerald-700 cursor-not-allowed"
-                        : "bg-emerald-50/40"
+                        ? "bg-brand-50 text-brand-700 cursor-not-allowed"
+                        : "bg-brand-50/40"
                     }`}
                   />
                 </div>
 
                 {/* Confirmation */}
-                <div className="border border-emerald-100 rounded-xl bg-emerald-50/60 px-3 py-3">
-                  <label className="flex items-start gap-2 text-xs text-emerald-900">
+                <div className="border border-brand-100 rounded-xl bg-brand-50/60 px-3 py-3">
+                  <label className="flex items-start gap-2 text-xs text-brand-900">
                     <input
                       type="checkbox"
                       name="confirm"
                       checked={form.confirm}
                       onChange={handleChange}
                       disabled={formDisabled}
-                      className="mt-0.5 h-4 w-4 rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500 disabled:cursor-not-allowed"
+                      className="mt-0.5 h-4 w-4 rounded border-brand-300 text-brand-600 focus:ring-brand-500 disabled:cursor-not-allowed"
                       required
                     />
                     <span>
@@ -358,7 +358,7 @@ const DataDeletion = () => {
 
                 {/* Status messages */}
                 {status === "success" && (
-                  <p className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+                  <p className="text-xs text-brand-700 bg-brand-50 border border-brand-200 rounded-lg px-3 py-2">
                     Thank you. Your deletion request has been submitted. Our
                     team will process it within 30 days.
                   </p>
@@ -383,7 +383,7 @@ const DataDeletion = () => {
                   <button
                     type="submit"
                     disabled={submitting || formDisabled}
-                    className="inline-flex items-center justify-center rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-800 disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="inline-flex items-center justify-center rounded-lg bg-brand-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-800 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     {formDisabled
                       ? "Sign in to submit"
@@ -400,7 +400,7 @@ const DataDeletion = () => {
                         confirm: false,
                       }))
                     }
-                    className="text-xs text-emerald-800 underline hover:text-emerald-600"
+                    className="text-xs text-brand-800 underline hover:text-brand-600"
                   >
                     Clear form
                   </button>

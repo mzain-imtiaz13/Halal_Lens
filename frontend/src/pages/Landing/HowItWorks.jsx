@@ -27,17 +27,17 @@ const HowItWorks = () => {
     },
   ];
   return (
-    <section id="workflow" className="bg-white border-t border-emerald-100">
+    <section id="workflow" className="bg-white border-t border-brand-100">
       <div className="mx-auto max-w-6xl px-4 py-12 md:py-16">
         <div className="grid md:grid-cols-2 gap-10 items-start">
           <div>
-            <p className="text-xs font-semibold text-emerald-600 tracking-[0.2em] uppercase">
+            <p className="text-xs font-semibold text-brand-600 tracking-[0.2em] uppercase">
               How It Works
             </p>
-            <h2 className="mt-2 text-2xl md:text-3xl font-bold text-emerald-950">
+            <h2 className="mt-2 text-2xl md:text-3xl font-bold text-brand-950">
               From scan to verdict in a few seconds
             </h2>
-            <p className="mt-3 text-sm text-emerald-700">
+            <p className="mt-3 text-sm text-brand-700">
               Halal Lens connects the mobile app, backend, and admin web panel
               in a single workflow powered by Django, PostgreSQL, and AWS.
             </p>
@@ -45,14 +45,14 @@ const HowItWorks = () => {
             <div className="mt-6 space-y-4">
               {workflowSteps.map((step, index) => (
                 <div key={step.title} className="flex gap-3 items-start">
-                  <div className="mt-1 flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-[11px] font-semibold text-emerald-700 border border-emerald-200">
+                  <div className="mt-1 flex h-7 w-7 items-center justify-center rounded-full bg-brand-100 text-[11px] font-semibold text-brand-700 border border-brand-200">
                     {index + 1}
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-emerald-900">
+                    <p className="text-sm font-semibold text-brand-900">
                       {step.title}
                     </p>
-                    <p className="text-xs text-emerald-700 mt-1">
+                    <p className="text-xs text-brand-700 mt-1">
                       {step.description}
                     </p>
                   </div>
@@ -61,13 +61,13 @@ const HowItWorks = () => {
             </div>
           </div>
 
-          <div className="rounded-3xl bg-emerald-50 border border-emerald-100 p-5 shadow-sm">
-            <h3 className="text-sm font-semibold text-emerald-900 mb-3">
+          <div className="rounded-3xl bg-brand-50 border border-brand-100 p-5 shadow-sm">
+            <h3 className="text-sm font-semibold text-brand-900 mb-3">
               Tech stack overview
             </h3>
-            <div className="grid grid-cols-2 gap-4 text-xs text-emerald-800">
+            <div className="grid grid-cols-2 gap-4 text-xs text-brand-800">
               <div className="space-y-2">
-                <p className="font-semibold text-emerald-900">Frontend</p>
+                <p className="font-semibold text-brand-900">Frontend</p>
                 <ul className="space-y-1 list-disc list-inside">
                   <li>React Native mobile app</li>
                   <li>React / Next.js admin panel</li>
@@ -76,7 +76,7 @@ const HowItWorks = () => {
                 </ul>
               </div>
               <div className="space-y-2">
-                <p className="font-semibold text-emerald-900">Backend</p>
+                <p className="font-semibold text-brand-900">Backend</p>
                 <ul className="space-y-1 list-disc list-inside">
                   <li>Django REST Framework</li>
                   <li>PostgreSQL + Redis cache</li>
@@ -86,7 +86,7 @@ const HowItWorks = () => {
                 </ul>
               </div>
               <div className="space-y-2">
-                <p className="font-semibold text-emerald-900">Infrastructure</p>
+                <p className="font-semibold text-brand-900">Infrastructure</p>
                 <ul className="space-y-1 list-disc list-inside">
                   <li>Dockerized services</li>
                   <li>AWS EC2 / Elastic Beanstalk</li>
@@ -95,7 +95,7 @@ const HowItWorks = () => {
                 </ul>
               </div>
               <div className="space-y-2">
-                <p className="font-semibold text-emerald-900">Admin Tools</p>
+                <p className="font-semibold text-brand-900">Admin Tools</p>
                 <ul className="space-y-1 list-disc list-inside">
                   <li>User & product management</li>
                   <li>Override AI verdicts</li>
@@ -103,7 +103,7 @@ const HowItWorks = () => {
                 </ul>
               </div>
             </div>
-            <p className="mt-4 text-[11px] text-emerald-700">
+            <p className="mt-4 text-[11px] text-brand-700">
               This architecture keeps Halal Lens fast, scalable, and ready for
               production workloads.
             </p>

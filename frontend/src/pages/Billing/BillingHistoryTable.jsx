@@ -29,7 +29,7 @@ const renderStatusChip = (status) => {
       )
     case 'free':
       return (
-        <span className={`${base} bg-emerald-100 text-emerald-800`}>
+        <span className={`${base} bg-brand-100 text-brand-800`}>
           <FiStar className="h-3 w-3" />
           Free
         </span>
@@ -161,7 +161,7 @@ const BillingHistoryTable = ({ userId }) => {
                     key={entry.id}
                     className={
                       entry.isCurrent
-                        ? 'bg-emerald-50/40'
+                        ? 'bg-brand-50/40'
                         : entry.isActive
                         ? 'bg-white'
                         : 'bg-slate-50'
@@ -188,7 +188,7 @@ const BillingHistoryTable = ({ userId }) => {
                     </td>
                     <td className="px-4 py-3 text-sm">
                       {entry.isActive ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-brand-100 px-2 py-0.5 text-xs font-medium text-brand-800">
                           <FiCheckCircle className="h-3 w-3" />
                           Active
                         </span>
@@ -200,7 +200,7 @@ const BillingHistoryTable = ({ userId }) => {
                     </td>
                     <td className="px-4 py-3 text-sm">
                       {entry.isCurrent ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-2 py-0.5 text-xs font-medium text-white">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-brand-600 px-2 py-0.5 text-xs font-medium text-white">
                           <FiCheckCircle className="h-3 w-3" />
                           Current
                         </span>

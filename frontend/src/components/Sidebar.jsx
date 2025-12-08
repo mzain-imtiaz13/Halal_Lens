@@ -12,7 +12,7 @@ const NavItem = ({ to, label, Icon, collapsed }) => {
           'flex items-center gap-3 px-3 py-2 mx-1 rounded-lg text-sm font-medium transition-colors',
           collapsed ? 'justify-center' : '',
           isActive
-            ? 'bg-emerald-50 text-emerald-700'
+            ? 'bg-brand-50 text-brand-700'
             : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900',
         ].join(' ')
       }
