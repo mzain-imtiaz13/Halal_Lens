@@ -180,7 +180,7 @@ export default function Users() {
     {
       title: "Actions",
       render: (_, row) => (
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2">
           <Button variant="primary" onClick={() => openHistory(row)}>
             Scans
           </Button>
