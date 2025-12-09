@@ -8,6 +8,7 @@ import {
   FiStar,
 } from 'react-icons/fi'
 import { fetchSubscriptionHistory } from '../../api/services/billing'
+import { formatDate } from '../../utils/dateUtils'
 
 const formatDateTime = (value) => {
   if (!value) return '—'
@@ -181,10 +182,10 @@ const BillingHistoryTable = ({ userId }) => {
                       {renderStatusChip(entry.status)}
                     </td>
                     <td className="px-4 py-3 text-sm text-slate-700">
-                      {formatDateTime(entry.startDate)}
+                      {formatDate(entry.startDate)}
                     </td>
                     <td className="px-4 py-3 text-sm text-slate-700">
-                      {formatDateTime(entry.endDate)}
+                      {formatDate(entry.endDate)}
                     </td>
                     <td className="px-4 py-3 text-sm">
                       {entry.isActive ? (

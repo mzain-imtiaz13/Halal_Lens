@@ -12,6 +12,7 @@ import {
 import { useAuth } from "../contexts/AuthContext";
 import BillingHistoryTable from "./Billing/BillingHistoryTable";
 import Button from "../components/Button";
+import { formatDate } from "../utils/dateUtils";
 
 export default function Users() {
   const { user, loading: authLoading, isAdmin } = useAuth();
@@ -26,7 +27,7 @@ export default function Users() {
 
   // pagination
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(25);
+  const [pageSize, setPageSize] = useState(25);
   const [total, setTotal] = useState(0);
   const [cursors, setCursors] = useState([]);
 
@@ -171,7 +172,11 @@ export default function Users() {
     { title: "Country", dataIndex: "country" },
     { title: "Mobile", dataIndex: "mobile" },
     { title: "Total Scans", dataIndex: "total_scans" },
-    { title: "Created At", dataIndex: "created_at" },
+    {
+      title: "Created At",
+      dataIndex: "created_at",
+      render: (_, row) => formatDate(row.created_at),
+    },
     {
       title: "Actions",
       render: (_, row) => (
@@ -215,16 +220,16 @@ export default function Users() {
         "Loading..."
       ) : (
         <>
-          <DataTable columns={columns} data={rows} />
-
-          <Pagination
+          <DataTable
+            columns={columns}
+            data={rows}
             page={page}
             pageSize={pageSize}
             total={total}
-            onChange={(p) => {
-              setPage(p);
-              if (p - 1 < cursors.length)
-                setCursors((prev) => prev.slice(0, Math.max(0, p - 1)));
+            onPageChange={setPage}
+            onPageSizeChange={(size) => {
+              setPageSize(size);
+              setPage(1);
             }}
           />
         </>

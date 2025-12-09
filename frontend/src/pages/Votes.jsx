@@ -21,7 +21,7 @@ export default function Votes() {
   const [voteType, setVoteType] = useState("");
   const [q, setQ] = useState("");
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(25);
+  const [pageSize, setPageSize] = useState(25);
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
@@ -90,12 +90,17 @@ export default function Votes() {
         "Loading..."
       ) : (
         <>
-          <DataTable columns={columns} data={rows} />
-          <Pagination
+          <DataTable
+            columns={columns}
+            data={rows}
             page={page}
             pageSize={pageSize}
             total={total}
-            onChange={setPage}
+            onPageChange={setPage}
+            onPageSizeChange={(size) => {
+              setPageSize(size);
+              setPage(1);
+            }}
           />
         </>
       )}

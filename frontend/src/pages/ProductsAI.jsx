@@ -194,7 +194,7 @@ export default function ProductsAI() {
   const [verdict, setVerdict] = useState("");
   const [q, setQ] = useState("");
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(25);
+  const [pageSize, setPageSize] = useState(25);
   const [total, setTotal] = useState(0);
 
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -213,7 +213,7 @@ export default function ProductsAI() {
 
   useEffect(() => {
     fetchData();
-  }, [verdict, q, page]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [verdict, q, page, pageSize]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const reset = () => {
     setVerdict("");
@@ -300,13 +300,14 @@ export default function ProductsAI() {
           <DataTable
             columns={columns}
             data={rows}
-            pageSize={rows.length || 10}
-          />
-          <Pagination
             page={page}
             pageSize={pageSize}
             total={total}
-            onChange={setPage}
+            onPageChange={setPage}
+            onPageSizeChange={(size) => {
+              setPageSize(size);
+              setPage(1);
+            }}
           />
         </>
       )}
