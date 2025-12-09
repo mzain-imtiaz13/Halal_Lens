@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import Button from "../../components/Button";
 
 const Navbar = ({ navItems }) => {
   const { logout, user } = useAuth();
@@ -39,8 +40,7 @@ const Navbar = ({ navItems }) => {
   const getClasses = (item) => {
     const base = "px-3 py-1 rounded-full transition-colors text-sm";
     const active = "text-brand-800 bg-brand-200 shadow-md font-semibold";
-    const inactive =
-      "text-brand-800 hover:text-brand-600 hover:bg-brand-100";
+    const inactive = "text-brand-800 hover:text-brand-600 hover:bg-brand-100";
 
     return base + " " + (isActive(item) ? active : inactive);
   };
@@ -161,9 +161,9 @@ const Navbar = ({ navItems }) => {
               )}
             </div>
           ) : (
-            <Link to="/login" className="btn primary">
-              Log in
-            </Link>
+            <Button variant="primary">
+              <Link to="/login">Log in</Link>
+            </Button>
           )}
 
           {/* Mobile Toggle */}
