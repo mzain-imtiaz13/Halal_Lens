@@ -101,7 +101,7 @@ function ProductDetailsModal({ open, onClose, data }) {
         </div>
 
         {/* Overview + Ingredients */}
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4">
           {/* Overview */}
           <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 shadow-sm">
             <h3 className="text-sm font-semibold text-slate-800">Overview</h3>
