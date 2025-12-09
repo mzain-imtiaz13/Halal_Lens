@@ -9,13 +9,6 @@ const SubscriptionService = require("../services/subscription.service");
 
 const stripe = Stripe(STRIPE_SECRET_KEY);
 
-// small helper
-const unixToDate = (value) => {
-  if (typeof value !== "number") return null;
-  const d = new Date(value * 1000);
-  return isNaN(d.valueOf()) ? null : d;
-};
-
 const stripeWebhookHandler = async (req, res) => {
   // ====== Incoming Request Debug ======
   console.log("===== Stripe Webhook Hit =====");
@@ -43,7 +36,7 @@ const stripeWebhookHandler = async (req, res) => {
   try {
     console.log("Attempting to construct Stripe event from webhook...");
     event = stripe.webhooks.constructEvent(
-      req.body, // raw body (make sure express.raw is used for this route)
+      req.body,
       sig,
       STRIPE_WEBHOOK_SECRET
     );
@@ -73,6 +66,24 @@ const stripeWebhookHandler = async (req, res) => {
         console.log("Session subscription:", session.subscription);
         console.log("Session metadata:", session.metadata);
 
+        // We only support one-time payment mode now
+        if (session.mode !== "payment") {
+          console.log(
+            "checkout.session.completed in non-payment mode, ignoring.",
+            { mode: session.mode }
+          );
+          break;
+        }
+
+        if (!session.customer) {
+          console.warn(
+            "checkout.session.completed has no customer, ignoring.",
+            { sessionId: session.id }
+          );
+          break;
+        }
+
+        // Fetch customer (to get firebaseUid from metadata, email, etc.)
         let customer;
         try {
           console.log("Fetching Stripe customer for ID:", session.customer);
@@ -85,129 +96,118 @@ const stripeWebhookHandler = async (req, res) => {
         } catch (err) {
           console.error("❌ Error retrieving customer:", err.message);
           console.error("Stack trace:", err.stack);
-          // keep flow same: just break after logging
           break;
         }
 
         const firebaseUid = customer.metadata?.firebaseUid;
-        const stripeSubscriptionId = session.subscription;
-
         console.log(
           "Extracted firebaseUid from customer.metadata:",
           firebaseUid
         );
-        console.log(
-          "Extracted stripeSubscriptionId from session:",
-          stripeSubscriptionId
-        );
 
-        if (!firebaseUid || !stripeSubscriptionId) {
+        if (!firebaseUid) {
           console.warn(
-            "⚠ Missing firebaseUid or stripeSubscriptionId in session/customer metadata",
+            "⚠ firebaseUid missing in customer.metadata for checkout.session.completed",
             {
-              firebaseUid,
-              stripeSubscriptionId,
+              customerId: customer.id,
             }
           );
           break;
         }
 
-        // Get full Stripe subscription
-        let stripeSub;
-        try {
-          console.log(
-            "Retrieving full Stripe subscription for ID:",
-            stripeSubscriptionId
-          );
-          stripeSub = await stripe.subscriptions.retrieve(stripeSubscriptionId);
-          console.log("Stripe subscription retrieved:", {
-            id: stripeSub.id,
-            status: stripeSub.status,
-            current_period_start: stripeSub.current_period_start,
-            current_period_end: stripeSub.current_period_end,
-          });
-        } catch (err) {
-          console.error("❌ Error retrieving subscription:", err.message);
-          console.error("Stack trace:", err.stack);
-          break;
+        // --- Resolve Plan ---
+        let plan = null;
+
+        // 1) Prefer planCode from session metadata (we set it in createCheckoutSessionForPlan)
+        const planCode = session.metadata?.planCode;
+        if (planCode) {
+          console.log("Looking up Plan by code from session.metadata:", planCode);
+          plan = await planModel.findOne({ code: planCode, isActive: true });
         }
 
-        const priceId = stripeSub.items?.data?.[0]?.price?.id;
-        console.log("Derived priceId from subscription items:", priceId);
+        // 2) Fallback: derive priceId from line_items and map to plan.stripePriceId
+        if (!plan) {
+          try {
+            console.log(
+              "Plan not found by code, retrieving checkout session with line_items..."
+            );
+            const fullSession = await stripe.checkout.sessions.retrieve(
+              session.id,
+              { expand: ["line_items"] }
+            );
 
-        if (!priceId) {
-          console.warn(
-            "⚠ No priceId found on subscription items. Subscription items:",
-            stripeSub.items?.data?.map((item) => ({
-              id: item.id,
-              price: item.price && {
-                id: item.price.id,
-                nickname: item.price.nickname,
-              },
-            }))
-          );
-          break;
+            const priceId =
+              fullSession.line_items?.data?.[0]?.price?.id || null;
+
+            console.log("Derived priceId from checkout line_items:", priceId);
+
+            if (priceId) {
+              plan = await planModel.findOne({
+                stripePriceId: priceId,
+                isActive: true,
+                code: { $ne: "INFINITE_ADMIN_PLAN" }
+              });
+            }
+          } catch (err) {
+            console.error(
+              "❌ Error retrieving checkout.session with line_items:",
+              err.message
+            );
+            console.error("Stack trace:", err.stack);
+          }
         }
-
-        console.log("Looking up Plan by stripePriceId:", priceId);
-        const plan = await planModel.findOne({ stripePriceId: priceId });
 
         if (!plan) {
           console.warn(
-            "⚠ No Plan found for priceId:",
-            priceId,
-            "– make sure stripePriceId is set on Plan."
+            "⚠ No Plan found for checkout.session.completed. Cannot create subscription record.",
+            {
+              planCode,
+              sessionId: session.id,
+            }
           );
           break;
         }
 
-        console.log("Plan found:", {
+        console.log("Plan resolved for checkout:", {
           id: plan._id,
           name: plan.name,
+          code: plan.code,
           stripePriceId: plan.stripePriceId,
         });
 
-        const periodStart = unixToDate(stripeSub.current_period_start);
-        const periodEnd = unixToDate(stripeSub.current_period_end);
-        console.log("Computed billing period:", {
-          periodStart,
-          periodEnd,
-        });
-
+        // --- Upsert "subscription" (actually: plan purchase) in Mongo ---
         console.log(
           "Calling SubscriptionService.upsertPaidSubscriptionFromStripe with:",
           {
             firebaseUid,
             stripeCustomerId: customer.id,
-            stripeSubscriptionId,
+            stripeSubscriptionId: null, // one-time payment -> no Stripe subscription
             planId: plan._id,
           }
         );
 
-        // ✅ Use new helper to ensure:
-        // - this paid sub is isCurrent=true, isActive=true
-        // - all previous subs have isCurrent=false
         const saved =
           await SubscriptionService.upsertPaidSubscriptionFromStripe({
             firebaseUid,
             stripeCustomerId: customer.id,
-            stripeSubscriptionId,
+            stripeSubscriptionId: null,
             plan,
-            periodStart,
-            periodEnd,
           });
 
-        console.log("Subscription saved/updated in DB:", {
+        console.log("Subscription/plan record saved/updated in DB:", {
           id: saved && saved._id,
           firebaseUid: saved && saved.firebaseUid,
-          plan: saved && saved.plan,
+          plan: saved && saved.plan && saved.plan.code,
           isCurrent: saved && saved.isCurrent,
           isActive: saved && saved.isActive,
           status: saved && saved.status,
+          currentPeriodStart: saved && saved.currentPeriodStart,
+          currentPeriodEnd: saved && saved.currentPeriodEnd,
         });
 
-        // Send purchase confirmation email
+        // --- Send purchase confirmation email ---
         if (customer.email) {
+          const periodEnd = saved?.currentPeriodEnd || null;
           console.log(
             "Sending plan purchase confirmation email to:",
             customer.email
@@ -233,193 +233,23 @@ const stripeWebhookHandler = async (req, res) => {
         }
 
         console.log(
-          "✅ checkout.session.completed handled successfully, subscription ID:",
-          saved && saved._id
+          "✅ checkout.session.completed (payment mode) handled successfully."
         );
         break;
       }
+
+      // You can leave invoice events here as future-proof no-ops for now
       case "invoice.payment_succeeded": {
-        console.log("➡ Handling event: invoice.payment_succeeded");
-        const invoice = event.data.object;
-
-        console.log("Invoice ID:", invoice.id);
-        console.log("Invoice subscription:", invoice.subscription);
-        console.log("Invoice customer:", invoice.customer);
-
-        const stripeCustomerId = invoice.customer;
-
-        // Get billing period from invoice line
-        const line = invoice.lines?.data?.[0];
-        if (!line || !line.period) {
-          console.warn(
-            "⚠ No line.period on invoice, cannot derive billing period"
-          );
-          break;
-        }
-
-        const periodStart = unixToDate(line.period.start);
-        const periodEnd = unixToDate(line.period.end);
-
-        console.log("Derived billing period from invoice:", {
-          rawStart: line.period.start,
-          rawEnd: line.period.end,
-          periodStart,
-          periodEnd,
-        });
-
-        // Fetch customer to get firebaseUid from metadata
-        let customer;
-        try {
-          console.log("Fetching Stripe customer for ID:", stripeCustomerId);
-          customer = await stripe.customers.retrieve(stripeCustomerId);
-          console.log("Stripe customer retrieved (for invoice):", {
-            id: customer.id,
-            email: customer.email,
-            metadata: customer.metadata,
-          });
-        } catch (err) {
-          console.error(
-            "❌ Error retrieving customer in invoice.payment_succeeded:",
-            err.message
-          );
-          console.error("Stack trace:", err.stack);
-          break;
-        }
-
-        const firebaseUid = customer.metadata?.firebaseUid;
-        if (!firebaseUid) {
-          console.warn(
-            "⚠ firebaseUid missing in customer.metadata for invoice.payment_succeeded"
-          );
-          break;
-        }
-
-        // ✅ Get the active subscription for this customer
-        let stripeSub;
-        try {
-          console.log(
-            "Listing active subscriptions for customer in invoice.payment_succeeded..."
-          );
-          const subs = await stripe.subscriptions.list({
-            customer: stripeCustomerId,
-            status: "active",
-            limit: 1,
-          });
-
-          stripeSub = subs.data[0];
-          if (!stripeSub) {
-            console.warn(
-              "⚠ No active subscription found for customer in invoice.payment_succeeded"
-            );
-            break;
-          }
-
-          console.log(
-            "Active subscription from list (invoice.payment_succeeded):",
-            {
-              id: stripeSub.id,
-              status: stripeSub.status,
-              current_period_start: stripeSub.current_period_start,
-              current_period_end: stripeSub.current_period_end,
-            }
-          );
-        } catch (err) {
-          console.error(
-            "❌ Error listing subscriptions in invoice.payment_succeeded:",
-            err.message
-          );
-          console.error("Stack trace:", err.stack);
-          break;
-        }
-
-        const stripeSubscriptionId = stripeSub.id;
-
-        // Figure out which plan this subscription is using
-        const priceId =
-          stripeSub.items?.data?.[0]?.price?.id || line.price?.id || null;
-
-        if (!priceId) {
-          console.warn(
-            "⚠ No priceId found in subscription or invoice line in invoice.payment_succeeded"
-          );
-          break;
-        }
-
         console.log(
-          "Looking up Plan by stripePriceId (invoice.payment_succeeded):",
-          priceId
+          "➡ invoice.payment_succeeded received (no subscription flow in use now). No-op."
         );
-
-        const plan = await planModel.findOne({ stripePriceId: priceId });
-        if (!plan) {
-          console.warn(
-            "⚠ No Plan found for priceId in invoice.payment_succeeded:",
-            priceId
-          );
-          break;
-        }
-
-        console.log("Plan found (invoice.payment_succeeded):", {
-          id: plan._id,
-          name: plan.name,
-          stripePriceId: plan.stripePriceId,
-        });
-
-        // ✅ Reuse central helper: this will
-        // - clear old isCurrent flags
-        // - upsert this paid subscription with the correct period
-        const saved =
-          await SubscriptionService.upsertPaidSubscriptionFromStripe({
-            firebaseUid,
-            stripeCustomerId,
-            stripeSubscriptionId,
-            plan,
-            periodStart,
-            periodEnd,
-          });
-
-        console.log("Updated subscription document with correct period:", {
-          id: saved && saved._id,
-          firebaseUid: saved && saved.firebaseUid,
-          plan: saved && saved.plan,
-          currentPeriodStart: saved && saved.currentPeriodStart,
-          currentPeriodEnd: saved && saved.currentPeriodEnd,
-        });
-
         break;
       }
+
       case "invoice.payment_failed": {
-        console.log("➡ Handling event: invoice.payment_failed");
-        const invoice = event.data.object;
-        console.log("Invoice ID:", invoice.id);
-        console.log("Invoice subscription:", invoice.subscription);
-        console.log("Invoice customer:", invoice.customer);
-        console.log("Invoice status:", invoice.status);
         console.log(
-          "Invoice attempt_count, paid, hosted_invoice_url:",
-          invoice.attempt_count,
-          invoice.paid,
-          invoice.hosted_invoice_url
+          "➡ invoice.payment_failed received (no subscription flow in use now). No-op."
         );
-
-        // Optional: you can mark subscription as past_due or send email
-        // Example (minimal):
-        /*
-        const stripeSubscriptionId = invoice.subscription;
-
-        if (stripeSubscriptionId) {
-          console.log(
-            "Would mark subscription as past_due in DB for stripeSubscriptionId:",
-            stripeSubscriptionId
-          );
-          await subscriptionModel.updateMany(
-            { stripeSubscriptionId },
-            { status: "past_due" }
-          );
-          // Optionally send EmailService.sendPaymentFailedEmail(...)
-        }
-        */
-        console.log("invoice.payment_failed received (no-op for now).");
         break;
       }
 
@@ -435,7 +265,6 @@ const stripeWebhookHandler = async (req, res) => {
   } catch (err) {
     console.error("❌ Webhook handler error:", err.message);
     console.error("Stack trace:", err.stack);
-    // still return 500 as before (functionality unchanged)
     res.status(500).send("Webhook handler error");
   }
 };

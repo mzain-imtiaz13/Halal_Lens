@@ -13,17 +13,13 @@ const subscriptionSchema = new mongoose.Schema(
       ref: "Plan",
       required: true,
     },
-
+    
     status: {
       type: String,
       enum: [
         "trial",
         "active",
-        "past_due",
-        "canceled",
-        "incomplete",
-        "incomplete_expired",
-        "free",
+        "free",        
       ],
       default: "active",
     },

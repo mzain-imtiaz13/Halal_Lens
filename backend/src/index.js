@@ -10,7 +10,10 @@ const runSubscriptionExpiry = require("./scripts/subscription-expiry.script");
 const app = express();
 
 app.set("view engine", "ejs");
-
+app.use((req, res, next) => {
+  console.log("INCOMING:", req.method, req.url);
+  next();
+});
 // Stripe webhook (no /api prefix here)
 app.post(
   "/billing/webhook",

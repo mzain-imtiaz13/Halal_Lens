@@ -2,6 +2,7 @@ const Stripe = require("stripe");
 const planModel = require("../models/plan.model");
 const subscriptionModel = require("../models/subscription.model");
 const EmailService = require("./email.service");
+const UserService = require("./user.service");
 
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -109,7 +110,31 @@ const SubscriptionService = {
   // Falls back to FREE plan if:
   //  - no subscription exists, OR
   //  - current subscription is expired
-  getCurrentSubscriptionForUser: async (firebaseUid, email) => {
+  getCurrentSubscriptionForUser: async (firebaseUid) => {
+    const user = await UserService.getUserById(firebaseUid);
+    const email = user.email;
+    if (user.role === "admin") {
+      const adminPlan = await planModel.findOne({
+          code: "INFINITE_ADMIN_PLAN",
+        });
+      let current = await subscriptionModel
+        .findOne({ firebaseUid, isCurrent: true, plan: adminPlan._id })
+        .populate("plan");
+      
+      // If no subscription, create an "infinite" admin subscription
+      if (!current) {
+        await subscriptionModel.deleteMany({ firebaseUid })  
+        current = await subscriptionModel.create({
+          firebaseUid,
+          plan: adminPlan._id,
+          status: "active",
+          isActive: true,
+          isCurrent: true,
+        });
+      }
+
+      return current.populate('plan');
+    }
     // Try to get a subscription marked as current
     let current = await subscriptionModel
       .findOne({ firebaseUid, isCurrent: true })
@@ -228,7 +253,7 @@ const SubscriptionService = {
     return freeSub;
   },
 
-  // Create Stripe checkout session for Standard Monthly / Yearly
+  // Create Stripe checkout session for Standard plans (now one-time payment)
   createCheckoutSessionForPlan: async ({
     firebaseUid,
     customerEmail,
@@ -238,6 +263,9 @@ const SubscriptionService = {
   }) => {
     const plan = await planModel.findOne({ code: planCode, isActive: true });
     if (!plan) throw new Error("planModel not found");
+
+    // We keep this check to avoid breaking existing semantics:
+    // "recurring" here just means "Stripe-paid plan" in your system, not Stripe subscriptions.
     if (plan.billingType !== "recurring") {
       throw new Error("This plan does not require Stripe checkout");
     }
@@ -245,21 +273,28 @@ const SubscriptionService = {
       throw new Error("stripePriceId not configured for this plan");
     }
 
+    // Create / attach Stripe customer with firebaseUid in metadata
     const customer = await stripe.customers.create({
       email: customerEmail || undefined,
       metadata: { firebaseUid },
     });
 
+    // One-time payment Checkout session
     const session = await stripe.checkout.sessions.create({
-      mode: "subscription",
+      mode: "payment", // ✅ one-time
       payment_method_types: ["card"],
       customer: customer.id,
       line_items: [
         {
-          price: plan.stripePriceId,
+          price: plan.stripePriceId, // one-time price in Stripe
           quantity: 1,
         },
       ],
+      // We attach metadata so webhook can resolve plan without extra queries
+      metadata: {
+        firebaseUid,
+        planCode,
+      },
       success_url: successUrl,
       cancel_url: cancelUrl,
     });
@@ -274,8 +309,6 @@ const SubscriptionService = {
     stripeCustomerId,
     stripeSubscriptionId,
     plan,
-    periodStart,
-    periodEnd,
   }) => {
     // Mark all old subs as not current
     await clearCurrentFlagForUser(firebaseUid);
@@ -289,9 +322,21 @@ const SubscriptionService = {
       isActive: true,
       isCurrent: true,
     };
+    const now = new Date();
+    const end = new Date();
 
-    if (periodStart) updateDoc.currentPeriodStart = periodStart;
-    if (periodEnd) updateDoc.currentPeriodEnd = periodEnd;
+    // Mongo-based period logic (no Stripe billing periods)
+    if (plan.interval === "month" || plan.interval === "monthly") {
+      end.setMonth(now.getMonth() + 1);
+    } else if (plan.interval === "year" || plan.interval === "yearly") {
+      end.setFullYear(now.getFullYear() + 1);
+    } else if (plan.interval === "week" || plan.interval === "weekly") {
+      end.setDate(now.getDate() + 7);
+    }
+    // you can add more intervals if needed; otherwise it becomes "no expiry"
+
+    updateDoc.currentPeriodStart = now;
+    updateDoc.currentPeriodEnd = end;
 
     const saved = await subscriptionModel
       .findOneAndUpdate({ firebaseUid, stripeSubscriptionId }, updateDoc, {

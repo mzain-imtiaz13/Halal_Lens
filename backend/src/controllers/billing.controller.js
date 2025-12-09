@@ -326,6 +326,7 @@ const BillingController = {
       });
     }
   },
+  
   sendAllTestEmails: async (req, res) => {
     // hard-coded test email as you requested
     const to = "faaiz290302@gmail.com";

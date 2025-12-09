@@ -6,7 +6,7 @@ const planModel = require("../models/plan.model");
 
 const PlanService = {
   getAllActivePlans: async () => {
-    return planModel.find({ isActive: true }).sort({ price: 1 });
+    return planModel.find({ isActive: true, code: { $ne: "INFINITE_ADMIN_PLAN" } }).sort({ price: 1 });
   },
 
   decoratePlansForUi: (plans, subscription, isAuthenticated) => {
@@ -125,6 +125,16 @@ const PlanService = {
         scansPerDay: 2,
       },
       {
+        name: "Admin Plan (Infinite Scans)",
+        code: "INFINITE_ADMIN_PLAN",
+        description: "This plan gives infinite scans to admin users.",
+        billingType: "free", // Or any other flag indicating this is special
+        interval: null,
+        price: 0,
+        scansPerDay: 999999, // Infinite scans for admin
+        isActive: true,
+      },
+      {
         name: "Standard Trial (7 days)",
         code: "TRIAL_7_DAYS",
         description: "7-day trial, 10 scans per day.",
@@ -133,7 +143,7 @@ const PlanService = {
         price: 0,
         scansPerDay: 10,
         trialDays: 7,
-      },      
+      },
       {
         name: "Standard Monthly",
         code: "STANDARD_MONTHLY",
