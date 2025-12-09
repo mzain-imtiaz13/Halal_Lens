@@ -323,37 +323,33 @@ export default function ProductsManual() {
 
   return (
     <>
-      <Toolbar
-        title="Manual Product Listing"
-        onReset={reset}
-        left={
-          <>
-            <input
-              className="input"
-              style={{ minWidth: 240 }}
-              placeholder="Search product..."
-              value={q}
-              onChange={(e) => {
-                setQ(e.target.value);
-                setPage(1);
-              }}
-            />
-            <select
-              className="select"
-              value={verdict}
-              onChange={(e) => {
-                setVerdict(e.target.value);
-                setPage(1);
-              }}
-            >
-              <option value="">All</option>
-              <option value="halal">Halal</option>
-              <option value="haram">Haram</option>
-              <option value="suspicious">Suspicious</option>
-            </select>
-          </>
-        }
-      />
+      <Toolbar title="Manual Product Listing" onReset={reset}>
+        <>
+          <input
+            className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+            style={{ minWidth: 240 }}
+            placeholder="Search product..."
+            value={q}
+            onChange={(e) => {
+              setQ(e.target.value);
+              setPage(1);
+            }}
+          />
+          <select
+            className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+            value={verdict}
+            onChange={(e) => {
+              setVerdict(e.target.value);
+              setPage(1);
+            }}
+          >
+            <option value="">All</option>
+            <option value="halal">Halal</option>
+            <option value="haram">Haram</option>
+            <option value="suspicious">Suspicious</option>
+          </select>
+        </>
+      </Toolbar>
 
       {loading ? (
         <div className="py-8 text-sm text-slate-500">Loading…</div>
