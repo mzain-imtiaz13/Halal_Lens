@@ -214,26 +214,19 @@ export default function Users() {
         />
       </Toolbar>
 
-      <div className="space" />
-
-      {loading ? (
-        "Loading..."
-      ) : (
-        <>
-          <DataTable
-            columns={columns}
-            data={rows}
-            page={page}
-            pageSize={pageSize}
-            total={total}
-            onPageChange={setPage}
-            onPageSizeChange={(size) => {
-              setPageSize(size);
-              setPage(1);
-            }}
-          />
-        </>
-      )}
+      <DataTable
+        columns={columns}
+        data={rows}
+        loading={loading}
+        page={page}
+        pageSize={pageSize}
+        total={total}
+        onPageChange={setPage}
+        onPageSizeChange={(size) => {
+          setPageSize(size);
+          setPage(1);
+        }}
+      />
 
       {/* Scan History Modal */}
       <Modal isOpen={historyOpen} onClose={closeHistory}>

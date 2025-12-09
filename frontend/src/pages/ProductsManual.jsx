@@ -351,13 +351,10 @@ export default function ProductsManual() {
         </>
       </Toolbar>
 
-      {loading ? (
-        <div className="py-8 text-sm text-slate-500">Loading…</div>
-      ) : (
-        <>
           <DataTable
             columns={columns}
             data={rows}
+            loading={loading}
             page={page}
             pageSize={pageSize}
             total={total}
@@ -367,8 +364,6 @@ export default function ProductsManual() {
               setPage(1);
             }}
           />
-        </>
-      )}
 
       <ManualProductDetailsModal
         open={detailsOpen}

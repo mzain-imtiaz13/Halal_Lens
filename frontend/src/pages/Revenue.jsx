@@ -70,12 +70,10 @@ export default function Revenue() {
   return (
     <>
       <Toolbar title="Revenue Reports" />
-      {loading ? (
-        "Loading..."
-      ) : (
         <DataTable
           columns={columns}
           data={pagedRows}
+          loading={loading}
           page={page}
           pageSize={pageSize}
           total={total}
@@ -85,7 +83,6 @@ export default function Revenue() {
             setPage(1);
           }}
         />
-      )}
     </>
   );
 }

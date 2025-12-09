@@ -30,30 +30,72 @@ function ProductDetailsModal({ open, onClose, data }) {
               Product details
             </h2>
             <p className="mt-1 text-sm text-slate-500">
-              Full AI analysis, ingredients and references for this product.
+              Full AI analysis, ingredients, and references for this product.
             </p>
           </div>
         </div>
 
         {/* Product title + images */}
-        <div>
-          <div className="mb-3 text-base font-extrabold text-slate-900">
-            {data.product_name}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-[11px] font-medium uppercase tracking-wide text-brand-600">
+                Product
+              </p>
+              <div className="text-base font-semibold text-slate-900">
+                {data.product_name}
+              </div>
+            </div>
+
+            {data.ai_verdict && (
+              <span
+                className={[
+                  "inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-medium",
+                  data.ai_verdict === "halal"
+                    ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                    : data.ai_verdict === "haram"
+                    ? "border-red-200 bg-red-50 text-red-700"
+                    : "border-amber-200 bg-amber-50 text-amber-700",
+                ].join(" ")}
+              >
+                <span
+                  className={[
+                    "h-1.5 w-1.5 rounded-full",
+                    data.ai_verdict === "halal"
+                      ? "bg-emerald-500"
+                      : data.ai_verdict === "haram"
+                      ? "bg-red-500"
+                      : "bg-amber-500",
+                  ].join(" ")}
+                />
+                {data.ai_verdict || "-"}
+              </span>
+            )}
           </div>
+
           <div className="flex flex-wrap gap-3">
             {x.frontImageUrl && (
-              <img
-                src={x.frontImageUrl}
-                alt="front"
-                className="h-40 w-auto rounded-md border border-slate-200 object-cover"
-              />
+              <div className="relative overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
+                <img
+                  src={x.frontImageUrl}
+                  alt="front"
+                  className="h-40 w-auto object-cover"
+                />
+              </div>
             )}
             {x.backImageUrl && (
-              <img
-                src={x.backImageUrl}
-                alt="back"
-                className="h-40 w-auto rounded-md border border-slate-200 object-cover"
-              />
+              <div className="relative overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
+                <img
+                  src={x.backImageUrl}
+                  alt="back"
+                  className="h-40 w-auto object-cover"
+                />
+              </div>
+            )}
+            {!x.frontImageUrl && !x.backImageUrl && (
+              <div className="flex h-24 w-full items-center justify-center rounded-lg border border-dashed border-slate-200 bg-slate-50 text-xs text-slate-500">
+                No product images available
+              </div>
             )}
           </div>
         </div>
@@ -61,120 +103,192 @@ function ProductDetailsModal({ open, onClose, data }) {
         {/* Overview + Ingredients */}
         <div className="grid gap-4 md:grid-cols-2">
           {/* Overview */}
-          <div className="card">
-            <div className="card-title">Overview</div>
-            <div className="kv" style={{ marginTop: 8 }}>
-              <div className="muted">Barcode</div>
-              <div>{x.barcode || "-"}</div>
+          <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 shadow-sm">
+            <h3 className="text-sm font-semibold text-slate-800">Overview</h3>
+            <dl className="mt-3 grid grid-cols-[120px,1fr] gap-y-2 text-xs sm:text-sm">
+              <dt className="text-slate-500">Barcode</dt>
+              <dd className="font-medium text-slate-800">{x.barcode || "-"}</dd>
 
-              <div className="muted">Brands</div>
-              <div>{x.brands || "-"}</div>
+              <dt className="text-slate-500">Brands</dt>
+              <dd className="font-medium text-slate-800">{x.brands || "-"}</dd>
 
-              <div className="muted">Data Source</div>
-              <div>{x.dataSource || "-"}</div>
+              <dt className="text-slate-500">Data Source</dt>
+              <dd className="text-slate-800">{x.dataSource || "-"}</dd>
 
-              <div className="muted">Added By</div>
-              <div>{x.addedByUserId || "-"}</div>
+              <dt className="text-slate-500">Added By</dt>
+              <dd className="text-slate-800">{x.addedByUserId || "-"}</dd>
 
-              <div className="muted">Verified</div>
-              <div>{x.isVerified ? "Yes" : "No"}</div>
+              <dt className="text-slate-500">Verified</dt>
+              <dd className="text-slate-800">{x.isVerified ? "Yes" : "No"}</dd>
 
-              <div className="muted">AI Verdict</div>
-              <div>
-                <span className={`chip ${verdictClass}`}>
-                  <span className="dot" /> {data.ai_verdict || "-"}
-                </span>
-              </div>
+              <dt className="text-slate-500">AI Verdict</dt>
+              <dd className="text-slate-800">
+                {data.ai_verdict ? (
+                  <span
+                    className={[
+                      "inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium",
+                      data.ai_verdict === "halal"
+                        ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                        : data.ai_verdict === "haram"
+                        ? "border-red-200 bg-red-50 text-red-700"
+                        : "border-amber-200 bg-amber-50 text-amber-700",
+                    ].join(" ")}
+                  >
+                    <span
+                      className={[
+                        "h-1.5 w-1.5 rounded-full",
+                        data.ai_verdict === "halal"
+                          ? "bg-emerald-500"
+                          : data.ai_verdict === "haram"
+                          ? "bg-red-500"
+                          : "bg-amber-500",
+                      ].join(" ")}
+                    />
+                    {data.ai_verdict}
+                  </span>
+                ) : (
+                  "-"
+                )}
+              </dd>
 
-              <div className="muted">Reason</div>
-              <div>{x.statusReason || "-"}</div>
+              <dt className="text-slate-500">Reason</dt>
+              <dd className="text-slate-800">{x.statusReason || "-"}</dd>
 
-              <div className="muted">Created</div>
-              <div>{x.createdAt || "-"}</div>
+              <dt className="text-slate-500">Created</dt>
+              <dd className="text-slate-800 text-xs sm:text-sm">
+                {x.createdAt || "-"}
+              </dd>
 
-              <div className="muted">Updated</div>
-              <div>{x.updatedAt || "-"}</div>
-            </div>
+              <dt className="text-slate-500">Updated</dt>
+              <dd className="text-slate-800 text-xs sm:text-sm">
+                {x.updatedAt || "-"}
+              </dd>
+            </dl>
           </div>
 
           {/* Ingredients */}
-          <div className="card">
-            <div className="card-title">Ingredients</div>
+          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <h3 className="text-sm font-semibold text-slate-800">
+              Ingredients
+            </h3>
             {!ing.length ? (
-              <div className="table-empty">No ingredients</div>
+              <div className="mt-4 rounded-lg border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
+                No ingredients found for this product.
+              </div>
             ) : (
-              <table className="table compact" style={{ marginTop: 8 }}>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Status</th>
-                    <th>Reason</th>
-                    <th>Votes</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {ing.map((it, i) => {
-                    const statusClass =
-                      it?.status === "halal"
-                        ? "green"
-                        : it?.status === "haram"
-                        ? "red"
-                        : "amber";
+              <div className="mt-3 overflow-hidden rounded-lg border border-slate-200">
+                <table className="min-w-full border-collapse text-xs sm:text-sm">
+                  <thead className="bg-slate-50">
+                    <tr className="text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                      <th className="border-b border-slate-200 px-3 py-2">
+                        Name
+                      </th>
+                      <th className="border-b border-slate-200 px-3 py-2">
+                        Status
+                      </th>
+                      <th className="border-b border-slate-200 px-3 py-2">
+                        Reason
+                      </th>
+                      <th className="border-b border-slate-200 px-3 py-2">
+                        Votes
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {ing.map((it, i) => {
+                      const status = it?.status;
+                      const totalVotes =
+                        (it?.halalVotes ?? 0) +
+                        (it?.haramVotes ?? 0) +
+                        (it?.suspiciousVotes ?? 0);
 
-                    const totalVotes =
-                      (it?.halalVotes ?? 0) +
-                      (it?.haramVotes ?? 0) +
-                      (it?.suspiciousVotes ?? 0);
+                      const statusClasses =
+                        status === "halal"
+                          ? {
+                              badge:
+                                "border-emerald-200 bg-emerald-50 text-emerald-700",
+                              dot: "bg-emerald-500",
+                            }
+                          : status === "haram"
+                          ? {
+                              badge: "border-red-200 bg-red-50 text-red-700",
+                              dot: "bg-red-500",
+                            }
+                          : {
+                              badge:
+                                "border-amber-200 bg-amber-50 text-amber-700",
+                              dot: "bg-amber-500",
+                            };
 
-                    return (
-                      <tr key={i}>
-                        <td>{it?.name || "-"}</td>
-                        <td>
-                          <span className={`chip ${statusClass}`}>
-                            <span className="dot" /> {it?.status || "-"}
-                          </span>
-                        </td>
-                        <td
-                          style={{
-                            maxWidth: 260,
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                          }}
-                          title={it?.reason || ""}
+                      return (
+                        <tr
+                          key={i}
+                          className="border-b border-slate-100 last:border-0 hover:bg-slate-50/70"
                         >
-                          {it?.reason || "-"}
-                        </td>
-                        <td>{totalVotes}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                          <td className="px-3 py-2 align-top text-slate-800">
+                            {it?.name || "-"}
+                          </td>
+                          <td className="px-3 py-2 align-top">
+                            <span
+                              className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium ${statusClasses.badge}`}
+                            >
+                              <span
+                                className={`h-1.5 w-1.5 rounded-full ${statusClasses.dot}`}
+                              />
+                              {status || "-"}
+                            </span>
+                          </td>
+                          <td
+                            className="max-w-xs px-3 py-2 align-top text-slate-700"
+                            title={it?.reason || ""}
+                          >
+                            <span className="line-clamp-2 text-xs sm:text-[13px]">
+                              {it?.reason || "-"}
+                            </span>
+                          </td>
+                          <td className="px-3 py-2 align-top text-right text-slate-800">
+                            {totalVotes}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
         </div>
 
         {/* References */}
-        <div className="card">
-          <div className="card-title">References</div>
+        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <h3 className="text-sm font-semibold text-slate-800">References</h3>
           {!refs.length ? (
-            <div className="table-empty">No references</div>
+            <div className="mt-4 rounded-lg border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
+              No references have been attached to this analysis.
+            </div>
           ) : (
-            <ul style={{ margin: 0, paddingLeft: 16 }}>
+            <ul className="mt-3 space-y-3">
               {refs.map((r, i) => (
-                <li key={i} style={{ marginBottom: 10 }}>
-                  <div style={{ fontWeight: 700 }}>{r?.title || "-"}</div>
-                  <div className="helper">{r?.notes || "-"}</div>
+                <li
+                  key={i}
+                  className="rounded-lg border border-slate-100 bg-slate-50/60 px-3 py-3"
+                >
+                  <div className="text-sm font-semibold text-slate-900">
+                    {r?.title || "-"}
+                  </div>
+                  <div className="mt-1 text-xs text-slate-600">
+                    {r?.notes || "-"}
+                  </div>
                   {r?.url && (
-                    <div style={{ marginTop: 6 }}>
+                    <div className="mt-2">
                       <a
-                        className="btn link"
                         href={r.url}
                         target="_blank"
                         rel="noreferrer"
+                        className="inline-flex items-center text-xs font-medium text-brand-600 hover:text-brand-700 hover:underline"
                       >
                         Open link
+                        <span className="ml-1 text-[11px]">↗</span>
                       </a>
                     </div>
                   )}
@@ -292,25 +406,19 @@ export default function ProductsAI() {
       </Toolbar>
 
       <div className="space" />
-
-      {loading ? (
-        "Loading..."
-      ) : (
-        <>
-          <DataTable
-            columns={columns}
-            data={rows}
-            page={page}
-            pageSize={pageSize}
-            total={total}
-            onPageChange={setPage}
-            onPageSizeChange={(size) => {
-              setPageSize(size);
-              setPage(1);
-            }}
-          />
-        </>
-      )}
+      <DataTable
+        loading={loading}
+        columns={columns}
+        data={rows}
+        page={page}
+        pageSize={pageSize}
+        total={total}
+        onPageChange={setPage}
+        onPageSizeChange={(size) => {
+          setPageSize(size);
+          setPage(1);
+        }}
+      />
 
       <ProductDetailsModal
         open={detailsOpen}
