@@ -14,6 +14,7 @@ import ShopForm from "./ShopForm";
 import ProductForm from "./ProductForm";
 
 import Modal from "../../components/Modal";
+import Button from "../../components/Button";
 
 export default function Shops() {
   const [rows, setRows] = useState([]);
@@ -124,13 +125,13 @@ export default function Shops() {
             Manage your verified shops and the products they sell.
           </p>
         </div>
-        <button
+        <Button
+          variant="primary"
           type="button"
           onClick={() => setCreateShopOpen(true)}
-          className="inline-flex items-center rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-700"
         >
           + Add Shop
-        </button>
+        </Button>
       </div>
 
       {/* Content */}
@@ -160,27 +161,27 @@ export default function Shops() {
                   </div>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <button
+                  <Button
+                    variant="secondary"
                     type="button"
-                    className="inline-flex items-center rounded-md border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-700 hover:bg-slate-50"
                     onClick={() => setEditShop(shop)}
                   >
                     Edit
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="primary"
                     type="button"
-                    className="inline-flex items-center rounded-md border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-700 hover:bg-slate-50"
                     onClick={() => setAddProductForShop(shop)}
                   >
                     Add Product
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="danger" outline
                     type="button"
-                    className="inline-flex items-center rounded-md bg-red-50 px-2.5 py-1 text-[11px] font-medium text-red-600 hover:bg-red-100"
                     onClick={() => handleDeleteShop(shop.id)}
                   >
                     Delete
-                  </button>
+                  </Button>
                 </div>
               </div>
 
@@ -225,9 +226,7 @@ export default function Shops() {
                             className="border-b border-slate-100 hover:bg-slate-50/70"
                           >
                             <td className="px-2 py-2 align-middle">
-                              <ImgThumb
-                                src={p.frontImage || p.picture || ""}
-                              />
+                              <ImgThumb src={p.frontImage || p.picture || ""} />
                             </td>
                             <td className="px-2 py-2 align-middle text-slate-800">
                               {p.name}
@@ -242,15 +241,13 @@ export default function Shops() {
                               <StatusBadge value={p.overallStatus} />
                             </td>
                             <td className="px-2 py-2 align-middle">
-                              <StatusBadge
-                                value={p.verified ? "Yes" : "No"}
-                              />
+                              <StatusBadge value={p.verified ? "Yes" : "No"} />
                             </td>
                             <td className="px-2 py-2 align-middle text-right">
                               <div className="inline-flex items-center gap-1">
-                                <button
+                                <Button
+                                  variant="secondary"
                                   type="button"
-                                  className="inline-flex items-center rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] font-medium text-slate-700 hover:bg-slate-50"
                                   onClick={() =>
                                     setEditProductContext({
                                       shopId: shop.id,
@@ -259,16 +256,16 @@ export default function Shops() {
                                   }
                                 >
                                   Edit
-                                </button>
-                                <button
+                                </Button>
+                                <Button
+                                  variant="danger" outline
                                   type="button"
-                                  className="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-[11px] font-medium text-red-600 hover:bg-red-100"
                                   onClick={() =>
                                     handleDeleteProduct(shop.id, p.id)
                                   }
                                 >
                                   Delete
-                                </button>
+                                </Button>
                               </div>
                             </td>
                           </tr>

@@ -4,7 +4,7 @@ import Toolbar from "../components/Toolbar";
 import Pagination from "../components/Pagination";
 import Modal from "../components/Modal"; // ⬅️ use your Modal here
 import { listManualProducts } from "../api/services/products";
-
+import Button from "../components/Button";
 
 const PLACEHOLDER_IMG =
   "data:image/svg+xml;utf8," +
@@ -307,16 +307,16 @@ export default function ProductsManual() {
       title: "Actions",
       key: "actions",
       render: (_, row) => (
-        <button
+        <Button
+          variant="secondary"
           type="button"
-          className="inline-flex cursor-pointer items-center rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50"
           onClick={() => {
             setActiveRow(row);
             setDetailsOpen(true);
           }}
         >
           View
-        </button>
+        </Button>
       ),
     },
   ];
@@ -359,7 +359,11 @@ export default function ProductsManual() {
         <div className="py-8 text-sm text-slate-500">Loading…</div>
       ) : (
         <>
-          <DataTable columns={columns} data={rows} pageSize={rows.length || 10} />
+          <DataTable
+            columns={columns}
+            data={rows}
+            pageSize={rows.length || 10}
+          />
           <Pagination
             page={page}
             pageSize={pageSize}

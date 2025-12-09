@@ -63,7 +63,7 @@ export default function VotesSummary() {
       <h2>Product-wise Ingredient Voting Summary</h2>
       <Toolbar onReset={reset}>
         <input
-          className="input"
+          className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
           style={{ minWidth: 240 }}
           placeholder="Search product or ingredient..."
           value={q}
@@ -73,7 +73,7 @@ export default function VotesSummary() {
           }}
         />
         <select
-          className="select"
+          className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
           value={aiStatus}
           onChange={(e) => {
             setAiStatus(e.target.value);

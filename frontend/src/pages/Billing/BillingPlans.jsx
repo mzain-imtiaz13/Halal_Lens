@@ -14,6 +14,7 @@ import {
   fetchBillingOverview,
   createCheckoutSession,
 } from "../../api/services/billing";
+import Button from "../../components/Button";
 
 const BillingPlans = () => {
   const navigate = useNavigate();
@@ -263,27 +264,21 @@ const BillingPlans = () => {
 
                     {/* Button pinned to bottom */}
                     {showButton && (
-                      <div
-                        className={
-                          "mt-auto border-t border-slate-100 flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition " +
-                          (disabled
-                            ? "cursor-not-allowed bg-slate-100 text-slate-400"
-                            : buttonVariant === "primary"
-                            ? "bg-brand-600 text-white hover:bg-brand-700 cursor-pointer"
-                            : "border border-slate-300 bg-white text-slate-800 hover:bg-slate-50 cursor-pointer")
-                        }
-                      >
-                        <button
+                        <Button
+                          variant={
+                            buttonVariant === "primary"
+                              ? "primary"
+                              : "secondary"
+                          }
                           disabled={disabled}
                           onClick={() => handlePlanAction(plan)}
-                          className="flex gap-2 items-center"
+                          className="mt-auto w-full"
                         >
                           <span>{buttonLabel}</span>
                           {!disabled && buttonVariant === "primary" && (
                             <FiArrowRight className="h-4 w-4" />
                           )}
-                        </button>
-                      </div>
+                        </Button>
                     )}
                   </div>
                 </div>

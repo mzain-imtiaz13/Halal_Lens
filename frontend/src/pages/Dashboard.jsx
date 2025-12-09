@@ -57,12 +57,6 @@ const lastNDays = (n) => {
  */
 async function fetchSubscriptionStatsPlaceholder() {
   return await fetchSubscriptionStats();
-  return {
-    activeSubscriptions: 0,
-    activeSubscriptionsAmount: 0,
-    revenueMTD: 0,
-    revenueTrendLast12Days: new Array(12).fill(0),
-  };
 }
 
 /* ----------------------- page ----------------------- */
@@ -398,7 +392,7 @@ export default function Dashboard() {
       {/* Bottom row: activity + top products */}
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Recent Activity */}
-        <div className="w-full rounded-2xl border border-(--border) bg-(--panel) p-4 shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md">
+        <div className="w-full rounded-2xl border border-brand-200 bg-white p-4 shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md">
           <div className="mb-2 flex items-center justify-between">
             <h3 className="text-sm font-semibold tracking-tight text-slate-900">
               Recent Activity
@@ -434,7 +428,7 @@ export default function Dashboard() {
         </div>
 
         {/* Top Products by Scans using DataTable */}
-        <div className="w-full rounded-2xl border border-(--border) bg-(--panel) p-4 shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md">
+        <div className="w-full rounded-2xl border border-brand-200 bg-white p-4 shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md">
           <div className="mb-3 flex items-center justify-between">
             <h3 className="text-sm font-semibold tracking-tight text-slate-900">
               Top Products by Scans

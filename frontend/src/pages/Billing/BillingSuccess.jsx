@@ -1,23 +1,24 @@
-import { useEffect, useState } from 'react'
-import { FiCheckCircle } from 'react-icons/fi'
-import { useNavigate } from 'react-router-dom'
-import { fetchMySubscription } from '../../api/services/billing'
+import { useEffect, useState } from "react";
+import { FiCheckCircle } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
+import { fetchMySubscription } from "../../api/services/billing";
+import Button from "../../components/Button";
 
 const BillingSuccess = () => {
-  const navigate = useNavigate()
-  const [sub, setSub] = useState(null)
+  const navigate = useNavigate();
+  const [sub, setSub] = useState(null);
 
   useEffect(() => {
     const load = async () => {
       try {
-        const s = await fetchMySubscription()
-        setSub(s)
+        const s = await fetchMySubscription();
+        setSub(s);
       } catch (e) {
         // ignore
       }
-    }
-    load()
-  }, [])
+    };
+    load();
+  }, []);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
@@ -31,35 +32,32 @@ const BillingSuccess = () => {
           Payment Successful
         </h1>
         <p className="mt-2 text-center text-sm text-slate-600">
-          Your subscription is now active. You can start using your new plan in Halal Lens.
+          Your subscription is now active. You can start using your new plan in
+          Halal Lens.
         </p>
 
         {sub && (
           <div className="mt-4 rounded-lg bg-brand-50 p-3 text-xs text-brand-900">
             <div>
-              Current plan:{' '}
+              Current plan:{" "}
               <span className="font-semibold">
                 {sub.plan?.name || sub.plan?.code}
               </span>
             </div>
             {sub.currentPeriodEnd && (
               <div>
-                Ends on:{' '}
-                {new Date(sub.currentPeriodEnd).toLocaleDateString()}
+                Ends on: {new Date(sub.currentPeriodEnd).toLocaleDateString()}
               </div>
             )}
           </div>
         )}
 
-        <button
-          onClick={() => navigate('/billing')}
-          className="mt-6 w-full rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
-        >
+        <Button variant="link" onClick={() => navigate("/billing")}>
           Go to Billing
-        </button>
+        </Button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default BillingSuccess
+export default BillingSuccess;

@@ -1,5 +1,6 @@
 // components/shops/NutrimentRow.jsx
 import React, { useEffect, useState } from "react";
+import Button from "../../components/Button";
 
 export const makeEmptyNutri = () => ({ key: "", value: "" });
 
@@ -31,13 +32,9 @@ export default function NutrimentRow({ value, onChange, onRemove }) {
         value={x.value}
         onChange={(e) => upd({ value: e.target.value })}
       />
-      <button
-        type="button"
-        onClick={onRemove}
-        className="inline-flex items-center justify-center rounded-md bg-red-50 px-2 py-1 text-[11px] font-medium text-red-600 hover:bg-red-100"
-      >
+      <Button variant="danger" outline type="button" onClick={onRemove}>
         Remove
-      </button>
+      </Button>
     </div>
   );
 }

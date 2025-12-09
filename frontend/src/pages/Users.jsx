@@ -11,7 +11,7 @@ import {
 } from "../api/services/users_firebase";
 import { useAuth } from "../contexts/AuthContext";
 import BillingHistoryTable from "./Billing/BillingHistoryTable";
-
+import Button from "../components/Button";
 
 export default function Users() {
   const { user, loading: authLoading, isAdmin } = useAuth();
@@ -88,7 +88,7 @@ export default function Users() {
           pageSize,
           cursorDoc,
         });
-        console.log(items)
+        console.log(items);
 
         if (!cancelled) {
           setRows(items);
@@ -176,12 +176,13 @@ export default function Users() {
       title: "Actions",
       render: (_, row) => (
         <div className="flex gap-2">
-          <button className="btn small" onClick={() => openHistory(row)}>
+          <Button variant="primary" onClick={() => openHistory(row)}>
             Scans
-          </button>
-          <button className="btn small" onClick={() => openBillingHistory(row)}>
+          </Button>
+
+          <Button variant="secondary" onClick={() => openBillingHistory(row)}>
             Subscriptions
-          </button>
+          </Button>
         </div>
       ),
     },
@@ -196,7 +197,7 @@ export default function Users() {
     <>
       <Toolbar onReset={reset} title={"Users & Subscriptions"}>
         <input
-          className="input"
+          className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
           style={{ minWidth: 240 }}
           placeholder="Search name or email..."
           value={q}
@@ -233,7 +234,9 @@ export default function Users() {
       <Modal isOpen={historyOpen} onClose={closeHistory}>
         <div className="flex items-start justify-between gap-4 pb-3 border-b border-slate-200">
           <div>
-            <h3 className="text-lg font-semibold text-slate-900">Scan History</h3>
+            <h3 className="text-lg font-semibold text-slate-900">
+              Scan History
+            </h3>
             {selectedUser && (
               <p className="mt-1 text-sm text-slate-500">
                 {selectedUser.name} • {selectedUser.email}
@@ -313,8 +316,8 @@ export default function Users() {
 
           <div className="space" />
           <div className="row" style={{ justifyContent: "center" }}>
-            <button
-              className="btn"
+            <Button
+              variant="secondary"
               disabled={!scansCursor || scansLoading}
               onClick={loadMoreScans}
             >
@@ -323,7 +326,7 @@ export default function Users() {
                 : scansCursor
                 ? "Load more"
                 : "No more"}
-            </button>
+            </Button>
           </div>
         </div>
       </Modal>

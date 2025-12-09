@@ -1,8 +1,9 @@
-import { useNavigate } from 'react-router-dom'
-import { FiAlertCircle } from 'react-icons/fi'
+import { useNavigate } from "react-router-dom";
+import { FiAlertCircle } from "react-icons/fi";
+import Button from "../../components/Button";
 
 const BillingCancel = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
@@ -16,18 +17,16 @@ const BillingCancel = () => {
           Payment Cancelled
         </h1>
         <p className="mt-2 text-center text-sm text-slate-600">
-          Your payment was cancelled or not completed. You can try again any time.
+          Your payment was cancelled or not completed. You can try again any
+          time.
         </p>
 
-        <button
-          onClick={() => navigate('/billing')}
-          className="mt-6 w-full rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50"
-        >
+        <Button variant="link" onClick={() => navigate("/billing")}>
           Back to Plans
-        </button>
+        </Button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default BillingCancel
+export default BillingCancel;

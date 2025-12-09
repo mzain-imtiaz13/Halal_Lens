@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import instance from "../api/axios";
+import Button from "../components/Button";
 
 const DataDeletion = () => {
   const { user, loading, logout } = useAuth();
@@ -380,18 +381,19 @@ const DataDeletion = () => {
 
                 {/* Buttons */}
                 <div className="flex items-center gap-3">
-                  <button
+                  <Button
+                    variant="primary"
                     type="submit"
                     disabled={submitting || formDisabled}
-                    className="inline-flex items-center justify-center rounded-lg bg-brand-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-800 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     {formDisabled
                       ? "Sign in to submit"
                       : submitting
                       ? "Submitting..."
                       : "Submit"}
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="secondary"
                     type="button"
                     onClick={() =>
                       setForm((prev) => ({
@@ -400,10 +402,9 @@ const DataDeletion = () => {
                         confirm: false,
                       }))
                     }
-                    className="text-xs text-brand-800 underline hover:text-brand-600"
                   >
                     Clear form
-                  </button>
+                  </Button>
                 </div>
               </form>
             </div>

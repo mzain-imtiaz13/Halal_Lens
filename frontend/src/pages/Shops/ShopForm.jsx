@@ -1,5 +1,6 @@
 // components/shops/ShopForm.jsx
 import React, { useState } from "react";
+import Button from "../../components/Button";
 
 export default function ShopForm({
   initial = { name: "", address: "" },
@@ -52,20 +53,12 @@ export default function ShopForm({
       </div>
 
       <div className="flex justify-end gap-2 pt-2">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="inline-flex items-center rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50"
-        >
+        <Button variant="secondary" type="button" onClick={onCancel}>
           Cancel
-        </button>
-        <button
-          type="submit"
-          disabled={saving}
-          className="inline-flex items-center rounded-md bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-brand-700 disabled:opacity-60"
-        >
+        </Button>
+        <Button variant="primary" type="submit" disabled={saving}>
           {saving ? "Saving..." : "Save"}
-        </button>
+        </Button>
       </div>
     </form>
   );

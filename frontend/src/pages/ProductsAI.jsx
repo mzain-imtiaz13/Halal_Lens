@@ -4,7 +4,7 @@ import Toolbar from "../components/Toolbar";
 import Pagination from "../components/Pagination";
 import Modal from "../components/Modal";
 import { listAIProducts } from "../api/services/products";
-
+import Button from "../components/Button";
 
 function ProductDetailsModal({ open, onClose, data }) {
   if (!open || !data) return null;
@@ -247,15 +247,15 @@ export default function ProductsAI() {
       key: "actions",
       render: (_, row) => (
         <div className="row">
-          <button
-            className="btn ghost"
+          <Button
+            variant="secondary"
             onClick={() => {
               setActiveRow(row);
               setDetailsOpen(true);
             }}
           >
             View
-          </button>
+          </Button>
         </div>
       ),
     },
@@ -267,7 +267,7 @@ export default function ProductsAI() {
 
       <Toolbar onReset={reset}>
         <input
-          className="input"
+          className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
           style={{ minWidth: 240 }}
           placeholder="Search product or ingredient..."
           value={q}
@@ -277,7 +277,7 @@ export default function ProductsAI() {
           }}
         />
         <select
-          className="select"
+          className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
           value={verdict}
           onChange={(e) => {
             setVerdict(e.target.value);

@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import logo from "/Halal_lens_logo.png";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../firebase";
-
+import Button from "../components/Button";
 
 export default function Login() {
   const { user, login, loginWithApple, loginWithGoogle } = useAuth();
@@ -79,7 +79,9 @@ export default function Login() {
     try {
       setResetting(true);
       await sendPasswordResetEmail(auth, trimmedEmail);
-      setInfo("Password reset email sent successfully. Please check your inbox.");
+      setInfo(
+        "Password reset email sent successfully. Please check your inbox."
+      );
       // Optionally switch back to login view after success
       setMode("login");
     } catch (err) {
@@ -123,8 +125,8 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen grid place-items-center px-6 bg-[radial-gradient(1200px_600px_at_20%_-10%,#dcfce7_0%,transparent_60%),var(--bg)]">
-      <div className="w-full max-w-[900px] bg-(--panel) border border-(--border) rounded-2xl shadow-(--shadow) overflow-hidden grid md:grid-cols-[1.05fr_1fr]">
+    <div className="min-h-screen grid place-items-center">
+      <div className="w-full max-w-[900px] bg-brand-100 border border-brand-300 rounded-2xl shadow-(--shadow) overflow-hidden grid md:grid-cols-[1.05fr_1fr]">
         {/* Left: Hero */}
         <div className="relative min-h-[420px] p-7 bg-[linear-gradient(135deg,var(--brand-500),var(--brand-600))] text-white flex flex-col items-center justify-center gap-3.5">
           <div className="w-[132px] h-[132px] rounded-full grid place-items-center bg-white/90 border border-white/60 shadow-[0_14px_28px_rgba(0,0,0,0.12)] ring-8 ring-white/25">
@@ -134,7 +136,7 @@ export default function Login() {
               className="w-24 h-24 object-contain"
             />
           </div>
-          <div className="text-center font-extrabold tracking-[0.03em] opacity-95">
+          <div className="text-brand-800 text-center font-extrabold tracking-[0.03em] opacity-95">
             Halal Lens
           </div>
         </div>
@@ -203,42 +205,36 @@ export default function Login() {
                   />
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="cursor-pointer w-full inline-flex items-center justify-center rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-700 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1"
-                >
+                <Button variant="primary" type="submit" disabled={submitting}>
                   {submitting ? "Signing in..." : "Sign In"}
-                </button>
+                </Button>
 
                 <div className="flex justify-between items-center mt-1">
-                  <button
-                    type="button"
-                    className="cursor-pointer text-sm font-medium text-brand-700 hover:text-brand-800"
-                    onClick={goToReset}
-                  >
+                  <Button variant="link" type="button" onClick={goToReset}>
                     Forgot password?
-                  </button>
+                  </Button>
                 </div>
               </form>
 
               {/* Social Login */}
-              <div className="mt-4 space-y-3">
-                <button
+              <div className="mt-4 flex flex-col space-y-1">
+                <Button
+                  variant="secondary"
+                  outline
                   type="button"
-                  className="cursor-pointer w-full inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
                   onClick={handleGoogleLogin}
                 >
                   Continue with Google
-                </button>
+                </Button>
 
-                <button
+                <Button
+                  variant="secondary"
+                  outline
                   type="button"
-                  className="cursor-pointer w-full inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
                   onClick={handleAppleLogin}
                 >
                   Continue with Apple
-                </button>
+                </Button>
               </div>
             </>
           )}
@@ -259,21 +255,13 @@ export default function Login() {
                 />
               </div>
 
-              <button
-                type="submit"
-                disabled={resetting}
-                className="cursor-pointer w-full inline-flex items-center justify-center rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-700 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1"
-              >
+              <Button className="primary" type="submit" disabled={resetting}>
                 {resetting ? "Sending reset link..." : "Send Reset Link"}
-              </button>
+              </Button>
 
-              <button
-                type="button"
-                className="cursor-pointer w-full inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
-                onClick={goToLogin}
-              >
+              <Button variant="link" type="button" onClick={goToLogin}>
                 Back to Login
-              </button>
+              </Button>
             </form>
           )}
         </div>

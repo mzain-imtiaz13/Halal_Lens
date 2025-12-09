@@ -1,4 +1,5 @@
 import React from "react";
+import Button from "./Button";
 
 export default function Pagination({ page, pageSize, total, onChange }) {
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -20,21 +21,18 @@ export default function Pagination({ page, pageSize, total, onChange }) {
 
       {/* Buttons */}
       <div className="flex items-center gap-2">
-        <button
-          className="cursor-pointer rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-700 shadow-sm hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
-          onClick={prev}
-          disabled={page <= 1}
-        >
+        <Button variant="secondary" outline onClick={prev} disabled={page <= 1}>
           Prev
-        </button>
+        </Button>
 
-        <button
-          className="cursor-pointer rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-700 shadow-sm hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+        <Button
+          variant="secondary"
+          outline
           onClick={next}
           disabled={page >= totalPages}
         >
           Next
-        </button>
+        </Button>
       </div>
     </div>
   );

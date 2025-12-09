@@ -38,7 +38,7 @@ const Navbar = ({ navItems }) => {
 
   const getClasses = (item) => {
     const base = "px-3 py-1 rounded-full transition-colors text-sm";
-    const active = "bg-brand-200 text-white shadow-md font-semibold";
+    const active = "text-brand-800 bg-brand-200 shadow-md font-semibold";
     const inactive =
       "text-brand-800 hover:text-brand-600 hover:bg-brand-100";
 

@@ -1,4 +1,5 @@
 import React from "react";
+import Button from "./Button";
 
 export default function Toolbar({
   title,
@@ -31,13 +32,13 @@ export default function Toolbar({
 
           {onReset && (
             <div>
-              <button
+              <Button
+                variant="secondary"
                 type="button"
                 onClick={onReset}
-                className="cursor-pointer rounded-md border border-slate-200 bg-white px-4 py-3 text-xs font-medium text-slate-600 shadow-sm hover:bg-slate-50 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1"
               >
                 Reset
-              </button>
+              </Button>
             </div>
           )}
         </div>

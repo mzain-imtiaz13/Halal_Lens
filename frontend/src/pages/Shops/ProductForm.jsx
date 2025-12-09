@@ -5,6 +5,7 @@ import TagInput from "./TagInput";
 import IngredientRow, { makeEmptyIngredient } from "./IngredientRow";
 import NutrimentRow, { makeEmptyNutri } from "./NutrimentRow";
 import ReferenceRow, { makeEmptyRef } from "./ReferenceRow";
+import Button from "../../components/Button";
 
 function toNutriObject(rows) {
   const o = {};
@@ -23,7 +24,7 @@ export default function ProductForm({
   onSave,
   saving,
 }) {
-  console.log(initial)
+  console.log(initial);
   // core
   const [productName, setProductName] = useState(
     initial.productName || initial.name || ""
@@ -36,9 +37,7 @@ export default function ProductForm({
   const [overallStatus, setOverallStatus] = useState(
     initial.overallStatus || ""
   );
-  const [statusReason, setStatusReason] = useState(
-    initial.statusReason || ""
-  );
+  const [statusReason, setStatusReason] = useState(initial.statusReason || "");
   const [isVerified, setIsVerified] = useState(
     !!initial.isVerified || !!initial.verified
   );
@@ -104,8 +103,7 @@ export default function ProductForm({
   const addIng = () => setIngredients((p) => [...p, makeEmptyIngredient()]);
   const updIng = (idx, val) =>
     setIngredients((p) => p.map((it, i) => (i === idx ? val : it)));
-  const rmIng = (idx) =>
-    setIngredients((p) => p.filter((_, i) => i !== idx));
+  const rmIng = (idx) => setIngredients((p) => p.filter((_, i) => i !== idx));
 
   // references
   const [references, setReferences] = useState(
@@ -114,8 +112,7 @@ export default function ProductForm({
   const addRef = () => setReferences((p) => [...p, makeEmptyRef()]);
   const updRef = (idx, val) =>
     setReferences((p) => p.map((r, i) => (i === idx ? val : r)));
-  const rmRef = (idx) =>
-    setReferences((p) => p.filter((_, i) => i !== idx));
+  const rmRef = (idx) => setReferences((p) => p.filter((_, i) => i !== idx));
 
   const handleSave = (e) => {
     e?.preventDefault();
@@ -182,9 +179,7 @@ export default function ProductForm({
             />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-slate-700">
-              Origin
-            </label>
+            <label className="text-xs font-medium text-slate-700">Origin</label>
             <input
               className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
               value={origin}
@@ -193,9 +188,7 @@ export default function ProductForm({
             />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-slate-700">
-              Brands
-            </label>
+            <label className="text-xs font-medium text-slate-700">Brands</label>
             <input
               className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
               value={brands}
@@ -297,13 +290,9 @@ export default function ProductForm({
             />
           ))}
         </div>
-        <button
-          type="button"
-          onClick={addIng}
-          className="inline-flex items-center rounded-md bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-200"
-        >
+        <Button variant="primary" type="button" onClick={addIng}>
           + Add ingredient
-        </button>
+        </Button>
       </section>
 
       {/* Categories / Allergens / Additives */}
@@ -358,13 +347,9 @@ export default function ProductForm({
             />
           ))}
         </div>
-        <button
-          type="button"
-          onClick={addNutriRow}
-          className="inline-flex items-center rounded-md bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-200"
-        >
+        <Button variant="secondary" type="button" onClick={addNutriRow}>
           + Add nutriment
-        </button>
+        </Button>
       </section>
 
       {/* Verdict */}
@@ -387,9 +372,7 @@ export default function ProductForm({
             </select>
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-slate-700">
-              Reason
-            </label>
+            <label className="text-xs font-medium text-slate-700">Reason</label>
             <textarea
               rows={3}
               className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
@@ -414,31 +397,19 @@ export default function ProductForm({
             />
           ))}
         </div>
-        <button
-          type="button"
-          onClick={addRef}
-          className="inline-flex items-center rounded-md bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-200"
-        >
+        <Button variant="secondary" type="button" onClick={addRef}>
           + Add reference
-        </button>
+        </Button>
       </section>
 
       {/* Actions */}
       <div className="flex justify-end gap-2 pt-2">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="inline-flex items-center rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50"
-        >
+        <Button variant="secondary" type="button" onClick={onCancel}>
           Cancel
-        </button>
-        <button
-          type="submit"
-          disabled={saving}
-          className="inline-flex items-center rounded-md bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-brand-700 disabled:opacity-60"
-        >
+        </Button>
+        <Button variant="primary" type="submit" disabled={saving}>
           {saving ? "Saving..." : "Save product"}
-        </button>
+        </Button>
       </div>
     </form>
   );

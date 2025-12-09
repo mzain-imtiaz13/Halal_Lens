@@ -1,5 +1,6 @@
 // components/shops/IngredientRow.jsx
 import React, { useEffect, useState } from "react";
+import Button from "../../components/Button";
 
 export const makeEmptyIngredient = () => ({
   name: "",
@@ -73,13 +74,9 @@ export default function IngredientRow({ value, onChange, onRemove }) {
       </div>
       {/* Remove */}
       <div className="flex justify-start mt-5">
-        <button
-          type="button"
-          onClick={onRemove}
-          className="inline-flex items-center justify-center rounded-md bg-red-50 px-2 py-1 text-[11px] font-medium text-red-600 hover:bg-red-100"
-        >
+        <Button variant="danger" outline type="button" onClick={onRemove}>
           Remove
-        </button>
+        </Button>
       </div>
     </div>
   );

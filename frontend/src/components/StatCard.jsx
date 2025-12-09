@@ -1,10 +1,8 @@
-import React from 'react'
-
 export default function StatCard({ label, value, delta, deltaType = 'up', icon }) {
   const isDown = deltaType === 'down'
 
   return (
-    <div className="w-full rounded-2xl border border-(--border) bg-(--panel) p-4 shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md">
+    <div className="w-full rounded-2xl border border-brand-200 bg-white p-4 shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md">
       <div className="flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
           {icon || (

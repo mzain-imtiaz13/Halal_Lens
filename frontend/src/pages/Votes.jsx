@@ -61,7 +61,7 @@ export default function Votes() {
       <h2>Community&nbsp;Votes</h2>
       <Toolbar onReset={reset}>
         <input
-          className="input"
+          className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
           style={{ minWidth: 240 }}
           placeholder="Search product, ingredient or user..."
           value={q}
@@ -71,7 +71,7 @@ export default function Votes() {
           }}
         />
         <select
-          className="select"
+          className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
           value={voteType}
           onChange={(e) => {
             setVoteType(e.target.value);

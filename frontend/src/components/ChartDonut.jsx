@@ -29,7 +29,7 @@ export default function ChartDonut({
   }
 
   return (
-    <div className="w-full rounded-2xl border border-(--border) bg-(--panel) p-4 shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md">
+    <div className="w-full rounded-2xl border border-brand-200 bg-white p-4 shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md">
       {title && (
         <div className="mb-2 text-sm font-semibold tracking-tight text-slate-900">
           {title}
