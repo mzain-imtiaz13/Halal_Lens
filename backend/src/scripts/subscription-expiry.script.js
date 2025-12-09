@@ -1,4 +1,4 @@
-// src/scripts/run-subscription-expiry.js
+// src/scripts/subscription-expiry.script.js
 require("dotenv").config();
 
 const mongoose = require("mongoose"); // same instance used by connectDb
