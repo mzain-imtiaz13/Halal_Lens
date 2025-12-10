@@ -8,7 +8,9 @@ import {
   query,
   serverTimestamp,
   updateDoc,
-  getDoc
+  getDoc,
+  where,
+  setDoc
 } from 'firebase/firestore'
 import { getAuth } from 'firebase/auth'
 import { getStorage, ref as sref, uploadString, getDownloadURL } from 'firebase/storage'
@@ -83,16 +85,24 @@ export async function deleteShop(id) {
   return { data: { ok: true }, status: 200 }
 }
 
-/** Create product: full object in products_v2 + mirror under shop */
+/* ---------- ADD PRODUCT WITH BARCODE CHECK (FIXED) ---------- */
 export async function addProduct(shopId, payload) {
   const uid = auth.currentUser?.uid || null
 
+  // normalize barcode to avoid type/whitespace mismatches
+  const barcode = String(payload.barcode || '').trim()
+  if (!barcode) {
+    return { data: { error: 'barcode_required' }, status: 400 }
+  }
+
   // upload images to Storage if they are data URLs
   const frontUrl = await ensureImageUrl(payload.frontImage || '', uid || 'admin', 'front')
-  const backUrl  = await ensureImageUrl(payload.backImage || '',  uid || 'admin', 'back')  
+  const backUrl  = await ensureImageUrl(payload.backImage || '',  uid || 'admin', 'back')
+
+  // Build v2 object (use normalized barcode)
   const v2 = {
     productName: payload.productName || '',
-    barcode: payload.barcode || '',
+    barcode: barcode,
     brands: payload.brands || '',
     categories: normStrings(payload.categories),
     ingredients: Array.isArray(payload.ingredients) ? payload.ingredients : [],
@@ -109,13 +119,31 @@ export async function addProduct(shopId, payload) {
     references: Array.isArray(payload.references) ? payload.references : [],
     isVerified: !!payload.isVerified,
     addedByUserId: uid || null,
-    createdAt: serverTimestamp(),
     updatedAt: serverTimestamp()
   }
 
-  const v2Ref = await addDoc(collection(db, 'products_v2'), v2)
-  await updateDoc(v2Ref, { id: v2Ref.id })
+  // Query products_v2 for matching barcode
+  const qRef = query(collection(db, 'products_v2'), where('barcode', '==', barcode))
+  const qSnap = await getDocs(qRef)
 
+  let v2DocId = null
+
+  if (!qSnap.empty) {
+    // Found existing product - OVERWRITE it (setDoc will replace fields)
+    const existingDoc = qSnap.docs[0]
+    v2DocId = existingDoc.id
+    const targetRef = doc(db, 'products_v2', v2DocId)
+
+    // Overwrite existing doc with the new v2 data; keep an 'id' field
+    await setDoc(targetRef, { ...v2, id: v2DocId, updatedAt: serverTimestamp() }, { merge: false })
+  } else {
+    // Not found - create new product_v2 doc (use generated id, set id field)
+    const newRef = doc(collection(db, 'products_v2')) // generate id
+    v2DocId = newRef.id
+    await setDoc(newRef, { ...v2, createdAt: serverTimestamp(), id: v2DocId })
+  }
+
+  // Build shop mirror (make sure productsV2Id points to v2DocId)
   const mirror = {
     name: v2.productName,
     barcode: v2.barcode,
@@ -125,24 +153,39 @@ export async function addProduct(shopId, payload) {
     frontImage: v2.frontImageUrl || '',
     backImage: v2.backImageUrl || '',
     picture: v2.frontImageUrl || '',
-    ingredientsPreview: (v2.ingredients || []).map(x=>x?.name).filter(Boolean).slice(0,6).join(', '),
-    productsV2Id: v2Ref.id,
+    ingredientsPreview: (v2.ingredients || []).map(x => x?.name).filter(Boolean).slice(0,6).join(', '),
+    productsV2Id: v2DocId,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp()
   }
+
+  // Check if shop already has a product with same barcode — update if present
+  const shopBarcodeCheck = query(collection(db, `shops/${shopId}/products`), where('barcode', '==', barcode))
+  const shopSnap = await getDocs(shopBarcodeCheck)
+
+  if (!shopSnap.empty) {
+    const shopProdDoc = shopSnap.docs[0]
+    await setDoc(shopProdDoc.ref, mirror, { merge: false })
+    return { data: { id: shopProdDoc.id, productsV2Id: v2DocId }, status: 200 }
+  }
+
+  // Not found in shop → create mirror entry
   const shopRef = await addDoc(collection(db, `shops/${shopId}/products`), mirror)
 
-  return { data: { id: shopRef.id }, status: 200 }
+  return { data: { id: shopRef.id, productsV2Id: v2DocId }, status: 200 }
 }
 
+/* ---------- UPDATE PRODUCT ---------- */
 export async function updateProduct(shopId, productId, payload) {
   const uid = auth.currentUser?.uid || null
   const frontUrl = await ensureImageUrl(payload.frontImage || '', uid || 'admin', 'front')
   const backUrl  = await ensureImageUrl(payload.backImage || '',  uid || 'admin', 'back')
-  console.log("payload", payload)
+
+  const barcode = String(payload.barcode || '').trim()
+
   const v2 = {
     productName: payload.productName || '',
-    barcode: payload.barcode || '',
+    barcode: barcode,
     brands: payload.brands || '',
     categories: normStrings(payload.categories),
     ingredients: Array.isArray(payload.ingredients) ? payload.ingredients : [],
@@ -162,9 +205,9 @@ export async function updateProduct(shopId, productId, payload) {
     updatedAt: serverTimestamp()
   }
 
-  // update mirror in shop
+  // Update mirror in shop (overwrite)
   const prodRef = doc(db, `shops/${shopId}/products`, productId)
-  await updateDoc(prodRef, {
+  await setDoc(prodRef, {
     name: v2.productName,
     barcode: v2.barcode,
     brand: v2.brands,
@@ -175,17 +218,20 @@ export async function updateProduct(shopId, productId, payload) {
     picture: v2.frontImageUrl || '',
     ingredientsPreview: (v2.ingredients || []).map(x=>x?.name).filter(Boolean).slice(0,6).join(', '),
     updatedAt: serverTimestamp()
-  })
+  }, { merge: true })
 
-  // update products_v2
+  // Update products_v2 linked to this shop product (if exists)
   const snap = await getDoc(prodRef)
   const v2Id = snap.data()?.productsV2Id
   if (v2Id) {
-    await updateDoc(doc(db, 'products_v2', v2Id), v2)
+    const v2Ref = doc(db, 'products_v2', v2Id)
+    await updateDoc(v2Ref, v2)
   }
+
   return { data: { ok: true }, status: 200 }
 }
 
+/* ---------- DELETE PRODUCT ---------- */
 export async function deleteProduct(shopId, productId) {
   const prodRef = doc(db, `shops/${shopId}/products`, productId)
   const snap = await getDoc(prodRef)
