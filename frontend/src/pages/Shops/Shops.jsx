@@ -8,6 +8,7 @@ import {
   addProduct,
   updateProduct,
   deleteProduct,
+  getProductV2ById,
 } from "../../api/services/shops";
 import StatusBadge from "./StatusBadge";
 import ShopForm from "./ShopForm";
@@ -29,6 +30,7 @@ export default function Shops() {
   const [addProductForShop, setAddProductForShop] = useState(null);
   const [editProductContext, setEditProductContext] = useState(null); // { shopId, product }
   const [savingProduct, setSavingProduct] = useState(false);
+  const [loadingProduct, setLoadingProduct] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
@@ -37,6 +39,41 @@ export default function Shops() {
       setRows(resp.data);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleEditProductClick = async (shop, product) => {
+    // If we don't have a productsV2Id on the mirror, just fall back to current data
+    if (!product?.productsV2Id) {
+      setEditProductContext({ shopId: shop.id, product });
+      return;
+    }
+
+    setLoadingProduct(true);
+    try {
+      const resp = await getProductV2ById(product.productsV2Id);
+      const full = resp?.data || {};
+
+      // Merge full products_v2 data with the mirror so the form sees all fields
+      const merged = {
+        ...full,
+        // keep id from shop mirror so ProductForm shows "Edit Product"
+        id: product.id,
+        name: full.productName || product.name,
+        barcode: full.barcode || product.barcode,
+        brands: full.brands || product.brand || product.brands,
+        frontImageUrl: full.frontImageUrl || product.frontImage || product.picture,
+        backImageUrl: full.backImageUrl || product.backImage,
+        overallStatus: full.overallStatus || product.overallStatus || "",
+        isVerified:
+          typeof full.isVerified === "boolean"
+            ? full.isVerified
+            : !!product.verified,
+      };
+
+      setEditProductContext({ shopId: shop.id, product: merged });
+    } finally {
+      setLoadingProduct(false);
     }
   };
 
@@ -248,12 +285,7 @@ export default function Shops() {
                                 <Button
                                   variant="secondary"
                                   type="button"
-                                  onClick={() =>
-                                    setEditProductContext({
-                                      shopId: shop.id,
-                                      product: p,
-                                    })
-                                  }
+                                  onClick={() => handleEditProductClick(shop, p)}
                                 >
                                   Edit
                                 </Button>
@@ -332,21 +364,7 @@ export default function Shops() {
       >
         {editProductContext && (
           <ProductForm
-            initial={{
-              ...editProductContext.product,
-              productName: editProductContext.product.name,
-              brands:
-                editProductContext.product.brand ||
-                editProductContext.product.brands ||
-                "",
-              frontImageUrl:
-                editProductContext.product.frontImage ||
-                editProductContext.product.picture ||
-                "",
-              backImageUrl: editProductContext.product.backImage || "",
-              overallStatus: editProductContext.product.overallStatus || "",
-              isVerified: editProductContext.product.verified,
-            }}
+            initial={editProductContext.product}
             onCancel={() => setEditProductContext(null)}
             onSave={(data) =>
               handleUpdateProduct(

@@ -242,3 +242,16 @@ export async function deleteProduct(shopId, productId) {
   await deleteDoc(prodRef)
   return { data: { ok: true }, status: 200 }
 }
+
+/* ---------- FETCH FULL PRODUCT_V2 BY ID ---------- */
+export async function getProductV2ById(id) {
+  if (!id) return { data: null, status: 400 }
+
+  const ref = doc(db, 'products_v2', id)
+  const snap = await getDoc(ref)
+  if (!snap.exists()) {
+    return { data: null, status: 404 }
+  }
+
+  return { data: { id: snap.id, ...(snap.data() || {}) }, status: 200 }
+}
