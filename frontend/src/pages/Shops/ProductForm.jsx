@@ -24,7 +24,6 @@ export default function ProductForm({
   onSave,
   saving,
 }) {
-  console.log(initial);
   // core
   const [productName, setProductName] = useState(
     initial.productName || initial.name || ""

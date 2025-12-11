@@ -1,4 +1,3 @@
-// src/api/services/users_firebase.js
 import {
   collection,
   getCountFromServer,
@@ -23,7 +22,7 @@ function tsToDateTime(ts) {
   return d.toISOString().replace('T', ' ').slice(0, 19)
 }
 
-function mapUserDoc(id, data) {
+function mapUserDoc(id, data, totalScans) {
   return {
     id,
     authProvider: data.authProvider ?? '-', // 🔹 everything from Firestore here
@@ -36,11 +35,10 @@ function mapUserDoc(id, data) {
     mobile: data.mobileNumber ?? '-',
     subscription_plan: data.subscriptionPlan ?? 'free',
     active_months: data.activeMonths ?? 0,
-    total_scans: data.totalScans ?? 0,
+    total_scans: totalScans, // calculated total scans
     created_at: tsToDateTime(data.createdAt),
   }
 }
-
 
 function buildFilters({ plan, status }) {
   const filters = []
@@ -60,14 +58,29 @@ export async function listUsersFirebase({
   const usersRef = collection(db, 'users')
   const filters = buildFilters({ plan, status })
 
-  const base = [...filters, orderBy('createdAt', 'desc'), limit(pageSize)]
-  const q = cursorDoc
-    ? query(usersRef, ...filters, orderBy('createdAt', 'desc'), startAfter(cursorDoc), limit(pageSize))
-    : query(usersRef, ...base)
+  const base = [...filters, orderBy('createdAt', 'desc')]
 
-  const snap = await getDocs(q)
-  let items = snap.docs.map((d) => mapUserDoc(d.id, d.data()))
+  // Apply the search filter before pagination
+  let q = search ? query(usersRef, ...base, limit(100)) : query(usersRef, ...base, limit(pageSize));
 
+  const snap = await getDocs(q);
+  let items = [];
+  
+  // Iterate through each user and fetch their total scan count
+  for (let doc of snap.docs) {
+    const userData = doc.data();
+    const userId = doc.id;
+    
+    // Fetch the total scans count from the user's scan history collection
+    const scanHistoryRef = collection(db, 'users', userId, 'scan_history');
+    const scanCountSnap = await getCountFromServer(scanHistoryRef);
+    const totalScans = scanCountSnap.data().count;
+
+    // Map user document to include total scans
+    items.push(mapUserDoc(doc.id, userData, totalScans));
+  }
+
+  // Apply search filtering after fetching users
   if (search) {
     const s = search.toLowerCase()
     items = items.filter(

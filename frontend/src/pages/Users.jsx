@@ -82,6 +82,7 @@ export default function Users() {
       try {
         const cursorDoc = page > 1 ? cursors[page - 2] || null : null;
 
+        // Fetch users with the search query applied
         const { items, nextCursor } = await listUsersFirebase({
           search: q,
           plan,
@@ -89,7 +90,6 @@ export default function Users() {
           pageSize,
           cursorDoc,
         });
-        console.log(items);
 
         if (!cancelled) {
           setRows(items);
@@ -107,6 +107,7 @@ export default function Users() {
 
     return () => (cancelled = true);
   }, [authLoading, user, isAdmin, q, plan, status, page, pageSize]);
+
   /* ---------------- Reset Filters ---------------- */
   const reset = () => {
     setQ("");
@@ -191,7 +192,10 @@ export default function Users() {
       ),
     },
   ];
-
+  const searchHandler = (e) => {
+    setPage(1); // Reset to the first page when searching
+    setQ(e.target.value); // Set the search query
+  };
   /* ---------------- Render ---------------- */
   if (authLoading) return <>Loading...</>;
   if (!user) return <>Please sign in.</>;
@@ -205,11 +209,7 @@ export default function Users() {
           style={{ minWidth: 240 }}
           placeholder="Search name or email..."
           value={q}
-          onChange={(e) => {
-            setPage(1);
-            setCursors([]);
-            setQ(e.target.value);
-          }}
+          onChange={searchHandler}
         />
       </Toolbar>
 

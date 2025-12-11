@@ -98,10 +98,11 @@ export async function addProduct(shopId, payload) {
   // upload images to Storage if they are data URLs
   const frontUrl = await ensureImageUrl(payload.frontImage || '', uid || 'admin', 'front')
   const backUrl  = await ensureImageUrl(payload.backImage || '',  uid || 'admin', 'back')
-
+  console.log(payload)
   // Build v2 object (use normalized barcode)
   const v2 = {
     productName: payload.productName || '',
+    origin: payload.origin,
     barcode: barcode,
     brands: payload.brands || '',
     categories: normStrings(payload.categories),
@@ -148,6 +149,7 @@ export async function addProduct(shopId, payload) {
     name: v2.productName,
     barcode: v2.barcode,
     brand: v2.brands,
+    origin: payload.origin,
     overallStatus: v2.overallStatus || '',
     verified: !!v2.isVerified,
     frontImage: v2.frontImageUrl || '',
