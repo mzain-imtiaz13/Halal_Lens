@@ -16,7 +16,7 @@ export default function Layout() {
 
         {/* Scrollable Content Area */}
         <main className="flex-1 overflow-auto bg-slate-50">
-          <div className="mx-auto max-w-6xl p-4 lg:p-6">
+          <div className="p-4 lg:p-6">
             <Outlet />
           </div>
         </main>

@@ -107,7 +107,6 @@ export default function Users() {
 
     return () => (cancelled = true);
   }, [authLoading, user, isAdmin, q, plan, status, page, pageSize]);
-
   /* ---------------- Reset Filters ---------------- */
   const reset = () => {
     setQ("");
@@ -245,71 +244,66 @@ export default function Users() {
 
         <div className="mt-4">
           <div className="card" style={{ padding: 0, overflow: "hidden" }}>
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Image</th>
-                  <th>Product</th>
-                  <th>Barcode</th>
-                  <th>Verdict</th>
-                  <th>Type</th>
-                  <th>Scanned At</th>
-                </tr>
-              </thead>
-              <tbody>
-                {scans.length === 0 && (
-                  <tr>
-                    <td className="table-empty" colSpan={6}>
-                      {scansLoading ? "Loading..." : "No scans found"}
-                    </td>
-                  </tr>
-                )}
-
-                {scans.map((s) => (
-                  <tr key={s.id}>
-                    <td>
-                      {s.frontImageUrl ? (
-                        <img
-                          src={s.frontImageUrl}
-                          alt=""
-                          style={{
-                            width: 54,
-                            height: 40,
-                            objectFit: "cover",
-                            borderRadius: 8,
-                            border: "1px solid var(--border)",
-                          }}
-                        />
-                      ) : (
-                        <span className="helper">—</span>
-                      )}
-                    </td>
-                    <td>
-                      <div style={{ fontWeight: 600 }}>{s.productName}</div>
+            <DataTable
+              columns={[
+                {
+                  title: "Image",
+                  dataIndex: "frontImageUrl",
+                  render: (value) =>
+                    value ? (
+                      <img
+                        src={value}
+                        alt=""
+                        style={{
+                          width: 54,
+                          height: 40,
+                          objectFit: "cover",
+                          borderRadius: 8,
+                          border: "1px solid var(--border)",
+                        }}
+                      />
+                    ) : (
+                      <span className="helper">—</span>
+                    ),
+                },
+                {
+                  title: "Product",
+                  dataIndex: "productName",
+                  render: (value, row) => (
+                    <div>
+                      <div style={{ fontWeight: 600 }}>{value}</div>
                       <div className="helper" style={{ fontSize: 12 }}>
-                        {s.productBrands}
+                        {row.productBrands}
                       </div>
-                    </td>
-                    <td>{s.barcode}</td>
-                    <td>
-                      <span
-                        className={`badge ${
-                          s.overallStatus === "halal"
-                            ? "ok"
-                            : s.overallStatus === "haram"
-                            ? "danger"
-                            : "warn"
-                        }`}
-                      >
-                        {s.overallStatus}
-                      </span>
-                    </td>
-                    <td>{s.scanType}</td>
-                    <td>{s.scannedAt}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    </div>
+                  ),
+                },
+                { title: "Barcode", dataIndex: "barcode" },
+                {
+                  title: "Verdict",
+                  dataIndex: "overallStatus",
+                  render: (value) => (
+                    <span
+                      className={`badge ${
+                        value === "halal"
+                          ? "ok"
+                          : value === "haram"
+                          ? "danger"
+                          : "warn"
+                      }`}
+                    >
+                      {value}
+                    </span>
+                  ),
+                },
+                { title: "Type", dataIndex: "scanType" },
+                { title: "Scanned At", dataIndex: "scannedAt" },
+              ]}
+              data={scans}
+              loading={scansLoading}
+              page={page}
+              pageSize={5}
+            />
           </div>
 
           <div className="space" />
