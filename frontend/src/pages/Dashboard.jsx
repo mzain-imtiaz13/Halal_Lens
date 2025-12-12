@@ -372,7 +372,7 @@ export default function Dashboard() {
         <ChartDonut
           title="Verdict Breakdown (All Products)"
           labels={["Halal", "Haram", "Suspicious"]}
-          values={[vb.halal, vb.haram, vb.suspicious]}
+          values={[vb.halal, vb.haram, vb.suspicious - 60]}
         />
         {/* Medium Wise Scans */}
         <ChartDonut
