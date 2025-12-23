@@ -6,6 +6,7 @@ const { R5XX } = require("./Responses");
 const stripeWebhookHandler = require("./controllers/stripe.controller");
 const { connectDb } = require("./config/db.config");
 const runSubscriptionExpiry = require("./scripts/subscription-expiry.script");
+const { CronRun } = require("./models");
 
 const app = express();
 
@@ -48,12 +49,28 @@ app.get("/health", (req, res) => {
 });
 
 app.get("/cron/subscriptions", async (req, res) => {
+  const startedAt = new Date();
+  const run = await CronRun.create({ job: "subscription-expiry", startedAt });
+
   try {
-    await runSubscriptionExpiry();
-    return res.json({ success: true });
+    const result = await runSubscriptionExpiry();
+    // result = { runId, summary, error }
+
+    run.endedAt = new Date();
+    run.ok = !result.error;
+    run.summary = result.summary;
+    run.error = result.error || null;
+    await run.save();
+
+    return res.json({ success: run.ok, runId: run._id, result });
   } catch (err) {
-    console.error("Cron /cron/subscriptions error:", err);
-    return res.status(500).json({ error: err.message });
+    run.endedAt = new Date();
+    run.ok = false;
+    run.error = err?.message || String(err);
+    await run.save();
+    return res
+      .status(500)
+      .json({ success: false, runId: run._id, error: run.error });
   }
 });
 

@@ -41,24 +41,6 @@ const lastNDays = (n) => {
   return out;
 };
 
-/* ------------------ subscription placeholders ------------------ */
-/**
- * Placeholder for subscription / revenue metrics.
- * Replace this with a real backend API call, e.g.
- * GET /api/dashboard/subscriptions
- *
- * Expected response shape:
- * {
- *   activeSubscriptions: number;           // total active subscriptions
- *   activeSubscriptionsAmount: number;    // total active MRR / recurring amount
- *   revenueMTD: number;                   // revenue month-to-date
- *   revenueTrendLast12Days: number[];     // length 12, oldest -> newest daily revenue
- * }
- */
-async function fetchSubscriptionStatsPlaceholder() {
-  return await fetchSubscriptionStats();
-}
-
 /* ----------------------- page ----------------------- */
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
@@ -121,7 +103,7 @@ export default function Dashboard() {
         );
 
         // ---------- Subscription / revenue metrics (placeholder: backend API) ----------
-        const subsFromBackend = await fetchSubscriptionStatsPlaceholder();
+        const subsFromBackend = await fetchSubscriptionStats();
         setSubStats(subsFromBackend);
       } catch (e) {
         console.error("Dashboard load error:", e);

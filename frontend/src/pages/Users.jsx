@@ -193,6 +193,7 @@ export default function Users() {
     },
   ];
   const searchHandler = (e) => {
+    setCursors([]); 
     setPage(1); // Reset to the first page when searching
     setQ(e.target.value); // Set the search query
   };
@@ -222,6 +223,7 @@ export default function Users() {
         total={total}
         onPageChange={setPage}
         onPageSizeChange={(size) => {
+          setCursors([]);
           setPageSize(size);
           setPage(1);
         }}

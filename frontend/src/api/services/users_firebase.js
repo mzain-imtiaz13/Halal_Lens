@@ -49,50 +49,51 @@ function buildFilters({ plan, status }) {
 
 /* -------------------- List Users -------------------- */
 export async function listUsersFirebase({
-  search = '',
-  plan = '',
-  status = '',
+  search = "",
+  plan = "",
+  status = "",
   pageSize = 10,
-  cursorDoc = null
+  cursorDoc = null,
 }) {
-  const usersRef = collection(db, 'users')
-  const filters = buildFilters({ plan, status })
+  const usersRef = collection(db, "users");
+  const filters = buildFilters({ plan, status });
+  const base = [...filters, orderBy("createdAt", "desc")];
 
-  const base = [...filters, orderBy('createdAt', 'desc')]
+  // ✅ IMPORTANT: cursor must be applied for page > 1
+  const qRef = cursorDoc
+    ? query(usersRef, ...base, startAfter(cursorDoc), limit(pageSize))
+    : query(usersRef, ...base, limit(pageSize));
 
-  // Apply the search filter before pagination
-  let q = search ? query(usersRef, ...base, limit(100)) : query(usersRef, ...base, limit(pageSize));
+  const snap = await getDocs(qRef);
 
-  const snap = await getDocs(q);
   let items = [];
-  
-  // Iterate through each user and fetch their total scan count
-  for (let doc of snap.docs) {
+
+  // NOTE: this part is slow (N extra reads). Keeping it as-is for now.
+  for (const doc of snap.docs) {
     const userData = doc.data();
     const userId = doc.id;
-    
-    // Fetch the total scans count from the user's scan history collection
-    const scanHistoryRef = collection(db, 'users', userId, 'scan_history');
+
+    const scanHistoryRef = collection(db, "users", userId, "scan_history");
     const scanCountSnap = await getCountFromServer(scanHistoryRef);
     const totalScans = scanCountSnap.data().count;
 
-    // Map user document to include total scans
     items.push(mapUserDoc(doc.id, userData, totalScans));
   }
 
-  // Apply search filtering after fetching users
+  // ⚠️ Your search is client-side; it filters only within the current page result set.
   if (search) {
-    const s = search.toLowerCase()
+    const s = search.toLowerCase();
     items = items.filter(
       (r) =>
-        String(r.name || '').toLowerCase().includes(s) ||
-        String(r.email || '').toLowerCase().includes(s)
-    )
+        String(r.name || "").toLowerCase().includes(s) ||
+        String(r.email || "").toLowerCase().includes(s)
+    );
   }
 
-  const nextCursor = snap.docs.length ? snap.docs[snap.docs.length - 1] : null
-  return { items, nextCursor }
+  const nextCursor = snap.docs.length ? snap.docs[snap.docs.length - 1] : null;
+  return { items, nextCursor };
 }
+
 
 /* -------------------- Count Users -------------------- */
 export async function countUsersFirebase({ plan = '', status = '' }) {

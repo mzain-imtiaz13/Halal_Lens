@@ -23,14 +23,39 @@ async function renderBaseTemplate(viewModel) {
 
 const EmailService = {
   sendEmail: async (to, subject, html, text = "") => {
-    const msg = {
-      from: `"${EMAIL_SENDER_NAME}" <${EMAIL_USER}>`,
+    console.log(`[EmailService] sending email`, {
       to,
       subject,
-      text,
-      html,
-    };
-    return await emailConfig.sendMail(msg);
+      hasHtml: !!html,
+      hasText: !!text,
+    });
+
+    try {
+      const msg = {
+        from: `"${EMAIL_SENDER_NAME}" <${EMAIL_USER}>`,
+        to,
+        subject,
+        text,
+        html,
+      };
+      const result = await emailConfig.sendMail(msg);
+      console.log(`[EmailService] sent OK`, {
+        messageId: result?.messageId,
+        response: result?.response,
+      });
+      return result;
+    } catch (err) {
+      console.error(`[EmailService] send failed`, {
+        to,
+        subject,
+        message: err?.message,
+        code: err?.code,
+        errno: err?.errno,
+        syscall: err?.syscall,
+        stack: err?.stack,
+      });
+      throw err;
+    }
   },
 
   // 1) Trial activation (on signup)

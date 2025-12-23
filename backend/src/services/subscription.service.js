@@ -59,13 +59,22 @@ const handleSubscriptionExpiryIfNeeded = async (subDoc) => {
 
 // Helper: create or return a "free" subscription and mark it as current
 const createOrGetFreeSubscription = async (firebaseUid, email) => {
+  const tag = `[createOrGetFreeSubscription uid=${firebaseUid}]`;
+
+  // 1) Load free plan
+  console.log(`${tag} ▶️ loading FREE_PLAN...`);
   const freePlan = await planModel.findOne({
     code: "FREE_PLAN",
     isActive: true,
   });
-  if (!freePlan) throw new Error("Free plan not configured");
+  if (!freePlan) {
+    console.error(`${tag} ❌ Free plan not configured`);
+    throw new Error("Free plan not configured");
+  }
+  console.log(`${tag} ✅ free plan found`, { planId: String(freePlan._id) });
 
-  // Check if there's already a free subscription that is active
+  // 2) Find existing active free subscription
+  console.log(`${tag} ▶️ searching for existing active free subscription...`);
   let existingFree = await subscriptionModel
     .findOne({
       firebaseUid,
@@ -76,34 +85,128 @@ const createOrGetFreeSubscription = async (firebaseUid, email) => {
     .populate("plan");
 
   if (existingFree) {
-    // Make sure this is marked as current
+    console.log(`${tag} ✅ existing active free subscription found`, {
+      subId: String(existingFree._id),
+      isCurrent: existingFree.isCurrent,
+    });
+
+    // ensure it's current
+    console.log(`${tag} ▶️ ensuring isCurrent=true (clearing others)...`);
     await clearCurrentFlagForUser(firebaseUid);
     existingFree.isCurrent = true;
+
     await existingFree.save();
+    console.log(`${tag} ✅ existing free subscription set as current`, {
+      subId: String(existingFree._id),
+    });
+
+    // Email is best-effort (DO NOT throw)
+    if (email) {
+      console.log(`${tag} ▶️ sending 'trial ended, now on free' email...`, {
+        to: email,
+      });
+      try {
+        await EmailService.sendTrialEndedNowOnFreeEmail(email, freePlan);
+        console.log(`${tag} ✅ email sent`);
+      } catch (err) {
+        console.error(`${tag} ⚠️ email failed but continuing`, {
+          message: err?.message,
+          code: err?.code,
+          errno: err?.errno,
+          syscall: err?.syscall,
+        });
+      }
+    } else {
+      console.log(`${tag} ℹ️ no email provided; skipping email`);
+    }
+
     return existingFree;
   }
 
-  // Otherwise create a new one
+  // 3) Create a new free subscription
+  console.log(`${tag} ℹ️ no active free subscription found, creating new one...`);
+  console.log(`${tag} ▶️ clearing current flag on all subscriptions...`);
   await clearCurrentFlagForUser(firebaseUid);
 
-  const sub = await subscriptionModel.create({
-    firebaseUid,
-    plan: freePlan._id,
-    status: "free",
-    isActive: true,
-    isCurrent: true,
-  });
+  let created;
+  try {
+    console.log(`${tag} ▶️ creating free subscription document...`);
+    created = await subscriptionModel.create({
+      firebaseUid,
+      plan: freePlan._id,
+      status: "free",
+      isActive: true,
+      isCurrent: true,
+    });
+    console.log(`${tag} ✅ free subscription created`, { subId: String(created._id) });
+  } catch (err) {
+    // If something raced and created it simultaneously, recover by re-fetching
+    console.error(`${tag} ⚠️ create failed, attempting to recover by re-fetching`, {
+      message: err?.message,
+      code: err?.code,
+    });
 
-  const populated = await sub.populate("plan");
+    existingFree = await subscriptionModel
+      .findOne({
+        firebaseUid,
+        status: "free",
+        isActive: true,
+      })
+      .sort({ createdAt: -1 })
+      .populate("plan");
 
-  // Optional: if you only want to send "moved to free" emails in some flows,
-  // keep this guarded behind email param:
+    if (!existingFree) {
+      console.error(`${tag} ❌ recovery failed; rethrowing error`);
+      throw err;
+    }
+
+    console.log(`${tag} ✅ recovered existing free subscription after create failure`, {
+      subId: String(existingFree._id),
+    });
+
+    // ensure current
+    await clearCurrentFlagForUser(firebaseUid);
+    existingFree.isCurrent = true;
+    await existingFree.save();
+
+    // best-effort email
+    if (email) {
+      try {
+        await EmailService.sendTrialEndedNowOnFreeEmail(email, freePlan);
+      } catch (e) {
+        console.error(`${tag} ⚠️ email failed but continuing (recovery path)`, {
+          message: e?.message,
+          code: e?.code,
+        });
+      }
+    }
+
+    return existingFree;
+  }
+
+  const populated = await created.populate("plan");
+
+  // 4) Best-effort email
   if (email) {
-    await EmailService.sendTrialEndedNowOnFreeEmail(email, freePlan);
+    console.log(`${tag} ▶️ sending 'trial ended, now on free' email...`, { to: email });
+    try {
+      await EmailService.sendTrialEndedNowOnFreeEmail(email, freePlan);
+      console.log(`${tag} ✅ email sent`);
+    } catch (err) {
+      console.error(`${tag} ⚠️ email failed but continuing`, {
+        message: err?.message,
+        code: err?.code,
+        errno: err?.errno,
+        syscall: err?.syscall,
+      });
+    }
+  } else {
+    console.log(`${tag} ℹ️ no email provided; skipping email`);
   }
 
   return populated;
 };
+
 
 const SubscriptionService = {
   // 🔹 This is now "smart": ensures we always return a valid current sub

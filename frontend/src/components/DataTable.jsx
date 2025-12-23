@@ -41,6 +41,16 @@ export default function DataTable({
   // how many skeleton rows to show when loading
   const skeletonRowCount = Math.max(5, Math.min(pageSize || 10, 10));
 
+  // ---------- NEW: exact current page count + range ----------
+  const currentCount = Array.isArray(data) ? data.length : 0;
+
+  const startIndex =
+    isPaginated && total > 0 ? (page - 1) * pageSize + 1 : 0;
+
+  const endIndex =
+    isPaginated && total > 0 ? Math.min((page - 1) * pageSize + currentCount, total) : 0;
+  // ----------------------------------------------------------
+
   return (
     <div className="space-y-3">
       {/* Pagination footer (optional) */}
@@ -79,11 +89,22 @@ export default function DataTable({
                 </select>
               </div>
 
-              {/* Info */}
+              {/* Info (UPDATED) */}
               <span className="text-sm text-slate-600">
                 Page <span className="font-medium">{page}</span> of{" "}
                 <span className="font-medium">{totalPages}</span> •{" "}
                 <span className="font-medium">{total}</span> items
+                {total > 0 && (
+                  <>
+                    {" "}
+                    • Showing{" "}
+                    <span className="font-medium">{startIndex}</span>–
+                    <span className="font-medium">{endIndex}</span>
+                    {" "}
+                    • This page:{" "}
+                    <span className="font-medium">{currentCount}</span>
+                  </>
+                )}
               </span>
 
               <div className="flex-1" />
