@@ -11,6 +11,9 @@ export default function DataTable({
   total,
   onPageChange,
   onPageSizeChange,
+  isCSVExport = true,
+  // CSV export filename (optional)
+  csvFileName = "export.csv",
 }) {
   const isPaginated =
     typeof page === "number" &&
@@ -31,28 +34,146 @@ export default function DataTable({
     onPageChange(Math.min(totalPages, page + 1));
   };
 
+  // -------------------- NEW: PageSize "All items" --------------------
+  const ALL_VALUE = "__ALL__";
+  const computedAllSize = isPaginated
+    ? Math.max(0, Number(total || 0))
+    : Array.isArray(data)
+    ? data.length
+    : 0;
+
+  // Consider "All" selected when pageSize covers the entire dataset.
+  const isAllSelected =
+    isPaginated &&
+    computedAllSize > 0 &&
+    Number(pageSize) >= computedAllSize;
+
   const handlePageSizeChange = (e) => {
     if (!onPageSizeChange || loading) return;
-    const newSize = Number(e.target.value || 10);
+
+    const raw = e.target.value;
+
+    if (raw === ALL_VALUE) {
+      const newSize = computedAllSize || Number(pageSize || 10);
+      onPageSizeChange(newSize);
+      if (onPageChange) onPageChange(1);
+      return;
+    }
+
+    const newSize = Number(raw || 10);
     onPageSizeChange(newSize);
     if (onPageChange) onPageChange(1);
   };
+  // -------------------------------------------------------------------
 
   // how many skeleton rows to show when loading
   const skeletonRowCount = Math.max(5, Math.min(pageSize || 10, 10));
 
-  // ---------- NEW: exact current page count + range ----------
+  // ---------- exact current page count + range ----------
   const currentCount = Array.isArray(data) ? data.length : 0;
 
   const startIndex =
     isPaginated && total > 0 ? (page - 1) * pageSize + 1 : 0;
 
   const endIndex =
-    isPaginated && total > 0 ? Math.min((page - 1) * pageSize + currentCount, total) : 0;
-  // ----------------------------------------------------------
+    isPaginated && total > 0
+      ? Math.min((page - 1) * pageSize + currentCount, total)
+      : 0;
+  // -----------------------------------------------------
+
+  // -------------------- Export CSV --------------------
+  const safeColumns = Array.isArray(columns) ? columns : [];
+  const safeData = Array.isArray(data) ? data : [];
+
+  const getValueByDataIndex = (row, dataIndex) => {
+    if (!row || dataIndex == null) return "";
+    // supports simple "a.b.c" paths (optional)
+    if (typeof dataIndex === "string" && dataIndex.includes(".")) {
+      return dataIndex
+        .split(".")
+        .reduce((acc, key) => (acc ? acc[key] : ""), row);
+    }
+    return row[dataIndex];
+  };
+
+  const toCsvCell = (val) => {
+    if (val === null || val === undefined) return "";
+    let s =
+      typeof val === "string"
+        ? val
+        : typeof val === "number"
+        ? String(val)
+        : JSON.stringify(val);
+    s = s.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+    s = s.replace(/"/g, '""');
+    if (/[",\n]/.test(s)) s = `"${s}"`;
+    return s;
+  };
+
+  const buildCsv = () => {
+    const exportableCols = safeColumns.filter(
+      (c) => c && (c.dataIndex != null || typeof c.exportValue === "function")
+    );
+
+    const header = exportableCols
+      .map((c) => toCsvCell(c.title ?? ""))
+      .join(",");
+
+    const rows = safeData.map((row) => {
+      const cells = exportableCols.map((c) => {
+        try {
+          if (typeof c.exportValue === "function") {
+            return toCsvCell(
+              c.exportValue(getValueByDataIndex(row, c.dataIndex), row)
+            );
+          }
+          return toCsvCell(getValueByDataIndex(row, c.dataIndex));
+        } catch {
+          return "";
+        }
+      });
+      return cells.join(",");
+    });
+
+    // BOM for Excel compatibility
+    return "\ufeff" + [header, ...rows].join("\n");
+  };
+
+  const downloadCsv = (csvText) => {
+    const blob = new Blob([csvText], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = csvFileName || "export.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExportCsv = () => {
+    if (loading || safeData.length === 0) return;
+    const csvText = buildCsv();
+    downloadCsv(csvText);
+  };
+  // ----------------------------------------------------
 
   return (
     <div className="space-y-3">
+      {/* Export button */}
+      {isCSVExport && <div className="flex items-center justify-end">
+        <Button
+          variant="secondary"
+          outline
+          onClick={handleExportCsv}
+          disabled={loading || safeData.length === 0}
+        >
+          Export CSV
+        </Button>
+      </div>}
+
       {/* Pagination footer (optional) */}
       {isPaginated && (
         <div className="mt-1 flex flex-wrap items-center gap-3 rounded-lg border border-slate-200 bg-white px-4 py-2 shadow-sm">
@@ -78,7 +199,7 @@ export default function DataTable({
                 <span>Rows per page:</span>
                 <select
                   className="rounded-md border border-slate-300 bg-white px-2 py-1 text-sm text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
-                  value={pageSize}
+                  value={isAllSelected ? ALL_VALUE : pageSize}
                   onChange={handlePageSizeChange}
                 >
                   {[5, 10, 25, 50, 100].map((opt) => (
@@ -86,10 +207,13 @@ export default function DataTable({
                       {opt}
                     </option>
                   ))}
+                  <option key={ALL_VALUE} value={ALL_VALUE}>
+                    All items
+                  </option>
                 </select>
               </div>
 
-              {/* Info (UPDATED) */}
+              {/* Info */}
               <span className="text-sm text-slate-600">
                 Page <span className="font-medium">{page}</span> of{" "}
                 <span className="font-medium">{totalPages}</span> •{" "}
@@ -99,9 +223,7 @@ export default function DataTable({
                     {" "}
                     • Showing{" "}
                     <span className="font-medium">{startIndex}</span>–
-                    <span className="font-medium">{endIndex}</span>
-                    {" "}
-                    • This page:{" "}
+                    <span className="font-medium">{endIndex}</span> • This page:{" "}
                     <span className="font-medium">{currentCount}</span>
                   </>
                 )}

@@ -2,12 +2,12 @@
 import React, { useEffect, useState } from "react";
 import DataTable from "../components/DataTable";
 import Toolbar from "../components/Toolbar";
-import Pagination from "../components/Pagination";
 import Modal from "../components/Modal";
 import {
   listUsersFirebase,
   countUsersFirebase,
   listUserScanHistory,
+  countUserScanHistoryFirebase,
 } from "../api/services/users_firebase";
 import { useAuth } from "../contexts/AuthContext";
 import BillingHistoryTable from "./Billing/BillingHistoryTable";
@@ -35,8 +35,13 @@ export default function Users() {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [scans, setScans] = useState([]);
-  const [scansCursor, setScansCursor] = useState(null);
   const [scansLoading, setScansLoading] = useState(false);
+
+  // ✅ scan pagination (NEW)
+  const [scansPage, setScansPage] = useState(1);
+  const [scansPageSize, setScansPageSize] = useState(5);
+  const [scansTotal, setScansTotal] = useState(0);
+  const [scansCursors, setScansCursors] = useState([]);
 
   // billing history modal
   const [billingOpen, setBillingOpen] = useState(false);
@@ -52,7 +57,7 @@ export default function Users() {
     setBillingUser(null);
   };
 
-  /* ---------------- Fetch total users ---------------- */
+  /* ---------------- Fetch total users (IMPORTANT: includes search) ---------------- */
   useEffect(() => {
     if (authLoading) return;
     if (!user || !isAdmin) {
@@ -61,10 +66,10 @@ export default function Users() {
     }
 
     (async () => {
-      const t = await countUsersFirebase({ plan, status });
+      const t = await countUsersFirebase({ search: q, plan, status });
       setTotal(t);
     })();
-  }, [authLoading, user, isAdmin, plan, status]);
+  }, [authLoading, user, isAdmin, q, plan, status]);
 
   /* ---------------- Fetch users list ---------------- */
   useEffect(() => {
@@ -82,7 +87,6 @@ export default function Users() {
       try {
         const cursorDoc = page > 1 ? cursors[page - 2] || null : null;
 
-        // Fetch users with the search query applied
         const { items, nextCursor } = await listUsersFirebase({
           search: q,
           plan,
@@ -108,7 +112,6 @@ export default function Users() {
     return () => (cancelled = true);
   }, [authLoading, user, isAdmin, q, plan, status, page, pageSize]);
 
-  /* ---------------- Reset Filters ---------------- */
   const reset = () => {
     setQ("");
     setPlan("");
@@ -117,29 +120,73 @@ export default function Users() {
     setCursors([]);
   };
 
-  /* ---------------- Open Scan History ---------------- */
-  const openHistory = async (userRow) => {
+  /* ---------------- Fetch total scans for selected user ---------------- */
+  useEffect(() => {
+    if (!historyOpen || !selectedUser?.id) return;
+
+    let cancelled = false;
+
+    (async () => {
+      const t = await countUserScanHistoryFirebase({ userId: selectedUser.id });
+      if (!cancelled) setScansTotal(t);
+    })();
+
+    return () => (cancelled = true);
+  }, [historyOpen, selectedUser?.id]);
+
+  /* ---------------- Fetch paginated scan history ---------------- */
+  useEffect(() => {
+    if (!historyOpen || !selectedUser?.id) return;
+
+    let cancelled = false;
+
+    (async () => {
+      setScansLoading(true);
+      try {
+        const cursorDoc =
+          scansPage > 1 ? scansCursors[scansPage - 2] || null : null;
+
+        const { items, nextCursor } = await listUserScanHistory({
+          userId: selectedUser.id,
+          pageSize: scansPageSize,
+          cursorDoc,
+        });
+
+        if (!cancelled) {
+          setScans(items);
+
+          setScansCursors((prev) => {
+            const copy = [...prev];
+            if (scansPage - 1 === copy.length && nextCursor)
+              copy.push(nextCursor);
+            return copy;
+          });
+        }
+      } finally {
+        if (!cancelled) setScansLoading(false);
+      }
+    })();
+
+    return () => (cancelled = true);
+  }, [historyOpen, selectedUser?.id, scansPage, scansPageSize]);
+
+  const openHistory = (userRow) => {
     setSelectedUser(userRow);
     setHistoryOpen(true);
-    setScans([]);
-    setScansCursor(null);
-    setScansLoading(true);
 
-    try {
-      const { items, nextCursor } = await listUserScanHistory({
-        userId: userRow.id,
-        pageSize: 20,
-      });
-      setScans(items);
-      setScansCursor(nextCursor);
-    } finally {
-      setScansLoading(false);
-    }
+    // reset scans state
+    setScans([]);
+    setScansLoading(false);
+
+    // reset pagination
+    setScansPage(1);
+    setScansPageSize(5);
+    setScansTotal(0);
+    setScansCursors([]);
   };
 
   const loadMoreScans = async () => {
     if (!selectedUser || !scansCursor) return;
-
     setScansLoading(true);
 
     try {
@@ -158,11 +205,16 @@ export default function Users() {
   const closeHistory = () => {
     setHistoryOpen(false);
     setSelectedUser(null);
+
     setScans([]);
-    setScansCursor(null);
+    setScansLoading(false);
+
+    setScansPage(1);
+    setScansPageSize(5);
+    setScansTotal(0);
+    setScansCursors([]);
   };
 
-  /* ---------------- Users Table Columns ---------------- */
   const columns = [
     { title: "Name", dataIndex: "name" },
     { title: "Email", dataIndex: "email" },
@@ -171,7 +223,6 @@ export default function Users() {
     { title: "Status", dataIndex: "status" },
     { title: "Country", dataIndex: "country" },
     { title: "Mobile", dataIndex: "mobile" },
-    { title: "Total Scans", dataIndex: "total_scans" },
     {
       title: "Created At",
       dataIndex: "created_at",
@@ -184,7 +235,6 @@ export default function Users() {
           <Button variant="primary" onClick={() => openHistory(row)}>
             Scans
           </Button>
-
           <Button variant="secondary" onClick={() => openBillingHistory(row)}>
             Subscriptions
           </Button>
@@ -192,12 +242,13 @@ export default function Users() {
       ),
     },
   ];
+
   const searchHandler = (e) => {
-    setCursors([]); 
-    setPage(1); // Reset to the first page when searching
-    setQ(e.target.value); // Set the search query
+    setCursors([]);
+    setPage(1);
+    setQ(e.target.value);
   };
-  /* ---------------- Render ---------------- */
+
   if (authLoading) return <>Loading...</>;
   if (!user) return <>Please sign in.</>;
   if (!isAdmin) return <>You are not authorized.</>;
@@ -241,12 +292,14 @@ export default function Users() {
                 {selectedUser.name} • {selectedUser.email}
               </p>
             )}
+            <h2 className="mt-2 text-xl font-semibold">Total Scans: {scansTotal}</h2>
           </div>
         </div>
 
         <div className="mt-4">
           <div className="card" style={{ padding: 0, overflow: "hidden" }}>
             <DataTable
+              isCSVExport={false}
               columns={[
                 {
                   title: "Image",
@@ -268,59 +321,24 @@ export default function Users() {
                       <span className="helper">—</span>
                     ),
                 },
-                {
-                  title: "Product",
-                  dataIndex: "productName",
-                  render: (value, row) => (
-                    <div>
-                      <div style={{ fontWeight: 600 }}>{value}</div>
-                      <div className="helper" style={{ fontSize: 12 }}>
-                        {row.productBrands}
-                      </div>
-                    </div>
-                  ),
-                },
+                { title: "Product", dataIndex: "productName" },
                 { title: "Barcode", dataIndex: "barcode" },
-                {
-                  title: "Verdict",
-                  dataIndex: "overallStatus",
-                  render: (value) => (
-                    <span
-                      className={`badge ${
-                        value === "halal"
-                          ? "ok"
-                          : value === "haram"
-                          ? "danger"
-                          : "warn"
-                      }`}
-                    >
-                      {value}
-                    </span>
-                  ),
-                },
+                { title: "Verdict", dataIndex: "overallStatus" },
                 { title: "Type", dataIndex: "scanType" },
                 { title: "Scanned At", dataIndex: "scannedAt" },
               ]}
               data={scans}
               loading={scansLoading}
-              page={page}
-              pageSize={5}
+              page={scansPage}
+              pageSize={scansPageSize}
+              total={scansTotal}
+              onPageChange={setScansPage}
+              onPageSizeChange={(size) => {
+                setScansCursors([]);
+                setScansPageSize(size);
+                setScansPage(1);
+              }}
             />
-          </div>
-
-          <div className="space" />
-          <div className="row" style={{ justifyContent: "center" }}>
-            <Button
-              variant="secondary"
-              disabled={!scansCursor || scansLoading}
-              onClick={loadMoreScans}
-            >
-              {scansLoading
-                ? "Loading..."
-                : scansCursor
-                ? "Load more"
-                : "No more"}
-            </Button>
           </div>
         </div>
       </Modal>
@@ -336,7 +354,7 @@ export default function Users() {
               <p className="mt-1 text-sm text-slate-500">
                 {billingUser.name} • {billingUser.email}
               </p>
-            )}
+            )}            
           </div>
         </div>
 
